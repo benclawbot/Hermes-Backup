@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
       const session = await stripeRequest<{ url: string; id: string }>('/v1/checkout/sessions', 'POST', {
         customer: customer.id,
         'mode': 'subscription',
-        'line_items[0][price]': process.env.STRIPE_PRICE_MONTHLY || '',
+        'line_items[0][price]': (process.env.STRIPE_PRICE_MONTHLY || '').trim(),
         'line_items[0][quantity]': '1',
         ...Object.fromEntries(Object.entries(baseParams).map(([k, v]) => [`subscription_data[metadata][${k}]`, v])),
         ...Object.fromEntries(Object.entries(baseParams)),
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
     } else {
       const session = await stripeRequest<{ url: string; id: string }>('/v1/checkout/sessions', 'POST', {
         'mode': 'payment',
-        'line_items[0][price]': process.env.STRIPE_PRICE_SINGLE_SCAN || '',
+        'line_items[0][price]': (process.env.STRIPE_PRICE_SINGLE_SCAN || '').trim(),
         'line_items[0][quantity]': '1',
         'customer_email': email || '',
         ...Object.fromEntries(Object.entries(baseParams).map(([k, v]) => [`metadata[${k}]`, v])),
