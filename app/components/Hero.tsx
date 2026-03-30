@@ -81,7 +81,8 @@ export function Hero() {
             name="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="your@email.com (optional — for report delivery)"
+            placeholder="your@email.com"
+            required
             className="rounded-lg bg-midnight-light border border-white/20 px-5 py-4 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-transparent transition-all"
           />
           <button
@@ -89,7 +90,7 @@ export function Hero() {
             disabled={loading}
             className="rounded-lg bg-accent-blue px-8 py-4 font-semibold text-white hover:bg-accent-glow transition-all shadow-lg shadow-accent-blue/30 hover:shadow-accent-blue/50 whitespace-nowrap glow-accent disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Redirecting to payment...' : 'Scan Now — €20'}
+            {loading ? 'Redirecting to payment...' : 'Scan Now — €27'}
           </button>
         </form>
 
