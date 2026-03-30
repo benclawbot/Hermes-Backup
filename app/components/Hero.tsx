@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 
 export function Hero() {
@@ -93,6 +94,16 @@ export function Hero() {
             {loading ? 'Redirecting to payment...' : 'Scan Now — $29'}
           </button>
         </form>
+
+        {/* Subscriber login link */}
+        <div className="mb-6">
+          <Link
+            href="/login"
+            className="text-sm text-white/40 hover:text-white/70 transition-colors"
+          >
+            Subscriber Dashboard →
+          </Link>
+        </div>
 
         {/* Trust badges */}
         <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/50">

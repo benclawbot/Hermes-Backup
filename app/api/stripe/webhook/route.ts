@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { v4 as uuidv4 } from 'uuid';
 import { getDb } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
@@ -36,20 +37,68 @@ export async function POST(request: NextRequest) {
       const session = event.data.object as Stripe.Checkout.Session;
       const { scanId, url } = session.metadata || {};
 
-      if (scanId) {
-        // Update scan record with payment info
-        db.prepare(`
-          UPDATE scans
-          SET stripe_session_id = ?, status = 'pending', email = COALESCE(?, email)
-          WHERE id = ?
-        `).run(session.id, session.customer_email ?? null, scanId);
-
-        // Trigger scan immediately after payment for one-time scans
-        if (session.mode === 'payment') {
+      if (session.mode === 'payment') {
+        // One-time scan
+        if (scanId) {
+          db.prepare(`
+            UPDATE scans
+            SET stripe_session_id = ?, status = 'pending', email = COALESCE(?, email)
+            WHERE id = ?
+          `).run(session.id, session.customer_email ?? null, scanId);
           triggerScan(scanId, url ?? '').catch(console.error);
-        } else if (session.mode === 'subscription') {
-          // For subscription: log for now (subscription scan scheduling in TASK-004)
-          console.log('Subscription activated for scanId:', scanId);
+        }
+      } else if (session.mode === 'subscription') {
+        // Subscriber checkout — create subscriber + token, email dashboard link
+        const customerId = session.customer as string;
+        const customerEmail = session.customer_email ?? '';
+
+        // Upsert subscriber
+        const existingSub = db.prepare('SELECT id FROM subscribers WHERE stripe_customer_id = ?').get(customerId) as any;
+        let subscriberId = existingSub?.id;
+
+        if (!subscriberId) {
+          subscriberId = uuidv4();
+          db.prepare(`
+            INSERT INTO subscribers (id, stripe_customer_id, email, plan, status)
+            VALUES (?, ?, ?, 'monthly', 'active')
+          `).run(subscriberId, customerId, customerEmail);
+        } else {
+          db.prepare(`
+            UPDATE subscribers SET status = 'active', updated_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
+            WHERE id = ?
+          `).run(subscriberId);
+        }
+
+        // Generate subscriber token
+        const token = uuidv4();
+        db.prepare(`
+          INSERT OR REPLACE INTO subscriber_tokens (token, subscriber_id, created_at, last_used_at)
+          VALUES (?, ?, strftime('%Y-%m-%dT%H:%M:%SZ', 'now'), strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
+        `).run(token, subscriberId);
+
+        // Email dashboard access link
+        if (process.env.RESEND_API_KEY && customerEmail) {
+          const { Resend } = await import('resend');
+          const resend = new Resend(process.env.RESEND_API_KEY);
+          const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app'}/dashboard?token=${token}`;
+
+          await resend.emails.send({
+            from: 'ComplyScan <hello@complyscan.com>',
+            to: customerEmail,
+            subject: 'Your ComplyScan Dashboard Access',
+            html: `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:600px;margin:0 auto;padding:40px 20px;color:#1a1a2e;">
+  <h1 style="color:#4f8ef7;">Welcome to ComplyScan!</h1>
+  <p>Your subscription is active. Access your dashboard to run unlimited GDPR scans:</p>
+  <a href="${dashboardUrl}" style="display:inline-block;background:#4f8ef7;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;margin:20px 0;">Open Dashboard</a>
+  <p style="color:#666;font-size:14px;">Or copy this link: ${dashboardUrl}</p>
+  <hr style="border:none;border-top:1px solid #eee;margin:30px 0;">
+  <p style="color:#999;font-size:12px;">ComplyScan — GDPR compliance made effortless</p>
+</body>
+</html>`,
+          });
         }
       }
       break;
@@ -57,7 +106,11 @@ export async function POST(request: NextRequest) {
 
     case 'customer.subscription.deleted': {
       const subscription = event.data.object as Stripe.Subscription;
-      console.log('Subscription cancelled:', subscription.id);
+      const customerId = subscription.customer as string;
+      db.prepare(`
+        UPDATE subscribers SET status = 'cancelled', updated_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
+        WHERE stripe_customer_id = ?
+      `).run(customerId);
       break;
     }
 

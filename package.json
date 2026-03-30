@@ -7,8 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "echo \"No tests specified\" && exit 0",
-    "test:coverage": "echo \"No coverage command specified\" && exit 0"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@stripe/stripe-js": "latest",
@@ -27,18 +27,23 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@tailwindcss/typography": "^0.5.19",
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "latest",
     "@types/puppeteer-core": "^5.4.0",
     "@types/react": "latest",
     "@types/uuid": "^10.0.0",
+    "@vitejs/plugin-react": "^6.0.1",
     "autoprefixer": "^10.4.27",
     "eslint": "^9.39.4",
     "eslint-config-next": "^16.2.1",
     "playwright": "^1.58.2",
     "postcss": "^8.5.8",
     "tailwindcss": "^3.4.19",
-    "typescript": "latest"
+    "ts-node": "^10.9.2",
+    "typescript": "latest",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.2"
   }
 }

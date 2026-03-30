@@ -23,8 +23,27 @@ function initializeSchema(db: Database.Database) {
       result_json TEXT,
       email TEXT,
       stripe_session_id TEXT,
+      subscriber_id TEXT,
       created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
       completed_at TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS subscribers (
+      id TEXT PRIMARY KEY,
+      stripe_customer_id TEXT UNIQUE NOT NULL,
+      email TEXT NOT NULL,
+      plan TEXT NOT NULL DEFAULT 'monthly',
+      status TEXT NOT NULL DEFAULT 'active',
+      created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+      updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS subscriber_tokens (
+      token TEXT PRIMARY KEY,
+      subscriber_id TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+      last_used_at TEXT,
+      FOREIGN KEY (subscriber_id) REFERENCES subscribers(id)
     );
   `);
 }

@@ -1,0 +1,42 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getDb } from '@/lib/db';
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { email } = body;
+
+    if (!email) {
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+    }
+
+    const db = getDb();
+
+    // Find active subscriber by email
+    const subscriber = db.prepare(`
+      SELECT id, status FROM subscribers WHERE email = ? AND status = 'active'
+    `).get(email) as any;
+
+    if (!subscriber) {
+      return NextResponse.json({ notFound: true }, { status: 200 });
+    }
+
+    // Get the latest token for this subscriber
+    const tokenRecord = db.prepare(`
+      SELECT token FROM subscriber_tokens
+      WHERE subscriber_id = ?
+      ORDER BY last_used_at DESC LIMIT 1
+    `).get(subscriber.id) as any;
+
+    if (!tokenRecord) {
+      return NextResponse.json({ notFound: true }, { status: 200 });
+    }
+
+    const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app'}/dashboard?token=${tokenRecord.token}`;
+
+    return NextResponse.json({ dashboardUrl });
+  } catch (error: any) {
+    console.error('Login error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
