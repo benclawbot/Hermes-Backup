@@ -3,29 +3,42 @@ import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(request: NextRequest) {
   try {
-    const { url: websiteUrl, email, plan } = await request.json();
-
-    if (!websiteUrl) {
-      return NextResponse.json({ error: 'URL is required' }, { status: 400 });
-    }
+    const body = await request.json();
+    const websiteUrl = body.url as string;
+    const email = body.email as string | undefined;
+    const plan = (body.plan as string) || 'single';
 
     const stripeKey = process.env.STRIPE_SECRET_KEY;
-    if (!stripeKey) {
-      return NextResponse.json({ error: 'Stripe not configured' }, { status: 500 });
-    }
-
-    const scanId = uuidv4();
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app';
     const priceId = plan === 'monthly'
       ? (process.env.STRIPE_PRICE_MONTHLY || '').trim()
       : (process.env.STRIPE_PRICE_SINGLE_SCAN || '').trim();
 
-    if (!priceId) {
-      return NextResponse.json({ error: 'Price not configured' }, { status: 500 });
+    const scanId = uuidv4();
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app').trim();
+    const priceIdOk = !!priceId;
+    const stripeKeyOk = !!stripeKey;
+    const keyPrefix = stripeKey ? stripeKey.slice(0, 7) : 'MISSING';
+
+    // Test 1: Can we make ANY request to Stripe?
+    const testResp = await fetch('https://api.stripe.com/v1/balance', {
+      headers: { 'Authorization': `Bearer ${stripeKey}` }
+    });
+    const testData = await testResp.json().catch(() => ({}));
+
+    if (!testResp.ok) {
+      return NextResponse.json({
+        error: 'Cannot reach Stripe',
+        testStatus: testResp.status,
+        testData: testData.error,
+        keyPrefix,
+        priceIdOk,
+        priceId: priceId.slice(0, 10) + '...',
+      });
     }
 
-    const body = new URLSearchParams({
-      mode: plan === 'monthly' ? 'subscription' : 'payment',
+    // Test 2: Can we create a checkout session?
+    const checkoutBody = new URLSearchParams({
+      mode: 'payment',
       'line_items[0][price]': priceId,
       'line_items[0][quantity]': '1',
       'customer_email': email || '',
@@ -35,24 +48,28 @@ export async function POST(request: NextRequest) {
       'metadata[url]': websiteUrl,
     }).toString();
 
-    const resp = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+    const checkoutResp = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${stripeKey}`,
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body,
+      body: checkoutBody,
     });
 
-    const data = await resp.json();
+    const checkoutData = await checkoutResp.json();
 
-    if (!resp.ok) {
-      return NextResponse.json({ error: data.error?.message || `Stripe error: ${resp.status}` }, { status: 500 });
+    if (!checkoutResp.ok) {
+      return NextResponse.json({
+        error: 'Checkout session failed',
+        status: checkoutResp.status,
+        data: checkoutData.error,
+        priceId: priceId.slice(0, 10) + '...',
+      });
     }
 
-    return NextResponse.json({ url: data.url, sessionId: data.id, scanId });
+    return NextResponse.json({ url: checkoutData.url, sessionId: checkoutData.id, scanId });
   } catch (err: any) {
-    console.error('Checkout error:', err?.message || err);
-    return NextResponse.json({ error: err?.message || 'Checkout failed' }, { status: 500 });
+    return NextResponse.json({ error: err?.message || 'Unknown error' }, { status: 500 });
   }
 }
