@@ -47,13 +47,6 @@ export async function POST(request: NextRequest) {
     const scanId = uuidv4();
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app';
 
-    const baseParams = {
-      'success_url': `${appUrl}/success?session_id={CHECKOUT_SESSION_ID}&scan_id=${scanId}`,
-      'cancel_url': `${appUrl}/?cancelled=true`,
-      'metadata[scanId]': scanId,
-      'metadata[url]': url,
-    };
-
     if (plan === 'monthly') {
       const customer = await stripeRequest<{ id: string }>('/v1/customers', 'POST', {
         email: email || '',
@@ -78,7 +71,10 @@ export async function POST(request: NextRequest) {
         'line_items[0][price]': (process.env.STRIPE_PRICE_SINGLE_SCAN || '').trim(),
         'line_items[0][quantity]': '1',
         'customer_email': email || '',
-        ...Object.fromEntries(Object.entries(baseParams).map(([k, v]) => [`metadata[${k}]`, v])),
+        'success_url': `${appUrl}/success?session_id={CHECKOUT_SESSION_ID}&scan_id=${scanId}`,
+        'cancel_url': `${appUrl}/?cancelled=true`,
+        'metadata[scanId]': scanId,
+        'metadata[url]': url,
       }, stripeKey);
 
       return NextResponse.json({ url: session.url, sessionId: session.id, scanId });
