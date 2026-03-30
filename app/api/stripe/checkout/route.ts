@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     }
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2025-02-24.acacia' as any,
+      apiVersion: '2024-11-20',
     });
 
     const scanId = uuidv4();
