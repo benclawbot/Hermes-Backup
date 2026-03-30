@@ -1,7 +1,7 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 
-const DB_PATH = process.env.DATABASE_PATH || './data/complyscan.db';
+const DB_PATH = process.env.DATABASE_PATH || (process.env.VERCEL ? '/tmp/complyscan.db' : './data/complyscan.db');
 
 let db: Database.Database;
 
