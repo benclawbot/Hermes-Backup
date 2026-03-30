@@ -17,7 +17,7 @@ describe('Payment Flow E2E', () => {
     browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
 
-    await page.goto(BASE_URL, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(BASE_URL, { waitUntil: 'load', timeout: 30000 });
     await page.fill('input[type="url"]', 'https://example.com');
     await page.fill('input[type="email"]', 'e2e-test@complyscan.com');
 
@@ -32,7 +32,7 @@ describe('Payment Flow E2E', () => {
     browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
 
-    await page.goto(BASE_URL, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(BASE_URL, { waitUntil: 'load', timeout: 30000 });
 
     // Fill only URL, no email
     await page.fill('input[type="url"]', 'https://example.com');
@@ -50,7 +50,7 @@ describe('Payment Flow E2E', () => {
     browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
 
-    await page.goto(BASE_URL, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(BASE_URL, { waitUntil: 'load', timeout: 30000 });
 
     const buttonText = await page.textContent('button[type="submit"]');
     expect(buttonText).toContain('$29');
@@ -62,7 +62,7 @@ describe('Payment Flow E2E', () => {
     browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
 
-    await page.goto(BASE_URL, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(BASE_URL, { waitUntil: 'load', timeout: 30000 });
 
     const loginLink = await page.$('a[href="/login"]');
     expect(loginLink).not.toBeNull();
@@ -74,7 +74,7 @@ describe('Payment Flow E2E', () => {
     browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
 
-    await page.goto(`${BASE_URL}/login`, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(`${BASE_URL}/login`, { waitUntil: 'load', timeout: 30000 });
 
     const emailInput = await page.$('input[type="email"]');
     expect(emailInput).not.toBeNull();
@@ -100,7 +100,7 @@ describe('Payment Flow E2E', () => {
     const page = await browser.newPage();
 
     await page.goto(`${BASE_URL}/success?session_id=cs_test&scan_id=scan_123`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'load',
       timeout: 30000,
     });
 
