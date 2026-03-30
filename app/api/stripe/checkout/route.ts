@@ -65,8 +65,10 @@ export async function POST(request: NextRequest) {
         'mode': 'subscription',
         'line_items[0][price]': (process.env.STRIPE_PRICE_MONTHLY || '').trim(),
         'line_items[0][quantity]': '1',
-        ...Object.fromEntries(Object.entries(baseParams).map(([k, v]) => [`subscription_data[metadata][${k}]`, v])),
-        ...Object.fromEntries(Object.entries(baseParams)),
+        'success_url': `${appUrl}/success?session_id={CHECKOUT_SESSION_ID}&scan_id=${scanId}`,
+        'cancel_url': `${appUrl}/?cancelled=true`,
+        'subscription_data[metadata][scanId]': scanId,
+        'subscription_data[metadata][url]': url,
       }, stripeKey);
 
       return NextResponse.json({ url: session.url, sessionId: session.id, scanId });
