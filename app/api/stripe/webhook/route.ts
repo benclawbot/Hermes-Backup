@@ -4,89 +4,90 @@ import { v4 as uuidv4 } from 'uuid';
 import { getDb } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
-  if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
-    return NextResponse.json({ error: 'Stripe not configured' }, { status: 500 });
-  }
-
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: '2025-02-24.acacia' as any,
-  });
-
-  const body = await request.text();
-  const signature = request.headers.get('stripe-signature');
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
-  if (!signature || !webhookSecret) {
-    console.error('Missing stripe-signature or STRIPE_WEBHOOK_SECRET');
-    return NextResponse.json({ error: 'Missing signature or webhook secret' }, { status: 400 });
-  }
-
-  let event: Stripe.Event;
-
   try {
-    event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-  } catch (err: any) {
-    console.error('Webhook signature verification failed:', err.message);
-    return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
-  }
+    if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
+      return NextResponse.json({ error: 'Stripe not configured' }, { status: 500 });
+    }
 
-  const db = getDb();
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2025-02-24.acacia' as any,
+    });
 
-  switch (event.type) {
-    case 'checkout.session.completed': {
-      const session = event.data.object as Stripe.Checkout.Session;
-      const { scanId, url } = session.metadata || {};
+    const body = await request.text();
+    const signature = request.headers.get('stripe-signature');
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-      if (session.mode === 'payment') {
-        // One-time scan
-        if (scanId) {
+    if (!signature || !webhookSecret) {
+      console.error('Missing stripe-signature or STRIPE_WEBHOOK_SECRET');
+      return NextResponse.json({ error: 'Missing signature or webhook secret' }, { status: 400 });
+    }
+
+    let event: Stripe.Event;
+
+    try {
+      event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+    } catch (err: any) {
+      console.error('Webhook signature verification failed:', err.message, 'type:', err.type);
+      return NextResponse.json({ error: 'Invalid signature', detail: err.message, type: err.type }, { status: 400 });
+    }
+
+    const db = getDb();
+
+    switch (event.type) {
+      case 'checkout.session.completed': {
+        const session = event.data.object as Stripe.Checkout.Session;
+        const { scanId, url } = session.metadata || {};
+
+        if (session.mode === 'payment') {
+          // One-time scan
+          if (scanId) {
+            db.prepare(`
+              UPDATE scans
+              SET stripe_session_id = ?, status = 'pending', email = COALESCE(?, email)
+              WHERE id = ?
+            `).run(session.id, session.customer_email ?? null, scanId);
+            triggerScan(scanId, url ?? '').catch(console.error);
+          }
+        } else if (session.mode === 'subscription') {
+          // Subscriber checkout — create subscriber + token, email dashboard link
+          const customerId = session.customer as string;
+          const customerEmail = session.customer_email ?? '';
+
+          // Upsert subscriber
+          const existingSub = db.prepare('SELECT id FROM subscribers WHERE stripe_customer_id = ?').get(customerId) as any;
+          let subscriberId = existingSub?.id;
+
+          if (!subscriberId) {
+            subscriberId = uuidv4();
+            db.prepare(`
+              INSERT INTO subscribers (id, stripe_customer_id, email, plan, status)
+              VALUES (?, ?, ?, 'monthly', 'active')
+            `).run(subscriberId, customerId, customerEmail);
+          } else {
+            db.prepare(`
+              UPDATE subscribers SET status = 'active', updated_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
+              WHERE id = ?
+            `).run(subscriberId);
+          }
+
+          // Generate subscriber token
+          const token = uuidv4();
           db.prepare(`
-            UPDATE scans
-            SET stripe_session_id = ?, status = 'pending', email = COALESCE(?, email)
-            WHERE id = ?
-          `).run(session.id, session.customer_email ?? null, scanId);
-          triggerScan(scanId, url ?? '').catch(console.error);
-        }
-      } else if (session.mode === 'subscription') {
-        // Subscriber checkout — create subscriber + token, email dashboard link
-        const customerId = session.customer as string;
-        const customerEmail = session.customer_email ?? '';
+            INSERT OR REPLACE INTO subscriber_tokens (token, subscriber_id, created_at, last_used_at)
+            VALUES (?, ?, strftime('%Y-%m-%dT%H:%M:%SZ', 'now'), strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
+          `).run(token, subscriberId);
 
-        // Upsert subscriber
-        const existingSub = db.prepare('SELECT id FROM subscribers WHERE stripe_customer_id = ?').get(customerId) as any;
-        let subscriberId = existingSub?.id;
+          // Email dashboard access link
+          if (process.env.RESEND_API_KEY && customerEmail) {
+            const { Resend } = await import('resend');
+            const resend = new Resend(process.env.RESEND_API_KEY);
+            const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app'}/dashboard?token=${token}`;
 
-        if (!subscriberId) {
-          subscriberId = uuidv4();
-          db.prepare(`
-            INSERT INTO subscribers (id, stripe_customer_id, email, plan, status)
-            VALUES (?, ?, ?, 'monthly', 'active')
-          `).run(subscriberId, customerId, customerEmail);
-        } else {
-          db.prepare(`
-            UPDATE subscribers SET status = 'active', updated_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
-            WHERE id = ?
-          `).run(subscriberId);
-        }
-
-        // Generate subscriber token
-        const token = uuidv4();
-        db.prepare(`
-          INSERT OR REPLACE INTO subscriber_tokens (token, subscriber_id, created_at, last_used_at)
-          VALUES (?, ?, strftime('%Y-%m-%dT%H:%M:%SZ', 'now'), strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
-        `).run(token, subscriberId);
-
-        // Email dashboard access link
-        if (process.env.RESEND_API_KEY && customerEmail) {
-          const { Resend } = await import('resend');
-          const resend = new Resend(process.env.RESEND_API_KEY);
-          const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app'}/dashboard?token=${token}`;
-
-          await resend.emails.send({
-            from: 'ComplyScan <hello@complyscan.com>',
-            to: customerEmail,
-            subject: 'Your ComplyScan Dashboard Access',
-            html: `<!DOCTYPE html>
+            await resend.emails.send({
+              from: 'ComplyScan <hello@complyscan.com>',
+              to: customerEmail,
+              subject: 'Your ComplyScan Dashboard Access',
+              html: `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
 <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:600px;margin:0 auto;padding:40px 20px;color:#1a1a2e;">
@@ -98,27 +99,31 @@ export async function POST(request: NextRequest) {
   <p style="color:#999;font-size:12px;">ComplyScan — GDPR compliance made effortless</p>
 </body>
 </html>`,
-          });
+            });
+          }
         }
+        break;
       }
-      break;
+
+      case 'customer.subscription.deleted': {
+        const subscription = event.data.object as Stripe.Subscription;
+        const customerId = subscription.customer as string;
+        db.prepare(`
+          UPDATE subscribers SET status = 'cancelled', updated_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
+          WHERE stripe_customer_id = ?
+        `).run(customerId);
+        break;
+      }
+
+      default:
+        console.log('Unhandled event type:', event.type);
     }
 
-    case 'customer.subscription.deleted': {
-      const subscription = event.data.object as Stripe.Subscription;
-      const customerId = subscription.customer as string;
-      db.prepare(`
-        UPDATE subscribers SET status = 'cancelled', updated_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
-        WHERE stripe_customer_id = ?
-      `).run(customerId);
-      break;
-    }
-
-    default:
-      console.log('Unhandled event type:', event.type);
+    return NextResponse.json({ received: true });
+  } catch (err: any) {
+    console.error('Webhook handler error:', err.message, err.stack);
+    return NextResponse.json({ error: 'Internal error', detail: err.message }, { status: 500 });
   }
-
-  return NextResponse.json({ received: true });
 }
 
 async function triggerScan(scanId: string, url: string) {
