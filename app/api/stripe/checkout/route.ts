@@ -24,6 +24,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Price not configured' }, { status: 500 });
     }
 
+    const headers = {
+      'Authorization': `Bearer ${stripeKey}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    };
+
+    // Warmup fetch to Stripe (helps with connection reuse)
+    await fetch('https://api.stripe.com/v1/balance', { headers });
+
     const params = new URLSearchParams({
       mode: plan === 'monthly' ? 'subscription' : 'payment',
       'line_items[0][price]': priceId,
@@ -36,13 +44,9 @@ export async function POST(request: NextRequest) {
     });
 
     if (plan === 'monthly') {
-      // Create customer first
       const customerResp = await fetch('https://api.stripe.com/v1/customers', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${stripeKey}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+        headers,
         body: new URLSearchParams({ email: email || '', 'metadata[scanId]': scanId }).toString(),
       });
       const customer = await customerResp.json();
@@ -56,10 +60,7 @@ export async function POST(request: NextRequest) {
 
     const resp = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${stripeKey}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+      headers,
       body: params.toString(),
     });
 
