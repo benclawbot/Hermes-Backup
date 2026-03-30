@@ -1,36 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { v4 as uuidv4 } from 'uuid';
-
-const STRIPE_API = 'https://api.stripe.com';
-
-async function stripePost<T = any>(path: string, body: Record<string, string>, key: string): Promise<T> {
-  const params = new URLSearchParams(body).toString();
-  const url = `${STRIPE_API}${path}`;
-  
-  const resp = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Authorization': 'Bearer ' + key,
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: params,
-  });
-
-  const data = await resp.json();
-  
-  if (!resp.ok) {
-    throw new Error(data.error?.message || `Stripe error: ${resp.status}`);
-  }
-  
-  return data;
-}
+import Stripe from 'stripe';
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const websiteUrl = body.url as string;
-    const email = body.email as string | undefined;
-    const plan = (body.plan as string) || 'single';
+    const { url: websiteUrl, email, plan } = await request.json();
 
     if (!websiteUrl) {
       return NextResponse.json({ error: 'URL is required' }, { status: 400 });
@@ -41,43 +14,44 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Stripe not configured' }, { status: 500 });
     }
 
-    const scanId = uuidv4();
+    const stripe = new Stripe(stripeKey);
+    const scanId = crypto.randomUUID();
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app';
-    const priceId = plan === 'monthly' 
-      ? (process.env.STRIPE_PRICE_MONTHLY || '').trim()
-      : (process.env.STRIPE_PRICE_SINGLE_SCAN || '').trim();
+    const priceId = plan === 'monthly'
+      ? process.env.STRIPE_PRICE_MONTHLY
+      : process.env.STRIPE_PRICE_SINGLE_SCAN;
 
     if (!priceId) {
       return NextResponse.json({ error: 'Price not configured' }, { status: 500 });
     }
 
-    const sessionParams: Record<string, string> = {
-      'mode': plan === 'monthly' ? 'subscription' : 'payment',
-      'line_items[0][price]': priceId,
-      'line_items[0][quantity]': '1',
-      'customer_email': email || '',
-      'success_url': `${appUrl}/success?session_id={CHECKOUT_SESSION_ID}&scan_id=${scanId}`,
-      'cancel_url': `${appUrl}/?cancelled=true`,
-      'metadata[scanId]': scanId,
-      'metadata[url]': websiteUrl,
+    const baseParams = {
+      success_url: `${appUrl}/success?session_id={CHECKOUT_SESSION_ID}&scan_id=${scanId}`,
+      cancel_url: `${appUrl}/?cancelled=true`,
+      metadata: { scanId, url: websiteUrl },
     };
 
     if (plan === 'monthly') {
-      const customer = await stripePost<{ id: string }>('/v1/customers', {
-        email: email || '',
-        'metadata[scanId]': scanId,
-      }, stripeKey);
-      sessionParams['customer'] = customer.id;
-      // Add subscription_data for subscription mode
-      sessionParams['subscription_data[metadata][scanId]'] = scanId;
-      sessionParams['subscription_data[metadata][url]'] = websiteUrl;
+      const customer = await stripe.customers.create({ email, metadata: { scanId } });
+      const session = await stripe.checkout.sessions.create({
+        customer: customer.id,
+        mode: 'subscription',
+        line_items: [{ price: priceId, quantity: 1 }],
+        ...baseParams,
+        subscription_data: { metadata: { scanId, url: websiteUrl } },
+      });
+      return NextResponse.json({ url: session.url, sessionId: session.id, scanId });
+    } else {
+      const session = await stripe.checkout.sessions.create({
+        mode: 'payment',
+        line_items: [{ price: priceId, quantity: 1 }],
+        customer_email: email,
+        ...baseParams,
+      });
+      return NextResponse.json({ url: session.url, sessionId: session.id, scanId });
     }
-
-    const session = await stripePost<{ url: string; id: string }>('/v1/checkout/sessions', sessionParams, stripeKey);
-
-    return NextResponse.json({ url: session.url, sessionId: session.id, scanId });
-  } catch (error: any) {
-    console.error('Stripe checkout error:', error?.message || error);
-    return NextResponse.json({ error: error?.message || 'Unknown error' }, { status: 500 });
+  } catch (err: any) {
+    console.error('Checkout error:', err.message);
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
