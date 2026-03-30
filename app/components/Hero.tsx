@@ -90,7 +90,7 @@ export function Hero() {
             disabled={loading}
             className="rounded-lg bg-accent-blue px-8 py-4 font-semibold text-white hover:bg-accent-glow transition-all shadow-lg shadow-accent-blue/30 hover:shadow-accent-blue/50 whitespace-nowrap glow-accent disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Redirecting to payment...' : 'Scan Now — €27'}
+            {loading ? 'Redirecting to payment...' : 'Scan Now — $29'}
           </button>
         </form>
 
