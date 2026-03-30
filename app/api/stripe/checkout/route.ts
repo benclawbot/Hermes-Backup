@@ -33,9 +33,9 @@ async function stripeRequest<T = any>(
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { url, email, plan } = body as { url: string; email?: string; plan: 'single' | 'monthly' };
+    const { url: websiteUrl, email, plan } = body as { url: string; email?: string; plan: 'single' | 'monthly' };
 
-    if (!url) {
+    if (!websiteUrl) {
       return NextResponse.json({ error: 'URL is required' }, { status: 400 });
     }
 
@@ -46,6 +46,8 @@ export async function POST(request: NextRequest) {
 
     const scanId = uuidv4();
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app';
+
+    console.log('Checkout request:', { websiteUrl, email, plan, hasStripeKey: !!stripeKey, appUrl });
 
     if (plan === 'monthly') {
       const customer = await stripeRequest<{ id: string }>('/v1/customers', 'POST', {
@@ -61,7 +63,7 @@ export async function POST(request: NextRequest) {
         'success_url': `${appUrl}/success?session_id={CHECKOUT_SESSION_ID}&scan_id=${scanId}`,
         'cancel_url': `${appUrl}/?cancelled=true`,
         'subscription_data[metadata][scanId]': scanId,
-        'subscription_data[metadata][url]': url,
+        'subscription_data[metadata][url]': websiteUrl,
       }, stripeKey);
 
       return NextResponse.json({ url: session.url, sessionId: session.id, scanId });
@@ -74,13 +76,13 @@ export async function POST(request: NextRequest) {
         'success_url': `${appUrl}/success?session_id={CHECKOUT_SESSION_ID}&scan_id=${scanId}`,
         'cancel_url': `${appUrl}/?cancelled=true`,
         'metadata[scanId]': scanId,
-        'metadata[url]': url,
+        'metadata[url]': websiteUrl,
       }, stripeKey);
 
       return NextResponse.json({ url: session.url, sessionId: session.id, scanId });
     }
   } catch (error: any) {
-    console.error('Stripe checkout error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('Stripe checkout error:', error?.message || error, error?.stack);
+    return NextResponse.json({ error: error?.message || 'Unknown error', detail: error?.message }, { status: 500 });
   }
 }
