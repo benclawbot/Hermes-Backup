@@ -3,22 +3,17 @@ import { v4 as uuidv4 } from 'uuid';
 
 const STRIPE_API = 'https://api.stripe.com';
 
-async function stripeRequest<T = any>(
-  path: string,
-  method: string,
-  body: Record<string, string>,
-  key: string
-): Promise<T> {
+async function stripePost<T = any>(path: string, body: Record<string, string>, key: string): Promise<T> {
   const params = new URLSearchParams(body).toString();
-  const url = `${STRIPE_API}${path}${method === 'GET' && params ? '?' + params : ''}`;
+  const url = `${STRIPE_API}${path}`;
   
   const resp = await fetch(url, {
-    method,
+    method: 'POST',
     headers: {
       'Authorization': 'Bearer ' + key,
       'Content-Type': 'application/x-www-form-urlencoded',
     },
-    body: method !== 'GET' ? params : undefined,
+    body: params,
   });
 
   const data = await resp.json();
@@ -33,7 +28,9 @@ async function stripeRequest<T = any>(
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { url: websiteUrl, email, plan } = body as { url: string; email?: string; plan: 'single' | 'monthly' };
+    const websiteUrl = body.url as string;
+    const email = body.email as string | undefined;
+    const plan = (body.plan as string) || 'single';
 
     if (!websiteUrl) {
       return NextResponse.json({ error: 'URL is required' }, { status: 400 });
@@ -46,43 +43,41 @@ export async function POST(request: NextRequest) {
 
     const scanId = uuidv4();
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app';
+    const priceId = plan === 'monthly' 
+      ? (process.env.STRIPE_PRICE_MONTHLY || '').trim()
+      : (process.env.STRIPE_PRICE_SINGLE_SCAN || '').trim();
 
-    console.log('Checkout request:', { websiteUrl, email, plan, hasStripeKey: !!stripeKey, appUrl });
+    if (!priceId) {
+      return NextResponse.json({ error: 'Price not configured' }, { status: 500 });
+    }
+
+    const sessionParams: Record<string, string> = {
+      'mode': plan === 'monthly' ? 'subscription' : 'payment',
+      'line_items[0][price]': priceId,
+      'line_items[0][quantity]': '1',
+      'customer_email': email || '',
+      'success_url': `${appUrl}/success?session_id={CHECKOUT_SESSION_ID}&scan_id=${scanId}`,
+      'cancel_url': `${appUrl}/?cancelled=true`,
+      'metadata[scanId]': scanId,
+      'metadata[url]': websiteUrl,
+    };
 
     if (plan === 'monthly') {
-      const customer = await stripeRequest<{ id: string }>('/v1/customers', 'POST', {
+      const customer = await stripePost<{ id: string }>('/v1/customers', {
         email: email || '',
         'metadata[scanId]': scanId,
       }, stripeKey);
-
-      const session = await stripeRequest<{ url: string; id: string }>('/v1/checkout/sessions', 'POST', {
-        customer: customer.id,
-        'mode': 'subscription',
-        'line_items[0][price]': (process.env.STRIPE_PRICE_MONTHLY || '').trim(),
-        'line_items[0][quantity]': '1',
-        'success_url': `${appUrl}/success?session_id={CHECKOUT_SESSION_ID}&scan_id=${scanId}`,
-        'cancel_url': `${appUrl}/?cancelled=true`,
-        'subscription_data[metadata][scanId]': scanId,
-        'subscription_data[metadata][url]': websiteUrl,
-      }, stripeKey);
-
-      return NextResponse.json({ url: session.url, sessionId: session.id, scanId });
-    } else {
-      const session = await stripeRequest<{ url: string; id: string }>('/v1/checkout/sessions', 'POST', {
-        'mode': 'payment',
-        'line_items[0][price]': (process.env.STRIPE_PRICE_SINGLE_SCAN || '').trim(),
-        'line_items[0][quantity]': '1',
-        'customer_email': email || '',
-        'success_url': `${appUrl}/success?session_id={CHECKOUT_SESSION_ID}&scan_id=${scanId}`,
-        'cancel_url': `${appUrl}/?cancelled=true`,
-        'metadata[scanId]': scanId,
-        'metadata[url]': websiteUrl,
-      }, stripeKey);
-
-      return NextResponse.json({ url: session.url, sessionId: session.id, scanId });
+      sessionParams['customer'] = customer.id;
+      // Add subscription_data for subscription mode
+      sessionParams['subscription_data[metadata][scanId]'] = scanId;
+      sessionParams['subscription_data[metadata][url]'] = websiteUrl;
     }
+
+    const session = await stripePost<{ url: string; id: string }>('/v1/checkout/sessions', sessionParams, stripeKey);
+
+    return NextResponse.json({ url: session.url, sessionId: session.id, scanId });
   } catch (error: any) {
-    console.error('Stripe checkout error:', error?.message || error, error?.stack);
-    return NextResponse.json({ error: error?.message || 'Unknown error', detail: error?.message }, { status: 500 });
+    console.error('Stripe checkout error:', error?.message || error);
+    return NextResponse.json({ error: error?.message || 'Unknown error' }, { status: 500 });
   }
 }
