@@ -12,7 +12,7 @@ export default function SuccessClient() {
   const [reportHtml, setReportHtml] = useState<string | null>(null);
   const [reportStatus, setReportStatus] = useState<"loading" | "ready" | "pending" | "error">("loading");
   const [elapsed, setElapsed] = useState(0);
-  const pollStartedRef = useRef(false);
+  const startedRef = useRef(false);
 
   // Fetch session mode
   useEffect(() => {
@@ -26,15 +26,22 @@ export default function SuccessClient() {
       .catch(() => {});
   }, [sessionId]);
 
-  // Poll report status for one-time payments
+  // For one-time payments: trigger scan immediately, then poll until ready
   useEffect(() => {
-    if (sessionMode !== "payment" || !scanId || pollStartedRef.current) return;
-    pollStartedRef.current = true;
+    if (sessionMode !== "payment" || !scanId || startedRef.current) return;
+    startedRef.current = true;
 
     setReportStatus("pending");
     let attempts = 0;
-    const maxAttempts = 30; // ~3 minutes
-    const interval = setInterval(() => setElapsed((e) => e + 1), 1000);
+    const maxAttempts = 30;
+    const timer = setInterval(() => setElapsed((e) => e + 1), 1000);
+
+    // Trigger scan immediately (bypasses webhook dependency)
+    fetch("/api/scan/trigger", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ scanId }),
+    }).catch(() => {});
 
     const poll = () => {
       fetch(`/api/report/${encodeURIComponent(scanId)}`)
@@ -44,30 +51,34 @@ export default function SuccessClient() {
             attempts++;
             if (attempts >= maxAttempts) {
               setReportStatus("error");
-              clearInterval(interval);
+              clearInterval(timer);
             }
           } else if (r.status === 200 && data.reportHtml) {
             setReportHtml(data.reportHtml);
             setReportStatus("ready");
-            clearInterval(interval);
+            clearInterval(timer);
           }
         })
         .catch(() => {
           attempts++;
           if (attempts >= maxAttempts) {
             setReportStatus("error");
-            clearInterval(interval);
+            clearInterval(timer);
           }
         });
     };
 
     // Start polling
-    poll();
-    const pollInterval = setInterval(poll, 6000);
-    return () => clearInterval(pollInterval);
+    const pollInterval = setInterval(poll, 3000);
+    poll(); // immediate first check
+
+    return () => {
+      clearInterval(timer);
+      clearInterval(pollInterval);
+    };
   }, [sessionMode, scanId]);
 
-  // Subscriptions → show dashboard link
+  // Subscriptions → dashboard
   if (sessionMode === "subscription") {
     return (
       <div className="min-h-screen bg-midnight flex items-center justify-center px-4">
@@ -78,7 +89,7 @@ export default function SuccessClient() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-white mb-2">Subscription Active!</h1>
-          <p className="text-white/60 mb-8">Your monthly subscription is confirmed. Access your dashboard to run unlimited GDPR scans.</p>
+          <p className="text-white/60 mb-8">Your monthly subscription is confirmed.</p>
           <a href="/login" className="inline-block px-6 py-3 bg-accent-blue text-white rounded-lg font-medium hover:bg-accent-blue/90 transition-all">
             Access Dashboard
           </a>
@@ -87,7 +98,7 @@ export default function SuccessClient() {
     );
   }
 
-  // Report is ready → show it
+  // Report ready → show it
   if (reportStatus === "ready" && reportHtml) {
     return (
       <div className="min-h-screen bg-midnight">
@@ -99,12 +110,21 @@ export default function SuccessClient() {
               </svg>
             </div>
             <h1 className="text-2xl font-bold text-white">Your GDPR Report is Ready</h1>
-            <p className="text-white/60 mt-1">Payment confirmed. Your compliance scan is complete.</p>
+            <p className="text-white/60 mt-1">Scan complete. See your compliance results below.</p>
           </div>
           <div className="bg-white rounded-xl overflow-hidden shadow-2xl">
-            <iframe srcDoc={reportHtml} className="w-full" style={{ height: "80vh", border: "none" }} title="GDPR Report" />
+            <iframe srcDoc={reportHtml} className="w-full" id="report-frame" style={{ height: "80vh", border: "none" }} title="GDPR Report" />
           </div>
-          <div className="text-center mt-6">
+          <div className="flex items-center justify-center gap-4 mt-6">
+            <button
+              onClick={() => window.print()}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 text-white rounded-lg font-medium hover:bg-white/20 transition-all"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z"/>
+              </svg>
+              Save as PDF
+            </button>
             <a href="/" className="inline-block px-6 py-3 bg-accent-blue text-white rounded-lg font-medium hover:bg-accent-blue/90 transition-all">
               Scan Another Website
             </a>
@@ -124,15 +144,9 @@ export default function SuccessClient() {
           </svg>
         </div>
         <h1 className="text-2xl font-bold text-white mb-2">Payment Confirmed!</h1>
-        <p className="text-white/60 mb-2">
-          Your GDPR compliance scan is being generated.
-        </p>
-        {scanId ? (
-          <p className="text-white/40 text-sm mb-8">
-            Scan ID: {scanId.substring(0, 8)}...
-          </p>
-        ) : (
-          <p className="text-red-400 text-sm mb-8">Missing scan ID — contact support</p>
+        <p className="text-white/60 mb-2">Your GDPR compliance scan is being generated.</p>
+        {scanId && (
+          <p className="text-white/30 text-xs mb-8">Scan ID: {scanId.substring(0, 8)}...</p>
         )}
 
         {/* Progress */}
@@ -155,13 +169,10 @@ export default function SuccessClient() {
           <p className="text-white/40 text-xs mt-2">Usually takes 20–60 seconds</p>
         </div>
 
-        {reportStatus === "error" ? (
-          <p className="text-red-400 text-sm mb-4">The scan is taking longer than expected. This page will update automatically.</p>
-        ) : (
-          <p className="text-white/30 text-xs mb-4">Please keep this page open — your report will appear automatically</p>
+        {reportStatus === "error" && (
+          <p className="text-red-400 text-sm mb-4">Scan is taking longer than expected. This page will update automatically.</p>
         )}
 
-        {/* Keep disabled until report is ready */}
         <button
           disabled
           className="w-full rounded-lg bg-white/5 text-white/30 py-3 font-medium cursor-not-allowed"
