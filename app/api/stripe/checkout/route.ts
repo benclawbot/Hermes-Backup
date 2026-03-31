@@ -20,7 +20,6 @@ export async function POST(request: NextRequest) {
       stripeKeyPrefix: stripeKey ? stripeKey.slice(0, 7) : 'MISSING',
       priceIdPrefix: priceId ? priceId.slice(0, 10) : 'MISSING',
       priceIdLength: priceId.length,
-      appUrl: (process.env.NEXT_PUBLIC_APP_URL || '').slice(0, 20),
     });
 
     if (!websiteUrl) {
@@ -36,32 +35,33 @@ export async function POST(request: NextRequest) {
     const scanId = uuidv4();
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app';
 
-    const params = new URLSearchParams({
-      mode: plan === 'monthly' ? 'subscription' : 'payment',
-      'line_items[0][price]': priceId,
-      'line_items[0][quantity]': '1',
-      'customer_email': email || '',
-      'success_url': appUrl + '/success?session_id={CHECKOUT_SESSION_ID}&scan_id=' + scanId,
-      'cancel_url': appUrl + '/?cancelled=true',
-      'metadata[scanId]': scanId,
-      'metadata[url]': websiteUrl,
-    });
+    // Minimal params - avoid customer_email which may cause issues
+    const params = new URLSearchParams();
+    params.append('mode', plan === 'monthly' ? 'subscription' : 'payment');
+    params.append('line_items[0][price]', priceId);
+    params.append('line_items[0][quantity]', '1');
+    params.append('success_url', appUrl + '/success?session_id={CHECKOUT_SESSION_ID}&scan_id=' + scanId);
+    params.append('cancel_url', appUrl + '/?cancelled=true');
+    params.append('metadata[scanId]', scanId);
+    params.append('metadata[url]', websiteUrl);
+    
+    if (email) {
+      params.append('customer_email', email);
+    }
 
     const fetchHeaders = {
       'Authorization': 'Bearer ' + stripeKey,
       'Content-Type': 'application/x-www-form-urlencoded',
     };
 
-    const before = Date.now();
     const resp = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
       headers: fetchHeaders,
       body: params.toString(),
     });
-    const elapsed = Date.now() - before;
 
     const data = await resp.json();
-    console.log('Stripe response:', { status: resp.status, elapsed, error: data.error?.message, hasUrl: !!data.url });
+    console.log('Stripe response:', { status: resp.status, error: data.error?.message, hasUrl: !!data.url, dataKeys: Object.keys(data) });
 
     if (!resp.ok) {
       return NextResponse.json({ error: data.error?.message || 'Stripe error: ' + resp.status }, { status: 500 });
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ url: data.url, sessionId: data.id, scanId });
   } catch (err: any) {
-    console.error('Checkout error:', err?.message || err, err?.stack);
+    console.error('Checkout error:', err?.message || err);
     return NextResponse.json({ error: err?.message || 'Checkout failed' }, { status: 500 });
   }
 }
