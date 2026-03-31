@@ -25,10 +25,17 @@ export interface AiAnalysisResult {
 }
 
 export async function analyzeWithAI(crawlResult: any, ruleBasedChecks: any[]): Promise<AiAnalysisResult> {
+  // Truncate HTML to avoid context window overflow
+  const truncated = {
+    ...crawlResult,
+    html: crawlResult.html ? crawlResult.html.substring(0, 3000) + '...[truncated]' : '',
+    screenshots: [], // Exclude screenshots from AI analysis
+  };
+
   const prompt = `You are a GDPR compliance expert. Analyze this website scan data and provide a structured GDPR compliance assessment.
 
 SCAN DATA:
-${JSON.stringify(crawlResult, null, 2)}
+${JSON.stringify(truncated, null, 2)}
 
 RULE-BASED CHECKS ALREADY PERFORMED:
 ${JSON.stringify(ruleBasedChecks, null, 2)}
@@ -58,6 +65,11 @@ Be specific. Generic advice is not helpful. Focus on actionable fixes.`;
     temperature: 0.3,
   });
 
-  const content = response.choices[0].message.content || '{}';
+  let content = response.choices[0].message.content || '{}';
+  // Strip thinking/reasoning tags if present (MiniMax sometimes prefixes with these)
+  content = content.replace(/<thinking>[\s\S]*?<\/thinking>/gi, '').trim();
+  content = content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+  // Remove any leading markdown code fences
+  content = content.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').trim();
   return JSON.parse(content) as AiAnalysisResult;
 }
