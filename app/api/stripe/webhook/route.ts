@@ -1,30 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { v4 as uuidv4 } from 'uuid';
-import nodemailer from 'nodemailer';
 import { getDb } from '@/lib/db';
-
-function getMailTransport() {
-  return nodemailer.createTransport({
-    host: 'in-v3.mailjet.com',
-    port: 587,
-    secure: false,
-    auth: {
-      user: process.env.MAILJET_API_KEY || '87b668b9f6c48592069434b22eca2dcf',
-      pass: process.env.MAILJET_SECRET_KEY || '4be3cafafdf1f6320d2ebd26d67ec8af',
-    },
-  });
-}
-
-async function sendEmail(to: string, subject: string, html: string) {
-  const transport = getMailTransport();
-  await transport.sendMail({
-    from: 'ComplyScan <benclawbot@gmail.com>',
-    to,
-    subject,
-    html,
-  });
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -107,22 +84,7 @@ export async function POST(request: NextRequest) {
             VALUES (?, ?, strftime('%Y-%m-%dT%H:%M:%SZ', 'now'), strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
           `).run(token, subscriberId);
 
-          if (customerEmail) {
-            const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app'}/dashboard?token=${token}`;
-            const html = `<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"></head>
-<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:600px;margin:0 auto;padding:40px 20px;color:#1a1a2e;">
-  <h1 style="color:#4f8ef7;">Welcome to ComplyScan!</h1>
-  <p>Your subscription is active. Access your dashboard to run unlimited GDPR scans:</p>
-  <a href="${dashboardUrl}" style="display:inline-block;background:#4f8ef7;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;margin:20px 0;">Open Dashboard</a>
-  <p style="color:#666;font-size:14px;">Or copy this link: ${dashboardUrl}</p>
-  <hr style="border:none;border-top:1px solid #eee;margin:30px 0;">
-  <p style="color:#999;font-size:12px;">ComplyScan — GDPR compliance made effortless</p>
-</body>
-</html>`;
-            await sendEmail(customerEmail, 'Your ComplyScan Dashboard Access', html);
-          }
+          // Subscriber dashboard link shown on success page — no email sent
         }
         break;
       }
@@ -184,12 +146,7 @@ async function triggerScan(scanId: string, url: string) {
       WHERE id = ?
     `).run(JSON.stringify(result), scanId);
 
-    // Send email with report
-    const scan = db.prepare('SELECT * FROM scans WHERE id = ?').get(scanId) as any;
-    if (scan?.email) {
-      const reportHtml = generateReportHtml(url, result);
-      await sendEmail(scan.email, `GDPR Compliance Report for ${url}`, reportHtml);
-    }
+    // Report stored in DB — accessible via dashboard
   } catch (error: any) {
     console.error('Trigger scan error:', error);
     db.prepare(`UPDATE scans SET status = 'failed' WHERE id = ?`).run(scanId);
