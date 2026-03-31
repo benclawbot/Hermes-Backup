@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
             const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app'}/dashboard?token=${token}`;
 
             await resend.emails.send({
-              from: 'ComplyScan <hello@complyscan.com>',
+              from: 'ComplyScan <no-reply@resend.dev>',
               to: customerEmail,
               subject: 'Your ComplyScan Dashboard Access',
               html: `<!DOCTYPE html>
@@ -181,7 +181,7 @@ async function triggerScan(scanId: string, url: string) {
       const reportHtml = generateReportHtml(url, result);
 
       await resend.emails.send({
-        from: 'ComplyScan <reports@complyscan.com>',
+        from: 'ComplyScan <no-reply@resend.dev>',
         to: scan.email,
         subject: `GDPR Compliance Report for ${url}`,
         html: reportHtml,
