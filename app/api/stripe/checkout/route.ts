@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
+import { getDb } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,6 +24,13 @@ export async function POST(request: NextRequest) {
 
     const scanId = uuidv4();
     const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app').trim();
+
+    // Pre-create scan record so webhook can find and update it
+    const db = getDb();
+    db.prepare(`
+      INSERT INTO scans (id, url, status, email, stripe_session_id)
+      VALUES (?, ?, 'pending', ?, NULL)
+    `).run(scanId, websiteUrl, email || null);
 
     const params = new URLSearchParams();
     params.append('mode', plan === 'monthly' ? 'subscription' : 'payment');
@@ -66,6 +74,9 @@ export async function POST(request: NextRequest) {
     if (!resp.ok) {
       return NextResponse.json({ error: data.error?.message || `Stripe error: ${resp.status}` }, { status: 500 });
     }
+
+    // Update scan with Stripe session ID
+    db.prepare(`UPDATE scans SET stripe_session_id = ? WHERE id = ?`).run(data.id, scanId);
 
     return NextResponse.json({ url: data.url, sessionId: data.id, scanId });
   } catch (err: any) {

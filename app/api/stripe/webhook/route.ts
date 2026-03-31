@@ -37,16 +37,26 @@ export async function POST(request: NextRequest) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
         const { scanId, url } = session.metadata || {};
+        const customerEmail = session.customer_email || '';
 
         if (session.mode === 'payment') {
-          // One-time scan
+          // One-time scan — upsert in case webhook hits different instance than checkout
           if (scanId) {
-            db.prepare(`
-              UPDATE scans
-              SET stripe_session_id = ?, status = 'pending', email = COALESCE(?, email)
-              WHERE id = ?
-            `).run(session.id, session.customer_email ?? null, scanId);
-            triggerScan(scanId, url ?? '').catch(console.error);
+            const existing = db.prepare('SELECT id FROM scans WHERE id = ?').get(scanId);
+            if (existing) {
+              db.prepare(`
+                UPDATE scans
+                SET stripe_session_id = ?, status = 'pending', email = COALESCE(?, email)
+                WHERE id = ?
+              `).run(session.id, customerEmail || null, scanId);
+            } else {
+              // Scan was created on a different instance — recreate it here
+              db.prepare(`
+                INSERT INTO scans (id, url, status, email, stripe_session_id)
+                VALUES (?, ?, 'pending', ?, ?)
+              `).run(scanId, url || '', customerEmail || null, session.id);
+            }
+            triggerScan(scanId, url || '').catch(console.error);
           }
         } else if (session.mode === 'subscription') {
           // Subscriber checkout — create subscriber + token, email dashboard link
