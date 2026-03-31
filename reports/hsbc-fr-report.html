@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:800px;margin:0 auto;padding:40px 20px;color:#1a1a2e;">
+  <div style="text-align:center;margin-bottom:40px;">
+    <h1 style="color:#4f8ef7;font-size:28px;">ComplyScan</h1>
+    <h2 style="font-size:22px;color:#1a1a2e;">GDPR Compliance Report</h2>
+    <p style="color:#666;">hsbc.fr</p>
+  </div>
+  <div style="text-align:center;margin-bottom:40px;">
+    <div style="font-size:80px;font-weight:bold;color:#f59e0b;">65</div>
+    <div style="color:#666;">GDPR Compliance Score</div>
+    <div style="margin-top:8px;"><span style="background:#f59e0b;color:#fff;padding:4px 12px;border-radius:12px;font-size:12px;">MEDIUM RISK</span></div>
+  </div>
+  <div style="background:#f9f9f9;padding:20px;border-radius:12px;margin-bottom:30px;">
+    <p style="margin:0;line-height:1.6;">The HSBC France website demonstrates solid foundational security (SSL) and cookie consent infrastructure, but critically lacks a required privacy policy page, which is mandatory under GDPR Articles 13 and 14. The cookie banner is present and appears to offer granular consent options, though its implementation quality needs verification. Overall risk is medium due to this single critical gap.</p>
+  </div>
+  <div style="margin-bottom:30px;">
+    <h3 style="border-bottom:2px solid #4f8ef7;padding-bottom:8px;">Automated Checks</h3>
+
+  <div style="padding:12px;margin:8px 0;border-radius:8px;background:#f5f5f5;border-left:4px solid #22c55e;">
+    <strong>SSL/HTTPS Encryption</strong> — PASS
+    <p style="margin:4px 0 0 0;color:#666;">Site uses HTTPS</p>
+  </div>
+
+  <div style="padding:12px;margin:8px 0;border-radius:8px;background:#f5f5f5;border-left:4px solid #ef4444;">
+    <strong>Privacy Policy Present</strong> — FAIL
+    <p style="margin:4px 0 0 0;color:#666;">No privacy policy link detected</p>
+  </div>
+
+  <div style="padding:12px;margin:8px 0;border-radius:8px;background:#f5f5f5;border-left:4px solid #22c55e;">
+    <strong>Cookie Consent Banner</strong> — PASS
+    <p style="margin:4px 0 0 0;color:#666;">Cookie banner detected: "Cookies présents sur ce siteNous utilisons des cookies pour garantir le bon fonctionnement de notre "</p>
+  </div>
+
+  <div style="padding:12px;margin:8px 0;border-radius:8px;background:#f5f5f5;border-left:4px solid #22c55e;">
+    <strong>Third-Party Tracking Scripts</strong> — PASS
+    <p style="margin:4px 0 0 0;color:#666;">No known tracking scripts detected</p>
+  </div>
+
+  <div style="padding:12px;margin:8px 0;border-radius:8px;background:#f5f5f5;border-left:4px solid #22c55e;">
+    <strong>Form Input Labels</strong> — PASS
+    <p style="margin:4px 0 0 0;color:#666;">No form inputs found</p>
+  </div>
+
+  </div>
+  <div style="margin-bottom:30px;">
+    <h3 style="border-bottom:2px solid #4f8ef7;padding-bottom:8px;">AI-Detected Issues (3)</h3>
+
+      <div style="padding:12px;margin:8px 0;border-radius:8px;background:#fef2f2;border-left:4px solid #ef4444;">
+        <strong>[CRITICAL] Missing Privacy Policy Page</strong>
+        <p style="margin:4px 0 0 0;color:#666;">GDPR Articles 13 and 14 explicitly require controllers to provide comprehensive information to data subjects, including: identity and contact details of the controller, DPO contact, purposes and legal basis of processing, legitimate interests where applicable, recipients or categories of recipients, data retention periods, data subject rights (access, rectification, erasure, restriction, portability, objection), right to withdraw consent, right to lodge a complaint with a supervisory authority, whether data is required for contractual purposes, and any automated decision-making/profiling. Without a published privacy policy, HSBC France cannot demonstrate compliance with these mandatory disclosure requirements.</p>
+        <p style="margin:4px 0 0 0;"><strong>Fix:</strong> Create a dedicated privacy policy page hosted at /privacy-policy or similar URL that comprehensively addresses all GDPR Article 13/14 requirements. The page must include: company identity (HSBC France), contact details, DPO contact information, detailed purposes of data processing, legal bases (consent, contract, legitimate interest), data recipient categories (including any third-country transfers and safeguards), retention periods for each data category, clear explanation of data subject rights, complaint rights, and whether automated decisions are made. Link this page prominently in the website footer on every page.</p>
+      </div>
+
+      <div style="padding:12px;margin:8px 0;border-radius:8px;background:#fef2f2;border-left:4px solid #f59e0b;">
+        <strong>[WARNING] Cookie Banner Implementation Quality Uncertainty</strong>
+        <p style="margin:4px 0 0 0;color:#666;">While a cookie banner is present, the banner text appears to be a concatenated string without proper visual separation between sections ('Cookies présents sur ce siteNous utilisons des cookies pour garantir...'). This suggests the banner may not be displaying with proper formatting. Additionally, the banner mentions marketing cookies, which under GDPR require explicit opt-in consent (not opt-out). The current implementation claims to offer 'Accepter les cookies facultatifs' and 'Décliner les cookies facultatifs', but it is unclear whether non-essential cookies are truly blocked until explicit consent is obtained (prior consent requirement).</p>
+        <p style="margin:4px 0 0 0;"><strong>Fix:</strong> Verify that the cookie banner displays correctly with proper visual formatting and clear section separation. Ensure that prior to any user action, no non-essential cookies are set. Implement a true opt-in model where marketing and personalization cookies are only set after the user explicitly clicks 'Accepter les cookies facultatifs'. The 'Décliner les cookies facultatifs' option must result in those cookies not being set. Consider implementing a cookie preference center for granular consent control. Test that cookie settings persist correctly and can be modified later.</p>
+      </div>
+
+      <div style="padding:12px;margin:8px 0;border-radius:8px;background:#fef2f2;border-left:4px solid #f59e0b;">
+        <strong>[WARNING] Tealium Tag Detected in HTML</strong>
+        <p style="margin:4px 0 0 0;color:#666;">The HTML contains a Tealium tag management script (tags.tiqcdn.com/utag/hsbc/fr-common-nonrbwm/prod/utag.js) which is a tag management system often used for marketing and analytics tracking. The scan's 'trackingScripts' array is empty, but this script is present in the HTML source. Tealium typically loads additional tracking scripts dynamically, which may include marketing/analytics cookies requiring consent.</p>
+        <p style="margin:4px 0 0 0;"><strong>Fix:</strong> Verify that the Tealium implementation is properly configured to respect user consent preferences. Ensure that no tracking scripts fire before the user provides explicit consent via the cookie banner. Configure Tealium's consent management integration to block tag firing until consent is obtained. Document all tags loaded through Tealium and ensure each has a valid legal basis (consent) before activation.</p>
+      </div>
+
+  </div>
+  <div style="margin-top:40px;padding-top:20px;border-top:1px solid #eee;color:#999;font-size:12px;text-align:center;">
+    Generated by ComplyScan — GDPR compliance made effortless
+  </div>
+</body>
+</html>

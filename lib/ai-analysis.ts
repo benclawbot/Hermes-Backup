@@ -71,5 +71,10 @@ Be specific. Generic advice is not helpful. Focus on actionable fixes.`;
   content = content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
   // Remove any leading markdown code fences
   content = content.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').trim();
+  // Extract JSON from potentially malformed response (e.g. with thinking text before/after)
+  const jsonMatch = content.match(/\{[\s\S]*\}/);
+  if (jsonMatch) {
+    content = jsonMatch[0];
+  }
   return JSON.parse(content) as AiAnalysisResult;
 }

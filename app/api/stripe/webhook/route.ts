@@ -1,7 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { v4 as uuidv4 } from 'uuid';
+import nodemailer from 'nodemailer';
 import { getDb } from '@/lib/db';
+
+function getMailTransport() {
+  return nodemailer.createTransport({
+    host: 'in-v3.mailjet.com',
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.MAILJET_API_KEY || '87b668b9f6c48592069434b22eca2dcf',
+      pass: process.env.MAILJET_SECRET_KEY || '4be3cafafdf1f6320d2ebd26d67ec8af',
+    },
+  });
+}
+
+async function sendEmail(to: string, subject: string, html: string) {
+  const transport = getMailTransport();
+  await transport.sendMail({
+    from: 'ComplyScan <benclawbot@gmail.com>',
+    to,
+    subject,
+    html,
+  });
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,8 +50,8 @@ export async function POST(request: NextRequest) {
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     } catch (err: any) {
-      console.error('Webhook signature verification failed:', err.message, 'type:', err.type);
-      return NextResponse.json({ error: 'Invalid signature', detail: err.message, type: err.type }, { status: 400 });
+      console.error('Webhook signature verification failed:', err.message);
+      return NextResponse.json({ error: 'Invalid signature', detail: err.message }, { status: 400 });
     }
 
     const db = getDb();
@@ -50,7 +73,6 @@ export async function POST(request: NextRequest) {
                 WHERE id = ?
               `).run(session.id, customerEmail || null, scanId);
             } else {
-              // Scan was created on a different instance — recreate it here
               db.prepare(`
                 INSERT INTO scans (id, url, status, email, stripe_session_id)
                 VALUES (?, ?, 'pending', ?, ?)
@@ -59,11 +81,10 @@ export async function POST(request: NextRequest) {
             triggerScan(scanId, url || '').catch(console.error);
           }
         } else if (session.mode === 'subscription') {
-          // Subscriber checkout — create subscriber + token, email dashboard link
+          // Subscriber checkout
           const customerId = session.customer as string;
           const customerEmail = session.customer_email ?? '';
 
-          // Upsert subscriber
           const existingSub = db.prepare('SELECT id FROM subscribers WHERE stripe_customer_id = ?').get(customerId) as any;
           let subscriberId = existingSub?.id;
 
@@ -80,24 +101,15 @@ export async function POST(request: NextRequest) {
             `).run(subscriberId);
           }
 
-          // Generate subscriber token
           const token = uuidv4();
           db.prepare(`
             INSERT OR REPLACE INTO subscriber_tokens (token, subscriber_id, created_at, last_used_at)
             VALUES (?, ?, strftime('%Y-%m-%dT%H:%M:%SZ', 'now'), strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
           `).run(token, subscriberId);
 
-          // Email dashboard access link
-          if (process.env.RESEND_API_KEY && customerEmail) {
-            const { Resend } = await import('resend');
-            const resend = new Resend(process.env.RESEND_API_KEY);
+          if (customerEmail) {
             const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app'}/dashboard?token=${token}`;
-
-            await resend.emails.send({
-              from: 'ComplyScan <no-reply@resend.dev>',
-              to: customerEmail,
-              subject: 'Your ComplyScan Dashboard Access',
-              html: `<!DOCTYPE html>
+            const html = `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
 <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:600px;margin:0 auto;padding:40px 20px;color:#1a1a2e;">
@@ -108,8 +120,8 @@ export async function POST(request: NextRequest) {
   <hr style="border:none;border-top:1px solid #eee;margin:30px 0;">
   <p style="color:#999;font-size:12px;">ComplyScan — GDPR compliance made effortless</p>
 </body>
-</html>`,
-            });
+</html>`;
+            await sendEmail(customerEmail, 'Your ComplyScan Dashboard Access', html);
           }
         }
         break;
@@ -131,13 +143,12 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ received: true });
   } catch (err: any) {
-    console.error('Webhook handler error:', err.message, err.stack);
+    console.error('Webhook handler error:', err.message, err?.stack);
     return NextResponse.json({ error: 'Internal error', detail: err.message }, { status: 500 });
   }
 }
 
 async function triggerScan(scanId: string, url: string) {
-  // Dynamic imports to avoid circular dependency issues
   const { crawlPage } = await import('@/lib/crawler');
   const { runRuleBasedChecks } = await import('@/lib/gdpr-checks');
   const { analyzeWithAI } = await import('@/lib/ai-analysis');
@@ -175,17 +186,9 @@ async function triggerScan(scanId: string, url: string) {
 
     // Send email with report
     const scan = db.prepare('SELECT * FROM scans WHERE id = ?').get(scanId) as any;
-    if (scan?.email && process.env.RESEND_API_KEY) {
-      const { Resend } = await import('resend');
-      const resend = new Resend(process.env.RESEND_API_KEY);
+    if (scan?.email) {
       const reportHtml = generateReportHtml(url, result);
-
-      await resend.emails.send({
-        from: 'ComplyScan <no-reply@resend.dev>',
-        to: scan.email,
-        subject: `GDPR Compliance Report for ${url}`,
-        html: reportHtml,
-      });
+      await sendEmail(scan.email, `GDPR Compliance Report for ${url}`, reportHtml);
     }
   } catch (error: any) {
     console.error('Trigger scan error:', error);
@@ -201,45 +204,45 @@ function generateReportHtml(url: string, result: any): string {
   const checksHtml = ruleChecks.map((check: any) => `
     <div style="padding:12px;margin:8px 0;border-radius:8px;background:#f5f5f5;border-left:4px solid ${check.passed ? '#22c55e' : '#ef4444'};">
       <strong>${check.name}</strong> — ${check.passed ? 'PASS' : 'FAIL'}
-      <p>${check.detail}</p>
-      ${check.recommendation ? `<p><em>Fix: ${check.recommendation}</em></p>` : ''}
+      <p style="margin:4px 0 0 0;color:#666;">${check.detail}</p>
     </div>
   `).join('');
 
   const issuesHtml = aiAnalysis?.issues?.length
     ? aiAnalysis.issues.map((issue: any) => `
-        <div style="padding:12px;margin:8px 0;border-radius:8px;background:#fef2f2;border-left:4px solid #ef4444;">
-          <strong>${issue.title}</strong> (${issue.severity})
-          <p>${issue.description}</p>
-          <p><strong>Fix:</strong> ${issue.fix}</p>
+        <div style="padding:12px;margin:8px 0;border-radius:8px;background:#fef2f2;border-left:4px solid ${issue.severity === 'critical' ? '#ef4444' : issue.severity === 'warning' ? '#f59e0b' : '#3b82f6'};">
+          <strong>[${issue.severity.toUpperCase()}] ${issue.title}</strong>
+          <p style="margin:4px 0 0 0;color:#666;">${issue.description}</p>
+          <p style="margin:4px 0 0 0;"><strong>Fix:</strong> ${issue.fix}</p>
         </div>
       `).join('')
     : '';
 
   return `<!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <title>GDPR Report</title>
-</head>
+<head><meta charset="utf-8"></head>
 <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:800px;margin:0 auto;padding:40px 20px;color:#1a1a2e;">
   <div style="text-align:center;margin-bottom:40px;">
-    <h1 style="font-size:28px;color:#4f8ef7;">ComplyScan</h1>
-    <h2>GDPR Compliance Report</h2>
+    <h1 style="color:#4f8ef7;font-size:28px;">ComplyScan</h1>
+    <h2 style="font-size:22px;color:#1a1a2e;">GDPR Compliance Report</h2>
     <p style="color:#666;">${url}</p>
   </div>
-  <div style="text-align:center;font-size:72px;font-weight:bold;color:${scoreColor};">${score}/100</div>
-  <div style="text-align:center;color:#666;margin-bottom:30px;">GDPR Compliance Score</div>
+  <div style="text-align:center;margin-bottom:40px;">
+    <div style="font-size:80px;font-weight:bold;color:${scoreColor};">${score}</div>
+    <div style="color:#666;">GDPR Compliance Score</div>
+    <div style="margin-top:8px;"><span style="background:${scoreColor};color:#fff;padding:4px 12px;border-radius:12px;font-size:12px;">${(aiAnalysis?.riskLevel || 'unknown').toUpperCase()} RISK</span></div>
+  </div>
+  ${aiAnalysis?.summary ? `<div style="background:#f9f9f9;padding:20px;border-radius:12px;margin-bottom:30px;"><p style="margin:0;line-height:1.6;">${aiAnalysis.summary}</p></div>` : ''}
   <div style="margin-bottom:30px;">
     <h3 style="border-bottom:2px solid #4f8ef7;padding-bottom:8px;">Automated Checks</h3>
     ${checksHtml}
   </div>
   ${issuesHtml ? `<div style="margin-bottom:30px;">
-    <h3 style="border-bottom:2px solid #4f8ef7;padding-bottom:8px;">AI-Detected Issues</h3>
+    <h3 style="border-bottom:2px solid #4f8ef7;padding-bottom:8px;">AI-Detected Issues (${aiAnalysis.issues.length})</h3>
     ${issuesHtml}
   </div>` : ''}
-  <div style="text-align:center;color:#999;font-size:12px;margin-top:50px;">
-    <p>Generated by ComplyScan — GDPR compliance made effortless</p>
+  <div style="margin-top:40px;padding-top:20px;border-top:1px solid #eee;color:#999;font-size:12px;text-align:center;">
+    Generated by ComplyScan — GDPR compliance made effortless
   </div>
 </body>
 </html>`;
