@@ -1,94 +1,72 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
+import Stripe from 'stripe';
+import { generateReportHtml } from '@/lib/report';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
+  const { id: scanId } = await params;
+  const sessionId = request.nextUrl.searchParams.get('session_id');
   const db = getDb();
 
-  const scan = db.prepare('SELECT * FROM scans WHERE id = ?').get(id) as any;
+  // Primary: check DB
+  const scan = db.prepare('SELECT * FROM scans WHERE id = ?').get(scanId) as any;
 
-  if (!scan) {
+  // If scan is completed in DB, return immediately (no Stripe API call needed)
+  if (scan?.status === 'completed' && scan?.result_json) {
+    try {
+      const result = JSON.parse(scan.result_json);
+      const html = generateReportHtml(scan.url || '', result);
+      return NextResponse.json({ reportHtml: html });
+    } catch (e: any) {
+      console.error('DB parse failed:', e.message);
+    }
+  }
+
+  // Secondary: try Stripe metadata (works across Lambda instances)
+  const stripeSessionId = scan?.stripe_session_id || sessionId;
+  if (stripeSessionId) {
+    try {
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
+      const stripeSession = await stripe.checkout.sessions.retrieve(stripeSessionId);
+      const scanResultJson = stripeSession?.metadata?.scanResult;
+      if (scanResultJson) {
+        try {
+          const result = JSON.parse(scanResultJson);
+          // Cache in DB
+          try {
+            db.prepare(`INSERT OR REPLACE INTO scans (id, url, status, email, stripe_session_id, result_json) VALUES (?, ?, 'completed', ?, ?, ?)`)
+              .run(scanId, stripeSession.metadata?.url || scan?.url || '', stripeSession.customer_email || scan?.email || null, stripeSessionId, scanResultJson);
+          } catch {}
+          const html = generateReportHtml(stripeSession.metadata?.url || scan?.url || '', result);
+          return NextResponse.json({ reportHtml: html });
+        } catch (e: any) {
+          console.error('Stripe metadata parse failed:', e.message);
+        }
+      }
+    } catch (e: any) {
+      console.error('Stripe session retrieve failed:', e.message);
+    }
+  }
+
+  // Fallback: return based on what we know
+  if (!scan && !stripeSessionId) {
     return NextResponse.json({ error: 'Scan not found' }, { status: 404 });
   }
 
-  if (scan.status !== 'completed') {
+  if (scan?.status === 'pending' || scan?.status === 'processing') {
     return NextResponse.json({ error: 'Scan not yet complete' }, { status: 202 });
   }
 
-  const result = JSON.parse(scan.result_json);
-  const reportHtml = generateReportHtml(scan.url, result);
+  if (scan?.status === 'failed') {
+    return NextResponse.json({ error: 'Scan failed. Please try again.' }, { status: 500 });
+  }
 
-  return NextResponse.json({ reportHtml });
-}
+  if (scan?.status === 'completed' && !scan?.result_json) {
+    return NextResponse.json({ error: 'Scan not yet available' }, { status: 202 });
+  }
 
-function generateReportHtml(url: string, result: any): string {
-  const { ruleChecks, aiAnalysis } = result;
-  const score = aiAnalysis?.gdprScore || 0;
-
-  return `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>GDPR Compliance Report</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 800px; margin: 0 auto; padding: 40px 20px; color: #1a1a2e; }
-    .header { text-align: center; margin-bottom: 40px; }
-    .logo { font-size: 28px; font-weight: bold; color: #4f8ef7; }
-    .score { font-size: 72px; font-weight: bold; text-align: center; color: ${score >= 70 ? '#22c55e' : score >= 40 ? '#f59e0b' : '#ef4444'}; }
-    .score-label { text-align: center; color: #666; margin-bottom: 30px; }
-    .section { margin-bottom: 30px; }
-    .section h2 { color: #0f0f1a; border-bottom: 2px solid #4f8ef7; padding-bottom: 8px; }
-    .check { padding: 12px; margin: 8px 0; border-radius: 8px; background: #f0f0f0; }
-    .check.pass { border-left: 4px solid #22c55e; }
-    .check.fail { border-left: 4px solid #ef4444; }
-    .check.warn { border-left: 4px solid #f59e0b; }
-    .issue { background: #fef2f2; border-left: 4px solid #ef4444; padding: 12px; margin: 8px 0; border-radius: 8px; }
-    .footer { text-align: center; color: #999; font-size: 12px; margin-top: 50px; }
-  </style>
-</head>
-<body>
-  <div class="header">
-    <div class="logo">ComplyScan</div>
-    <h1>GDPR Compliance Report</h1>
-    <p style="color:#666;">${url}</p>
-  </div>
-
-  <div class="score">${score}</div>
-  <div class="score-label">out of 100 GDPR Compliance Score</div>
-
-  <div class="section">
-    <h2>Rule-Based Checks</h2>
-    ${ruleChecks.map((check: any) => `
-      <div class="check ${check.passed ? 'pass' : 'fail'}">
-        <strong>${check.name}</strong> — ${check.passed ? 'PASS' : 'FAIL'}
-        <p>${check.detail}</p>
-        ${check.recommendation ? `<p><em>Fix: ${check.recommendation}</em></p>` : ''}
-      </div>
-    `).join('')}
-  </div>
-
-  ${aiAnalysis?.issues?.length ? `
-  <div class="section">
-    <h2>AI-Detected Issues</h2>
-    ${aiAnalysis.issues.map((issue: any) => `
-      <div class="issue">
-        <strong>${issue.title}</strong> (${issue.severity})
-        <p>${issue.description}</p>
-        <p><strong>Fix:</strong> ${issue.fix}</p>
-      </div>
-    `).join('')}
-  </div>
-  ` : ''}
-
-  <div class="footer">
-    <p>Generated by ComplyScan — GDPR compliance made effortless</p>
-    <p>Report generated: ${new Date().toLocaleDateString('en-GB')}</p>
-  </div>
-</body>
-</html>
-  `.trim();
+  return NextResponse.json({ error: 'Scan not yet complete' }, { status: 202 });
 }
