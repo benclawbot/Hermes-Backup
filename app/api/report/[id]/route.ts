@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
-import { Resend } from 'resend';
 
 export async function GET(
   request: NextRequest,
@@ -19,27 +18,10 @@ export async function GET(
     return NextResponse.json({ error: 'Scan not yet complete' }, { status: 202 });
   }
 
-  if (!scan.email) {
-    return NextResponse.json({ error: 'No email provided for this scan' }, { status: 400 });
-  }
-
   const result = JSON.parse(scan.result_json);
   const reportHtml = generateReportHtml(scan.url, result);
 
-  if (process.env.RESEND_API_KEY) {
-    const resend = new Resend(process.env.RESEND_API_KEY);
-    await resend.emails.send({
-      from: 'ComplyScan <reports@complyscan.com>',
-      to: scan.email,
-      subject: `GDPR Compliance Report for ${scan.url}`,
-      html: reportHtml,
-    });
-  }
-
-  return NextResponse.json({
-    message: 'Report sent to ' + scan.email,
-    reportHtml: process.env.NODE_ENV === 'development' ? reportHtml : null
-  });
+  return NextResponse.json({ reportHtml });
 }
 
 function generateReportHtml(url: string, result: any): string {
