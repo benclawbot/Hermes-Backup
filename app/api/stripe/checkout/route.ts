@@ -3,34 +3,38 @@ import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(request: NextRequest) {
   try {
-    const { url: websiteUrl, email, plan } = await request.json();
+    const body = await request.json();
+    const websiteUrl = body.url as string;
+    const email = body.email as string | undefined;
+    const plan = (body.plan as string) || 'single';
+
+    const stripeKey = process.env.STRIPE_SECRET_KEY || '';
+    const priceId = (plan === 'monthly'
+      ? process.env.STRIPE_PRICE_MONTHLY
+      : process.env.STRIPE_PRICE_SINGLE_SCAN) || '';
+
+    console.log('Checkout params:', {
+      websiteUrl,
+      email,
+      plan,
+      stripeKeyPrefix: stripeKey ? stripeKey.slice(0, 7) : 'MISSING',
+      priceIdPrefix: priceId ? priceId.slice(0, 10) : 'MISSING',
+      priceIdLength: priceId.length,
+      appUrl: (process.env.NEXT_PUBLIC_APP_URL || '').slice(0, 20),
+    });
 
     if (!websiteUrl) {
       return NextResponse.json({ error: 'URL is required' }, { status: 400 });
     }
-
-    const stripeKey = process.env.STRIPE_SECRET_KEY;
     if (!stripeKey) {
       return NextResponse.json({ error: 'Stripe not configured' }, { status: 500 });
     }
-
-    const scanId = uuidv4();
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app';
-    const priceId = plan === 'monthly'
-      ? process.env.STRIPE_PRICE_MONTHLY
-      : process.env.STRIPE_PRICE_SINGLE_SCAN;
-
     if (!priceId) {
       return NextResponse.json({ error: 'Price not configured' }, { status: 500 });
     }
 
-    const headers = {
-      'Authorization': 'Bearer ' + stripeKey,
-      'Content-Type': 'application/x-www-form-urlencoded',
-    };
-
-    // Warmup: ping Stripe balance to establish connection
-    await fetch('https://api.stripe.com/v1/balance', { headers }).then(r => r.json().catch(() => null));
+    const scanId = uuidv4();
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app';
 
     const params = new URLSearchParams({
       mode: plan === 'monthly' ? 'subscription' : 'payment',
@@ -43,36 +47,29 @@ export async function POST(request: NextRequest) {
       'metadata[url]': websiteUrl,
     });
 
-    if (plan === 'monthly') {
-      const customerResp = await fetch('https://api.stripe.com/v1/customers', {
-        method: 'POST',
-        headers,
-        body: new URLSearchParams({ email: email || '', 'metadata[scanId]': scanId }).toString(),
-      });
-      const customer = await customerResp.json();
-      if (!customerResp.ok) {
-        return NextResponse.json({ error: customer.error?.message || 'Customer creation failed' }, { status: 500 });
-      }
-      params.set('customer', customer.id);
-      params.set('subscription_data[metadata][scanId]', scanId);
-      params.set('subscription_data[metadata][url]', websiteUrl);
-    }
+    const fetchHeaders = {
+      'Authorization': 'Bearer ' + stripeKey,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    };
 
+    const before = Date.now();
     const resp = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
-      headers,
+      headers: fetchHeaders,
       body: params.toString(),
     });
+    const elapsed = Date.now() - before;
 
     const data = await resp.json();
+    console.log('Stripe response:', { status: resp.status, elapsed, error: data.error?.message, hasUrl: !!data.url });
 
     if (!resp.ok) {
-      return NextResponse.json({ error: data.error?.message || `Stripe error: ${resp.status}` }, { status: 500 });
+      return NextResponse.json({ error: data.error?.message || 'Stripe error: ' + resp.status }, { status: 500 });
     }
 
     return NextResponse.json({ url: data.url, sessionId: data.id, scanId });
   } catch (err: any) {
-    console.error('Checkout error:', err?.message || err);
+    console.error('Checkout error:', err?.message || err, err?.stack);
     return NextResponse.json({ error: err?.message || 'Checkout failed' }, { status: 500 });
   }
 }
