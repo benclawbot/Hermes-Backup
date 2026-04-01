@@ -16,14 +16,22 @@ export async function GET(
 
   // If scan is completed in DB, return immediately (no Stripe API call needed)
   // result_json is gzip+base64 encoded for corruption protection on Lambda /tmp
+  // (falls back to plain JSON for records written before this fix)
   if (scan?.status === 'completed' && scan?.result_json) {
     try {
-      const rawJson = require('zlib').gunzipSync(Buffer.from(scan.result_json, 'base64')).toString('utf8');
+      let rawJson: string;
+      try {
+        // Try compressed (gzip+base64) format first
+        rawJson = require('zlib').gunzipSync(Buffer.from(scan.result_json, 'base64')).toString('utf8');
+      } catch {
+        // Fall back to plain JSON (for old records before compression fix)
+        rawJson = scan.result_json;
+      }
       const result = JSON.parse(rawJson);
       const html = generateReportHtml(scan.url || '', result);
       return NextResponse.json({ reportHtml: html, url: scan.url || '' });
     } catch (e: any) {
-      console.error('DB parse/decompress failed:', e.message, '— falling back to Stripe');
+      console.error('DB parse failed:', e.message, '— falling back to Stripe');
       // Fall through to Stripe fallback below
     }
   }
