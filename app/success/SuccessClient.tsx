@@ -111,7 +111,43 @@ export default function SuccessClient() {
   if (reportStatus === "ready" && reportHtml) {
     return (
       <div className="min-h-screen bg-midnight">
-        <div className="max-w-4xl mx-auto py-8 px-4">
+        {/* Sticky top-right action bar */}
+        <div className="sticky top-0 z-10 flex justify-end gap-3 p-4">
+          <button
+            onClick={async () => {
+              if (!scanId) return;
+              let domain = scanId;
+              try {
+                const res = await fetch(`/api/report/${encodeURIComponent(scanId)}`);
+                if (res.ok) {
+                  const data = await res.json();
+                  if (data.url) {
+                    domain = new URL(data.url).hostname.replace(/[^a-zA-Z0-9]/g, '-');
+                  }
+                }
+              } catch {}
+              const date = new Date().toISOString().split("T")[0];
+              const filename = `GDPR-Report-${domain}-${date}.pdf`;
+              const a = document.createElement("a");
+              a.href = `/api/report/${encodeURIComponent(scanId)}/pdf`;
+              a.download = filename;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+            }}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 text-white rounded-lg font-medium hover:bg-white/20 transition-all backdrop-blur-sm border border-white/10"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Download PDF
+          </button>
+          <a href="/" className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent-blue text-white rounded-lg font-medium hover:bg-accent-blue/90 transition-all shadow-lg shadow-accent-blue/20">
+            Scan Another Website
+          </a>
+        </div>
+
+        <div className="max-w-4xl mx-auto px-4 pb-8">
           <div className="text-center mb-6">
             <div className="w-16 h-16 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-success" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -123,41 +159,6 @@ export default function SuccessClient() {
           </div>
           <div className="bg-white rounded-xl overflow-hidden shadow-2xl">
             <iframe srcDoc={reportHtml} className="w-full" id="report-frame" style={{ height: "80vh", border: "none" }} title="GDPR Report" />
-          </div>
-          <div className="flex items-center justify-center gap-4 mt-6">
-            <button
-              onClick={async () => {
-                if (!scanId) return;
-                // Derive filename from scan URL at click time (not stale state)
-                let domain = scanId;
-                try {
-                  const res = await fetch(`/api/report/${encodeURIComponent(scanId)}`);
-                  if (res.ok) {
-                    const data = await res.json();
-                    if (data.url) {
-                      domain = new URL(data.url).hostname.replace(/[^a-zA-Z0-9]/g, '-');
-                    }
-                  }
-                } catch {}
-                const date = new Date().toISOString().split("T")[0];
-                const filename = `GDPR-Report-${domain}-${date}.pdf`;
-                const a = document.createElement("a");
-                a.href = `/api/report/${encodeURIComponent(scanId)}/pdf`;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-              }}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 text-white rounded-lg font-medium hover:bg-white/20 transition-all"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              Download PDF
-            </button>
-            <a href="/" className="inline-block px-6 py-3 bg-accent-blue text-white rounded-lg font-medium hover:bg-accent-blue/90 transition-all">
-              Scan Another Website
-            </a>
           </div>
         </div>
       </div>
