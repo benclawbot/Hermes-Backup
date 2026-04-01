@@ -1,13 +1,23 @@
-import Database from 'better-sqlite3';
 import path from 'path';
 
 const DB_PATH = process.env.DATABASE_PATH || (process.env.VERCEL ? '/tmp/complyscan.db' : './data/complyscan.db');
 
-let db: Database.Database;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let db: any;
+let dbError: string | null = null;
 
-export function getDb(): Database.Database {
-  if (!db) {
-    db = new Database(DB_PATH);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function loadDb(): any {
+  // Use __non_webpack_require__ to tell webpack not to bundle this native module
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  // eslint-disable-next-line camelcase
+  const Database = typeof __non_webpack_require__ !== 'undefined' 
+    ? __non_webpack_require__('better-sqlite3') 
+    : require('better-sqlite3');
+  return new Database(DB_PATH);
+}
+
+export function getDb(): DatabaseType.Database {
     // WAL causes issues on Lambda /tmp (multiple .db-wal and .db-shm files
     // getting out of sync between Lambda invocations). Use DELETE mode instead.
     db.pragma('journal_mode = DELETE');
