@@ -32,7 +32,17 @@ export async function GET(
           }
         }
       }
-      const result = JSON.parse(rawJson);
+      // result_json is stored as gzip+base64 by scan/route.ts — detect via magic bytes
+      let result;
+      const decoded = Buffer.from(rawJson, 'base64');
+      if (decoded[0] === 0x1f && decoded[1] === 0x8b) {
+        // gzip magic — decompress
+        const gunzipped = require('zlib').gunzipSync(decoded).toString('utf8');
+        result = JSON.parse(gunzipped);
+      } else {
+        // legacy plain JSON
+        result = JSON.parse(rawJson);
+      }
       const html = generateReportHtml(scan.url || '', result);
       return NextResponse.json({ reportHtml: html, url: scan.url || '' });
     } catch (e: any) {

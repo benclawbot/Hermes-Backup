@@ -1,23 +1,18 @@
-import path from 'path';
-
 const DB_PATH = process.env.DATABASE_PATH || (process.env.VERCEL ? '/tmp/complyscan.db' : './data/complyscan.db');
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let db: any;
-let dbError: string | null = null;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 function loadDb(): any {
-  // Use __non_webpack_require__ to tell webpack not to bundle this native module
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  // eslint-disable-next-line camelcase
-  const Database = typeof __non_webpack_require__ !== 'undefined' 
-    ? __non_webpack_require__('better-sqlite3') 
-    : require('better-sqlite3');
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const Database = require('better-sqlite3');
   return new Database(DB_PATH);
 }
 
-export function getDb(): DatabaseType.Database {
+export function getDb(): any {
+  if (!db) {
+    db = loadDb();
     // WAL causes issues on Lambda /tmp (multiple .db-wal and .db-shm files
     // getting out of sync between Lambda invocations). Use DELETE mode instead.
     db.pragma('journal_mode = DELETE');
@@ -30,7 +25,7 @@ export function getDb(): DatabaseType.Database {
   return db;
 }
 
-function initializeSchema(db: Database.Database) {
+function initializeSchema(db: any) {
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,

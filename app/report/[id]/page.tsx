@@ -15,7 +15,15 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
     return <div className="min-h-screen bg-midnight flex items-center justify-center text-white">Report not ready yet</div>;
   }
 
-  const result = JSON.parse(scan.result_json);
+  let result: any;
+  if (scan.result_json) {
+    const decoded = Buffer.from(scan.result_json, 'base64');
+    if (decoded[0] === 0x1f && decoded[1] === 0x8b) {
+      result = JSON.parse(require('zlib').gunzipSync(decoded).toString('utf8'));
+    } else {
+      result = JSON.parse(scan.result_json);
+    }
+  }
   const html = generateReportHtml(scan.url, result);
 
   return (

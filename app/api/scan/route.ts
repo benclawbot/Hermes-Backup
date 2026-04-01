@@ -54,10 +54,23 @@ export async function POST(request: NextRequest) {
     }
 
     const completed = db.prepare('SELECT status, result_json FROM scans WHERE id = ?').get(scanId) as any;
+
+    let parsedResult = undefined;
+    if (completed?.result_json) {
+      try {
+        const decoded = Buffer.from(completed.result_json, 'base64');
+        if (decoded[0] === 0x1f && decoded[1] === 0x8b) {
+          parsedResult = JSON.parse(require('zlib').gunzipSync(decoded).toString('utf8'));
+        } else {
+          parsedResult = JSON.parse(completed.result_json);
+        }
+      } catch {}
+    }
+
     return NextResponse.json({
       scanId,
       status: completed?.status || 'processing',
-      result: completed?.result_json ? JSON.parse(completed.result_json) : undefined,
+      result: parsedResult,
     });
   } catch (error: any) {
     // Only reaches here for truly unexpected errors (JSON parse, DB init, etc.)

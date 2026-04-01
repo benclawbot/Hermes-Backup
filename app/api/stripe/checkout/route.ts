@@ -24,7 +24,11 @@ export async function POST(request: NextRequest) {
     }
 
     const scanId = uuidv4();
-    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app').trim();
+    // Detect local dev vs Vercel: VERCEL is set automatically on Vercel infrastructure
+    const isLocal = !process.env.VERCEL;
+    const appUrl = isLocal
+      ? 'http://localhost:3000'
+      : (process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app').trim();
     const stripe = new Stripe(stripeKey);
 
     // Pre-create scan record so webhook / success page can find it
