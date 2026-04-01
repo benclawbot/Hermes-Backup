@@ -6,6 +6,9 @@ import { runRuleBasedChecks } from '@/lib/gdpr-checks';
 import { analyzeWithAI } from '@/lib/ai-analysis';
 
 export async function POST(request: NextRequest) {
+  let scanId: string | undefined;
+  let db: ReturnType<typeof getDb> | undefined;
+
   try {
     const body = await request.json();
     const { url, email } = body;
@@ -24,60 +27,73 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 });
     }
 
-    const scanId = uuidv4();
-    const db = getDb();
+    scanId = uuidv4();
+    db = getDb();
 
     db.prepare(`
       INSERT INTO scans (id, url, email, status)
       VALUES (?, ?, ?, 'processing')
     `).run(scanId, url, email || null);
 
-    processScanAsync(scanId, url).catch(err => {
-      console.error('Scan failed:', err);
-      db.prepare(`UPDATE scans SET status = 'failed' WHERE id = ?`).run(scanId);
-    });
+    let scanError: Error | null = null;
+    try {
+      // Run synchronously with timeout so errors propagate properly
+      const timeoutMs = 55_000;
+      await Promise.race([
+        processScanAsync(scanId, url),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Scan timed out after 55s')), timeoutMs)),
+      ]);
+    } catch (err: any) {
+      console.error('Scan processing error:', err.message);
+      scanError = err;
+    }
 
+    if (scanError) {
+      db.prepare(`UPDATE scans SET status = 'failed' WHERE id = ?`).run(scanId);
+      return NextResponse.json({ error: scanError.message || 'Scan failed' }, { status: 500 });
+    }
+
+    const completed = db.prepare('SELECT status, result_json FROM scans WHERE id = ?').get(scanId) as any;
     return NextResponse.json({
       scanId,
-      status: 'processing',
-      message: 'Scan started. Use GET /api/scan/[id] to check status.'
+      status: completed?.status || 'processing',
+      result: completed?.result_json ? JSON.parse(completed.result_json) : undefined,
     });
   } catch (error: any) {
-    console.error('Scan error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    // Only reaches here for truly unexpected errors (JSON parse, DB init, etc.)
+    if (db && scanId) {
+      db!.prepare(`UPDATE scans SET status = 'failed' WHERE id = ?`).run(scanId!);
+    }
+    console.error('Unexpected scan error:', error);
+    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
   }
 }
 
 async function processScanAsync(scanId: string, url: string) {
   const db = getDb();
 
-  try {
-    const crawlResult = await crawlPage(url);
-    const ruleChecks = runRuleBasedChecks(crawlResult);
-    const aiResult = await analyzeWithAI(crawlResult, ruleChecks);
+  const crawlResult = await crawlPage(url);
+  const ruleChecks = runRuleBasedChecks(crawlResult);
+  const aiResult = await analyzeWithAI(crawlResult, ruleChecks);
 
-    const result = {
-      crawl: {
-        title: crawlResult.title,
-        description: crawlResult.description,
-        h1s: crawlResult.h1s,
-        trackingScripts: crawlResult.trackingScripts,
-        formsCount: crawlResult.formsCount,
-        hasSSL: crawlResult.hasSSL,
-        statusCode: crawlResult.statusCode,
-      },
-      ruleChecks,
-      aiAnalysis: aiResult,
-      scannedAt: new Date().toISOString(),
-    };
+  const result = {
+    crawl: {
+      title: crawlResult.title,
+      description: crawlResult.description,
+      h1s: crawlResult.h1s,
+      trackingScripts: crawlResult.trackingScripts,
+      formsCount: crawlResult.formsCount,
+      hasSSL: crawlResult.hasSSL,
+      statusCode: crawlResult.statusCode,
+    },
+    ruleChecks,
+    aiAnalysis: aiResult,
+    scannedAt: new Date().toISOString(),
+  };
 
-    db.prepare(`
-      UPDATE scans
-      SET status = 'completed', result_json = ?, completed_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
-      WHERE id = ?
-    `).run(JSON.stringify(result), scanId);
-  } catch (error: any) {
-    console.error('Processing error:', error);
-    throw error;
-  }
+  db.prepare(`
+    UPDATE scans
+    SET status = 'completed', result_json = ?, completed_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
+    WHERE id = ?
+  `).run(JSON.stringify(result), scanId);
 }

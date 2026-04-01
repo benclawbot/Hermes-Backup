@@ -62,6 +62,7 @@ export async function POST(request: NextRequest) {
       params.append('subscription_data[metadata][scanId]', scanId);
       params.append('subscription_data[metadata][url]', websiteUrl);
     }
+    // For single scans, pass customer_email directly to the checkout session — no pre-creation needed
 
     const resp = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',

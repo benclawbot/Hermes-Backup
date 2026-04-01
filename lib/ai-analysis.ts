@@ -1,9 +1,9 @@
 import OpenAI from 'openai';
 
 function getOpenAI(): OpenAI {
-  const key = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN;
+  const key = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN || process.env.MINIMAX_API_KEY;
   if (!key) {
-    throw new Error('No API key set (OPENAI_API_KEY or ANTHROPIC_AUTH_TOKEN)');
+    throw new Error('No API key set (OPENAI_API_KEY, ANTHROPIC_AUTH_TOKEN, or MINIMAX_API_KEY)');
   }
   return new OpenAI({
     apiKey: key,

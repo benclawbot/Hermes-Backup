@@ -40,13 +40,15 @@ export async function POST(request: NextRequest) {
         const customerEmail = session.customer_email || '';
 
         if (session.mode === 'payment') {
-          // One-time scan — upsert in case webhook hits different instance than checkout
+          // One-time scan — the scan trigger runs on the success page, not here.
+          // Keep status as 'pending' so the trigger knows to actually run the scan.
+          // Only upsert the stripe_session_id so the report endpoint can look it up.
           if (scanId) {
             const existing = db.prepare('SELECT id FROM scans WHERE id = ?').get(scanId);
             if (existing) {
               db.prepare(`
                 UPDATE scans
-                SET stripe_session_id = ?, status = 'pending', email = COALESCE(?, email)
+                SET stripe_session_id = ?, email = COALESCE(?, email)
                 WHERE id = ?
               `).run(session.id, customerEmail || null, scanId);
             } else {
@@ -55,7 +57,6 @@ export async function POST(request: NextRequest) {
                 VALUES (?, ?, 'pending', ?, ?)
               `).run(scanId, url || '', customerEmail || null, session.id);
             }
-            triggerScan(scanId, url || '').catch(console.error);
           }
         } else if (session.mode === 'subscription') {
           // Subscriber checkout
