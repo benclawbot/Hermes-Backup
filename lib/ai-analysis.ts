@@ -24,11 +24,33 @@ export interface AiAnalysisResult {
   gdprScore: number;
 }
 
+/** Escape HTML to unicode entities so it cannot break the prompt string or corrupt JSON generation */
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function validateResult(obj: unknown): obj is AiAnalysisResult {
+  if (!obj || typeof obj !== 'object') return false;
+  const o = obj as Record<string, unknown>;
+  return (
+    typeof o.summary === 'string' &&
+    ['low', 'medium', 'high'].includes(o.riskLevel as string) &&
+    Array.isArray(o.issues) &&
+    Array.isArray(o.positives) &&
+    typeof o.gdprScore === 'number'
+  );
+}
+
 export async function analyzeWithAI(crawlResult: any, ruleBasedChecks: any[]): Promise<AiAnalysisResult> {
-  // Truncate HTML to avoid context window overflow
+  // Truncate HTML and escape it — prevents prompt corruption and JSON generation breakage
   const truncated = {
     ...crawlResult,
-    html: crawlResult.html ? crawlResult.html.substring(0, 3000) + '...[truncated]' : '',
+    html: crawlResult.html ? escapeHtml(crawlResult.html.substring(0, 3000)) + '...[truncated]' : '',
     screenshots: [], // Exclude screenshots from AI analysis
   };
 
@@ -76,5 +98,22 @@ Be specific. Generic advice is not helpful. Focus on actionable fixes.`;
   if (jsonMatch) {
     content = jsonMatch[0];
   }
-  return JSON.parse(content) as AiAnalysisResult;
+
+  // ── Defensive parse with validation ────────────────────────────────────────
+  let parsed: AiAnalysisResult;
+  try {
+    parsed = JSON.parse(content) as AiAnalysisResult;
+  } catch (parseErr: unknown) {
+    const errMsg = parseErr instanceof Error ? parseErr.message : String(parseErr);
+    throw new Error(`AI response JSON parse failed: ${errMsg} | content preview: ${content.substring(0, 200)}`);
+  }
+
+  if (!validateResult(parsed)) {
+    throw new Error(
+      `AI response validation failed — missing required fields. ` +
+      `Got: ${JSON.stringify(Object.keys(parsed || {}))}`
+    );
+  }
+
+  return parsed;
 }
