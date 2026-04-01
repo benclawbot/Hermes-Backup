@@ -111,52 +111,59 @@ export default function SuccessClient() {
   if (reportStatus === "ready" && reportHtml) {
     return (
       <div className="min-h-screen bg-midnight">
-        {/* Sticky top-right action bar */}
-        <div className="sticky top-0 z-10 flex justify-end gap-3 p-4">
-          <button
-            onClick={async () => {
-              if (!scanId) return;
-              let domain = scanId;
-              try {
-                const res = await fetch(`/api/report/${encodeURIComponent(scanId)}`);
-                if (res.ok) {
-                  const data = await res.json();
-                  if (data.url) {
-                    domain = new URL(data.url).hostname.replace(/[^a-zA-Z0-9]/g, '-');
-                  }
-                }
-              } catch {}
-              const date = new Date().toISOString().split("T")[0];
-              const filename = `GDPR-Report-${domain}-${date}.pdf`;
-              const a = document.createElement("a");
-              a.href = `/api/report/${encodeURIComponent(scanId)}/pdf`;
-              a.download = filename;
-              document.body.appendChild(a);
-              a.click();
-              document.body.removeChild(a);
-            }}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 text-white rounded-lg font-medium hover:bg-white/20 transition-all backdrop-blur-sm border border-white/10"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            Download PDF
-          </button>
-          <a href="/" className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent-blue text-white rounded-lg font-medium hover:bg-accent-blue/90 transition-all shadow-lg shadow-accent-blue/20">
-            Scan Another Website
-          </a>
+        {/* Sticky header: status + actions, always visible at top */}
+        <div className="sticky top-0 z-10 bg-midnight/95 backdrop-blur-sm border-b border-white/5">
+          <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-success/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-success" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-white font-semibold text-sm">Your GDPR Report is Ready</p>
+                <p className="text-white/40 text-xs">Scan complete — scroll for full results</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <button
+                onClick={async () => {
+                  if (!scanId) return;
+                  let domain = scanId;
+                  try {
+                    const res = await fetch(`/api/report/${encodeURIComponent(scanId)}`);
+                    if (res.ok) {
+                      const data = await res.json();
+                      if (data.url) {
+                        domain = new URL(data.url).hostname.replace(/[^a-zA-Z0-9]/g, '-');
+                      }
+                    }
+                  } catch {}
+                  const date = new Date().toISOString().split("T")[0];
+                  const filename = `GDPR-Report-${domain}-${date}.pdf`;
+                  const a = document.createElement("a");
+                  a.href = `/api/report/${encodeURIComponent(scanId)}/pdf`;
+                  a.download = filename;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 text-white rounded-lg text-sm font-medium hover:bg-white/20 transition-all border border-white/10"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Download PDF
+              </button>
+              <a href="/" className="inline-flex items-center gap-2 px-4 py-2 bg-accent-blue text-white rounded-lg text-sm font-medium hover:bg-accent-blue/90 transition-all">
+                Scan Another
+              </a>
+            </div>
+          </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 pb-8">
-          <div className="text-center mb-6">
-            <div className="w-16 h-16 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-success" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h1 className="text-2xl font-bold text-white">Your GDPR Report is Ready</h1>
-            <p className="text-white/60 mt-1">Scan complete. See your compliance results below.</p>
-          </div>
+        {/* Report body */}
+        <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="bg-white rounded-xl overflow-hidden shadow-2xl">
             <iframe srcDoc={reportHtml} className="w-full" id="report-frame" style={{ height: "80vh", border: "none" }} title="GDPR Report" />
           </div>
