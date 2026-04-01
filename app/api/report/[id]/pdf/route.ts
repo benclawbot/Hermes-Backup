@@ -8,9 +8,14 @@ async function getScanWithResult(scanId: string) {
   const scan = db.prepare('SELECT * FROM scans WHERE id = ?').get(scanId) as any;
   if (!scan || scan.status !== 'completed' || !scan.result_json) return null;
 
-  let result;
+  let result: any;
   try {
-    result = JSON.parse(scan.result_json);
+    const decoded = Buffer.from(scan.result_json, 'base64');
+    if (decoded[0] === 0x1f && decoded[1] === 0x8b) {
+      result = JSON.parse(require('zlib').gunzipSync(decoded).toString('utf8'));
+    } else {
+      result = JSON.parse(scan.result_json);
+    }
   } catch {
     return null;
   }
