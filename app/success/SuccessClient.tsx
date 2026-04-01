@@ -11,6 +11,7 @@ export default function SuccessClient() {
   const [sessionMode, setSessionMode] = useState<"payment" | "subscription" | null>(null);
   const [reportHtml, setReportHtml] = useState<string | null>(null);
   const [reportStatus, setReportStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [reportError, setReportError] = useState<string>("");
   const [reportUrl, setReportUrl] = useState<string>("");
   const startedRef = useRef(false);
 
@@ -25,22 +26,38 @@ export default function SuccessClient() {
       .catch(() => {});
   }, [sessionId]);
 
-  // Trigger scan + poll until ready (fast — typically <5s)
+  // Trigger scan + poll until ready (Lambda cold starts can take 30s+ on serverless)
   useEffect(() => {
     if (!sessionId || !scanId || startedRef.current) return;
     startedRef.current = true;
 
-    // Trigger scan immediately
+    // Trigger scan immediately, store the AbortController for cleanup
+    let triggerFailed = false;
     fetch("/api/scan/trigger", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ scanId }),
-    }).catch(() => {});
+    }).then(async (r) => {
+      if (!r.ok) {
+        const err = await r.json().catch(() => ({}));
+        triggerFailed = true;
+        setReportError(err.error || "Scan failed. Please try again.");
+        setReportStatus("error");
+        return;
+      }
+      // If ok, let polling detect the result
+    }).catch(() => {
+      // Network error on trigger → show error immediately
+      triggerFailed = true;
+      setReportError("Network error. Please check your connection and try again.");
+      setReportStatus("error");
+    });
 
     let attempts = 0;
-    const maxAttempts = 20;
+    const maxAttempts = 90; // up to 90s for slow serverless cold starts
 
     const poll = () => {
+      if (triggerFailed) return; // stop polling if trigger already failed
       fetch(`/api/report/${encodeURIComponent(scanId)}?session_id=${encodeURIComponent(sessionId)}`)
         .then(async (r) => {
           if (r.ok) {
@@ -51,6 +68,7 @@ export default function SuccessClient() {
               setReportStatus("ready");
               return;
             }
+            // 200 ok but no reportHtml yet → scan still processing
           }
           attempts++;
           if (attempts < maxAttempts) {
@@ -65,7 +83,8 @@ export default function SuccessClient() {
         });
     };
 
-    poll();
+    // Start polling after a short delay to allow trigger to complete
+    setTimeout(poll, 3000);
   }, [sessionId, scanId]);
 
   // Subscriptions → dashboard
@@ -157,10 +176,15 @@ export default function SuccessClient() {
               </svg>
             </div>
             <h1 className="text-2xl font-bold text-white mb-2">Scan Failed</h1>
-            <p className="text-white/60 mb-8">Something went wrong. Please try again.</p>
-            <a href="/" className="inline-block px-6 py-3 bg-accent-blue text-white rounded-lg font-medium hover:bg-accent-blue/90 transition-all">
-              Try Again
-            </a>
+            <p className="text-white/60 mb-2">Something went wrong during the scan.</p>
+            {reportError && (
+              <p className="text-red-400 text-sm mb-8 max-w-sm mx-auto px-4">{reportError}</p>
+            )}
+            {!reportError && (
+              <a href="/" className="inline-block px-6 py-3 bg-accent-blue text-white rounded-lg font-medium hover:bg-accent-blue/90 transition-all">
+                Try Again
+              </a>
+            )}
           </>
         ) : (
           <>
