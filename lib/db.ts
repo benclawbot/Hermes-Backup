@@ -8,7 +8,13 @@ let db: Database.Database;
 export function getDb(): Database.Database {
   if (!db) {
     db = new Database(DB_PATH);
-    db.pragma('journal_mode = WAL');
+    // WAL causes issues on Lambda /tmp (multiple .db-wal and .db-shm files
+    // getting out of sync between Lambda invocations). Use DELETE mode instead.
+    db.pragma('journal_mode = DELETE');
+    // Wait up to 10s for locks to clear before giving up
+    db.pragma('busy_timeout = 10000');
+    // FULL ensures writes are durable before reporting success
+    db.pragma('synchronous = FULL');
     initializeSchema(db);
   }
   return db;

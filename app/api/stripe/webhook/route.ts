@@ -149,11 +149,13 @@ async function triggerScan(scanId: string, url: string, stripeSessionId: string)
       scannedAt: new Date().toISOString(),
     };
 
+    // Compress result_json with gzip+base64 for corruption protection on Lambda /tmp
+    const compressedJson = require('zlib').gzipSync(Buffer.from(JSON.stringify(result), 'utf8')).toString('base64');
     db.prepare(`
       UPDATE scans
       SET status = 'completed', result_json = ?, completed_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
       WHERE id = ?
-    `).run(JSON.stringify(result), scanId);
+    `).run(compressedJson, scanId);
 
     // Store essential result data in Stripe metadata for cross-Lambda access
     // (DB may not persist across Lambda invocations on serverless)

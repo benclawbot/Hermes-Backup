@@ -15,13 +15,16 @@ export async function GET(
   const scan = db.prepare('SELECT * FROM scans WHERE id = ?').get(scanId) as any;
 
   // If scan is completed in DB, return immediately (no Stripe API call needed)
+  // result_json is gzip+base64 encoded for corruption protection on Lambda /tmp
   if (scan?.status === 'completed' && scan?.result_json) {
     try {
-      const result = JSON.parse(scan.result_json);
+      const rawJson = require('zlib').gunzipSync(Buffer.from(scan.result_json, 'base64')).toString('utf8');
+      const result = JSON.parse(rawJson);
       const html = generateReportHtml(scan.url || '', result);
       return NextResponse.json({ reportHtml: html, url: scan.url || '' });
     } catch (e: any) {
-      console.error('DB parse failed:', e.message);
+      console.error('DB parse/decompress failed:', e.message, '— falling back to Stripe');
+      // Fall through to Stripe fallback below
     }
   }
 
