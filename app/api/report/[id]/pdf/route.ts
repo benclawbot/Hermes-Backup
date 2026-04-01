@@ -37,7 +37,10 @@ export async function GET(
 
   const data = await getScanWithResult(scanId);
   if (!data) {
-    return NextResponse.json({ error: 'Report not ready' }, { status: 404 });
+    return NextResponse.json(
+      { error: 'Report not ready. Scan may still be processing. Please refresh the page.' },
+      { status: 404 }
+    );
   }
 
   const { scan, result } = data;
@@ -51,23 +54,33 @@ export async function GET(
   let browser = null;
 
   try {
+    let executablePath: string;
     if (isDev) {
       // Local dev: use system Chrome/Chromium
-      const executablePath = process.env.CHROME_PATH ||
+      executablePath = process.env.CHROME_PATH ||
         '/usr/bin/google-chrome' ||
         '/usr/bin/chromium' ||
         '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-      browser = await puppeteer.launch({
-        executablePath,
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-      });
     } else {
       // Vercel: use @sparticuz/chromium
-      browser = await puppeteer.launch({
-        args: chromium.args,
-        executablePath: await chromium.executablePath(),
-      });
+      try {
+        executablePath = await chromium.executablePath();
+      } catch (chromiumErr: any) {
+        console.error('Chromium executablePath failed:', chromiumErr.message);
+        return NextResponse.json(
+          { error: 'PDF generation unavailable on this platform.', detail: chromiumErr.message },
+          { status: 500 }
+        );
+      }
     }
+
+    browser = await puppeteer.launch({
+      executablePath,
+      headless: true,
+      args: isDev
+        ? ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+        : chromium.args,
+    });
 
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'networkidle0' });
@@ -89,7 +102,10 @@ export async function GET(
     });
   } catch (err: any) {
     if (browser) await browser.close().catch(() => {});
-    console.error('PDF generation failed:', err.message);
-    return NextResponse.json({ error: 'PDF generation failed', detail: err.message }, { status: 500 });
+    console.error('PDF generation failed:', err?.message || err);
+    return NextResponse.json(
+      { error: 'PDF generation failed. Please try again or refresh the page.', detail: err?.message },
+      { status: 500 }
+    );
   }
 }
