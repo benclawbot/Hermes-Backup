@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import { getDb } from '@/lib/db';
+import Stripe from 'stripe';
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,14 +25,16 @@ export async function POST(request: NextRequest) {
 
     const scanId = uuidv4();
     const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app').trim();
+    const stripe = new Stripe(stripeKey);
 
-    // Pre-create scan record so webhook can find and update it
+    // Pre-create scan record so webhook / success page can find it
     const db = getDb();
     db.prepare(`
       INSERT INTO scans (id, url, status, email, stripe_session_id)
       VALUES (?, ?, 'pending', ?, NULL)
     `).run(scanId, websiteUrl, email || null);
 
+    // Build Stripe checkout session params
     const params = new URLSearchParams();
     params.append('mode', plan === 'monthly' ? 'subscription' : 'payment');
     params.append('line_items[0][price]', priceId);
@@ -69,16 +72,17 @@ export async function POST(request: NextRequest) {
       body: params.toString(),
     });
 
-    const data = await resp.json();
-
+    const sessionData = await resp.json();
     if (!resp.ok) {
-      return NextResponse.json({ error: data.error?.message || `Stripe error: ${resp.status}` }, { status: 500 });
+      return NextResponse.json({ error: sessionData.error?.message || `Stripe error: ${resp.status}` }, { status: 500 });
     }
 
-    // Update scan with Stripe session ID
-    db.prepare(`UPDATE scans SET stripe_session_id = ? WHERE id = ?`).run(data.id, scanId);
+    const sessionId = sessionData.id;
 
-    return NextResponse.json({ url: data.url, sessionId: data.id, scanId });
+    // Update scan with Stripe session ID
+    db.prepare(`UPDATE scans SET stripe_session_id = ? WHERE id = ?`).run(sessionId, scanId);
+
+    return NextResponse.json({ url: sessionData.url, sessionId, scanId });
   } catch (err: any) {
     console.error('Checkout error:', err?.message || err);
     return NextResponse.json({ error: err?.message || 'Checkout failed' }, { status: 500 });
