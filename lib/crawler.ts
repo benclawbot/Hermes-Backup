@@ -300,137 +300,127 @@ async function crawlWithBrowserless(url: string): Promise<CrawlResult> {
     throw new Error('BROWSERLESS_API_KEY not configured');
   }
 
-  const browserlessUrl = `https://chrome.browserless.io/chrome?token=${apiKey}`;
+  const browserlessUrl = `https://chrome.browserless.io/content?token=${apiKey}`;
+  const timeoutMs = 30000;
 
-  // We use the Browserless "debug" endpoint which gives us CDP access
-  // to run JavaScript in a headless Chrome
-  const extractScript = `
-(async () => {
-  const result = {};
-  result.title = document.title || '';
-  const desc = document.querySelector('meta[name="description"]');
-  result.description = desc ? (desc.getAttribute('content') || '').slice(0, 500) : '';
-  result.h1s = Array.from(document.querySelectorAll('h1')).map(el => (el.textContent || '').trim()).filter(Boolean);
-  result.hasSSL = location.protocol === 'https:';
-
-  // Privacy link
-  const privacyEl = document.querySelector('a[href*="privacy"], a[href*="datenschutz"], a[href*="rgpd"]');
-  result.privacyPolicyUrl = privacyEl ? privacyEl.href : null;
-  result.hasPrivacyPolicy = !!privacyEl;
-
-  // Cookie banner
-  const cookieEl = document.querySelector('[class*="cookie"], [id*="cookie"], [class*="consent"], [id*="consent"], [class*="gdpr"], [id*="gdpr"]');
-  result.cookieBannerText = cookieEl ? (cookieEl.textContent || '').trim().slice(0, 200) : null;
-  result.hasCookieBanner = !!cookieEl;
-
-  // Tracking scripts
-  const scripts = Array.from(document.querySelectorAll('script[src]')).map(el => el.src || '');
-  const trackingPatterns = ['google-analytics', 'googletagmanager', 'facebook', 'fbpixel', 'hotjar', 'mixpanel', 'segment', 'intercom', 'drift', 'zendesk'];
-  result.trackingScripts = scripts.filter(src => trackingPatterns.some(p => src.toLowerCase().includes(p)));
-
-  // Forms
-  const forms = document.querySelectorAll('form');
-  result.formsCount = forms.length;
-  const allInputs = document.querySelectorAll('input, textarea, select');
-  result.totalFormInputs = allInputs.length;
-  let labeledCount = 0;
-  allInputs.forEach(el => {
-    const id = el.id || el.getAttribute('id') || '';
-    if (id && (el.getAttribute('aria-label') || el.getAttribute('aria-labelledby') || document.querySelector('label[for="' + id + '"]'))) {
-      labeledCount++;
-    }
-  });
-  result.formInputsLabeled = labeledCount;
-
-  // Third-party embeds
-  const iframes = Array.from(document.querySelectorAll('iframe[src]')).map(el => el.src || '');
-  result.thirdPartyEmbeds = [];
-  iframes.forEach(src => {
-    if (src.includes('youtube.com') || src.includes('youtu.be')) result.thirdPartyEmbeds.push('YouTube embed');
-    else if (src.includes('vimeo.com')) result.thirdPartyEmbeds.push('Vimeo embed');
-    else if (src.includes('maps.google.com') || src.includes('google.com/maps')) result.thirdPartyEmbeds.push('Google Maps embed');
-    else if (src.includes('instagram.com')) result.thirdPartyEmbeds.push('Instagram embed');
-    else if (src.includes('twitter.com') || src.includes('platform.twitter')) result.thirdPartyEmbeds.push('Twitter embed');
-  });
-
-  // Mixed content
-  result.mixedContent = !!document.querySelector('[src^="http:"], [href^="http:"], link[href^="http:"], img[src^="http:"]');
-
-  // Marketing opt-in
-  if (result.formsCount > 0) {
-    const marketingInputs = Array.from(document.querySelectorAll('form input[type="checkbox"], form input[type="radio"]'))
-      .filter(el => {
-        const name = (el.name || '').toLowerCase();
-        const id = (el.id || '').toLowerCase();
-        const cls = (el.closest('form')?.className || '') + (el.className || '');
-        const label = (el.closest('label')?.textContent || '').toLowerCase();
-        return name.includes('marketing') || name.includes('newsletter') || name.includes('consent')
-          || name.includes('opt-in') || id.includes('marketing') || id.includes('newsletter')
-          || cls.includes('marketing') || cls.includes('newsletter')
-          || label.includes('marketing') || label.includes('newsletter') || label.includes('consent');
-      });
-    if (marketingInputs.length > 0) {
-      result.marketingOptinStatus = marketingInputs[0].checked ? 'pre_checked' : 'present_not_prechecked';
-    } else {
-      result.marketingOptinStatus = 'missing';
-    }
-  } else {
-    result.marketingOptinStatus = 'no_forms';
-  }
-
-  // HTML snapshot
-  result.html = document.documentElement.outerHTML.slice(0, 50000);
-
-  return result;
-})();
-`;
-
-  let browserlessData: any;
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 45000);
-
+  // Fetch HTML via Browserless (handles JS-rendered pages)
+  let html: string;
+  let statusCode = 200;
   try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
     const resp = await fetch(browserlessUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal,
-      body: JSON.stringify({
-        url,
-        js: extractScript,
-        gotoOptions: { waitUntil: 'networkidle2', timeout: 30000 },
-      }),
+      body: JSON.stringify({ url, gotoOptions: { waitUntil: 'networkidle2', timeout: 25000 } }),
     });
-    clearTimeout(timeout);
+    clearTimeout(timer);
     if (!resp.ok) {
-      const errText = await resp.text().catch(() => '');
-      throw new Error(`Browserless error ${resp.status}: ${errText}`);
+      throw new Error(`Browserless error ${resp.status}: ${await resp.text().catch(() => '')}`);
     }
-    browserlessData = await resp.json();
+    const contentType = resp.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      const data = await resp.json();
+      html = (data.data || data.html || data.content || '').slice(0, 50000);
+      if (data.statusCode) statusCode = data.statusCode;
+    } else {
+      html = (await resp.text()).slice(0, 50000);
+    }
   } catch (err: any) {
-    clearTimeout(timeout);
     throw new Error(`Browserless crawl failed: ${err.message}`);
   }
 
-  // Fetch privacy policy HTML via Browserless too
+  if (!html || html.length < 100) {
+    throw new Error('Browserless returned empty content');
+  }
+
+  // Parse the HTML (same extraction logic as crawlWithFetch)
+  const securityHeaders: Record<string, string> = {};
+  const title = extractText(html, 'title');
+  const description = extractMetaContent(html, 'description');
+  const h1s = extractAllText(html, 'h1');
+  const hasSSL = url.startsWith('https://');
+
+  const privacyLinks = extractLinksWithText(html, ['privacy', 'datenschutz', 'rgpd', 'privacidade', 'politique', 'privacy-policy', 'privacitat']);
+  let privacyPolicyUrl: string | null = null;
+  if (privacyLinks.length > 0) {
+    const first = privacyLinks[0];
+    try {
+      privacyPolicyUrl = first.href.startsWith('http') ? first.href : new URL(first.href, url).href;
+    } catch { privacyPolicyUrl = null; }
+  }
+
+  // Cookie banner
+  const cookiePatterns = ['cookie', 'consent', 'gdpr', 'ccpa', 'notice', 'banner', 'accept', 'agree'];
+  let hasCookieBanner = false;
+  let cookieBannerText: string | null = null;
+  for (const pattern of cookiePatterns) {
+    const bannerRegex = new RegExp(`<(?:div|section|p|span)[^>]+(?:class|id)=["'][^"']*${pattern}[^"']*["'][^>]*>([^<]{0,300})`, 'i');
+    const match = html.match(bannerRegex);
+    if (match) { hasCookieBanner = true; cookieBannerText = match[1].trim().slice(0, 200); break; }
+  }
+
+  const trackingPatterns = ['google-analytics', 'googletagmanager', 'facebook', 'fbpixel', 'hotjar', 'mixpanel', 'segment', 'intercom', 'drift', 'zendesk', 'analytics'];
+  const trackingScripts: string[] = [];
+  const scriptSrcRegex = /<script[^>]+src=["']([^"']+)["']/gi;
+  let scriptMatch;
+  while ((scriptMatch = scriptSrcRegex.exec(html)) !== null) {
+    const src = scriptMatch[1].toLowerCase();
+    if (trackingPatterns.some(p => src.includes(p))) trackingScripts.push(scriptMatch[1]);
+  }
+
+  const formsCount = countElements(html, 'form');
+  const totalFormInputs = countElements(html, 'input');
+
+  const thirdPartyEmbeds: string[] = [];
+  const iframeSrcRegex = /<iframe[^>]+src=["']([^"']+)["']/gi;
+  let iframeMatch;
+  while ((iframeMatch = iframeSrcRegex.exec(html)) !== null) {
+    const src = iframeMatch[1];
+    if (src.includes('youtube.com') || src.includes('youtu.be')) thirdPartyEmbeds.push('YouTube embed');
+    else if (src.includes('vimeo.com')) thirdPartyEmbeds.push('Vimeo embed');
+    else if (src.includes('maps.google.com') || src.includes('google.com/maps')) thirdPartyEmbeds.push('Google Maps embed');
+    else if (src.includes('instagram.com')) thirdPartyEmbeds.push('Instagram embed');
+    else if (src.includes('twitter.com') || src.includes('platform.twitter')) thirdPartyEmbeds.push('Twitter embed');
+  }
+
+  const mixedContentRegex = /<(?:img|script|link|iframe|source)[^>]+(?:src|href)=["'](http:[^"']+)["']/gi;
+  const mixedContent = mixedContentRegex.test(html);
+
+  let marketingOptinStatus: 'present_not_prechecked' | 'pre_checked' | 'missing' | 'no_forms' = 'no_forms';
+  if (formsCount > 0) {
+    const marketingInputRegex = /<input[^>]+(?:id|name)=["'][^"']*(?:marketing|newsletter|consent|opt[- ]?in)[^"']*["'][^>]*>/gi;
+    const marketingInputs = html.match(marketingInputRegex) || [];
+    if (marketingInputs.length > 0) {
+      const preChecked = marketingInputs.some(inp => inp.includes('checked') || inp.includes('selected'));
+      marketingOptinStatus = preChecked ? 'pre_checked' : 'present_not_prechecked';
+    } else {
+      marketingOptinStatus = 'missing';
+    }
+  }
+
+  // Fetch privacy policy HTML via Browserless
   let privacyPolicyHtml: string | null = null;
-  if (browserlessData.privacyPolicyUrl) {
+  if (privacyPolicyUrl) {
     try {
       const ppController = new AbortController();
-      const ppTimeout = setTimeout(() => ppController.abort(), 15000);
+      const ppTimer = setTimeout(() => ppController.abort(), 15000);
       const ppResp = await fetch(browserlessUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         signal: ppController.signal,
-        body: JSON.stringify({
-          url: browserlessData.privacyPolicyUrl,
-          html: true,
-          gotoOptions: { waitUntil: 'domcontentloaded', timeout: 10000 },
-        }),
+        body: JSON.stringify({ url: privacyPolicyUrl, gotoOptions: { waitUntil: 'domcontentloaded', timeout: 10000 } }),
       });
-      clearTimeout(ppTimeout);
+      clearTimeout(ppTimer);
       if (ppResp.ok) {
-        const ppData = await ppResp.json().catch(() => { return undefined; });
-        privacyPolicyHtml = (ppData?.data || ppData?.html || '').slice(0, 200000);
+        const ct = ppResp.headers.get('content-type') || '';
+        if (ct.includes('application/json')) {
+          const ppData = await ppResp.json();
+          privacyPolicyHtml = (ppData.data || ppData.html || '').slice(0, 200000);
+        } else {
+          privacyPolicyHtml = (await ppResp.text()).slice(0, 200000);
+        }
       }
     } catch (_) { /* non-fatal */ }
   }
@@ -439,27 +429,27 @@ async function crawlWithBrowserless(url: string): Promise<CrawlResult> {
 
   return {
     url,
-    title: browserlessData.title || '',
-    description: browserlessData.description || '',
-    h1s: browserlessData.h1s || [],
-    hasPrivacyPolicy: browserlessData.hasPrivacyPolicy || false,
-    privacyPolicyUrl: browserlessData.privacyPolicyUrl || null,
+    title,
+    description,
+    h1s,
+    hasPrivacyPolicy: !!privacyPolicyUrl,
+    privacyPolicyUrl,
     privacyPolicyHtml,
-    hasCookieBanner: browserlessData.hasCookieBanner || false,
-    cookieBannerText: browserlessData.cookieBannerText || null,
-    trackingScripts: browserlessData.trackingScripts || [],
-    formsCount: browserlessData.formsCount || 0,
-    formInputsLabeled: browserlessData.formInputsLabeled || 0,
-    totalFormInputs: browserlessData.totalFormInputs || 0,
-    hasSSL: browserlessData.hasSSL || false,
+    hasCookieBanner,
+    cookieBannerText,
+    trackingScripts,
+    formsCount,
+    formInputsLabeled: 0,
+    totalFormInputs,
+    hasSSL,
     screenshots: [],
-    html: browserlessData.html || '',
-    statusCode: 200,
-    securityHeaders: {},
+    html,
+    statusCode,
+    securityHeaders,
     hasCookiePolicyPage: false,
-    thirdPartyEmbeds: browserlessData.thirdPartyEmbeds || [],
-    mixedContent: browserlessData.mixedContent || false,
-    marketingOptinStatus: browserlessData.marketingOptinStatus || 'no_forms',
+    thirdPartyEmbeds: Array.from(new Set(thirdPartyEmbeds)),
+    mixedContent,
+    marketingOptinStatus,
     processorDisclosure: false,
     processorsFound: [],
     hasInternationalTransferDisclosure: false,
