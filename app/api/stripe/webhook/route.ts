@@ -40,9 +40,7 @@ export async function POST(request: NextRequest) {
         const customerEmail = session.customer_email || '';
 
         if (session.mode === 'payment') {
-          // One-time scan — the scan trigger runs on the success page, not here.
-          // Keep status as 'pending' so the trigger knows to actually run the scan.
-          // Only upsert the stripe_session_id so the report endpoint can look it up.
+          // One-time scan — upsert scan with 'pending' so the trigger knows to run it.
           if (scanId) {
             const existing = db.prepare('SELECT id FROM scans WHERE id = ?').get(scanId);
             if (existing) {
@@ -57,6 +55,13 @@ export async function POST(request: NextRequest) {
                 VALUES (?, ?, 'pending', ?, ?)
               `).run(scanId, url || '', customerEmail || null, session.id);
             }
+          }
+
+          // Trigger scan immediately, pass Stripe session ID so result can be stored in Stripe metadata
+          if (scanId && url) {
+            triggerScan(scanId, url, session.id).catch(err => {
+              console.error('Webhook scan trigger failed:', err.message);
+            });
           }
         } else if (session.mode === 'subscription') {
           // Subscriber checkout
@@ -111,13 +116,16 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function triggerScan(scanId: string, url: string) {
+async function triggerScan(scanId: string, url: string, stripeSessionId: string) {
   const { crawlPage } = await import('@/lib/crawler');
   const { runRuleBasedChecks } = await import('@/lib/gdpr-checks');
   const { analyzeWithAI } = await import('@/lib/ai-analysis');
   const { getDb } = await import('@/lib/db');
 
   const db = getDb();
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2025-02-24.acacia' as any,
+  });
 
   try {
     db.prepare(`UPDATE scans SET status = 'processing' WHERE id = ?`).run(scanId);
@@ -147,7 +155,30 @@ async function triggerScan(scanId: string, url: string) {
       WHERE id = ?
     `).run(JSON.stringify(result), scanId);
 
-    // Report stored in DB — accessible via dashboard
+    // Store essential result data in Stripe metadata for cross-Lambda access
+    // (DB may not persist across Lambda invocations on serverless)
+    const meta = {
+      scanId,
+      url,
+      status: 'completed',
+      gdprScore: aiResult.gdprScore ?? 0,
+      riskLevel: aiResult.riskLevel ?? 'unknown',
+      summary: (aiResult.summary || '').slice(0, 400),
+      issueCount: (aiResult.issues || []).length,
+      positiveCount: (aiResult.positives || []).length,
+      scannedAt: result.scannedAt,
+    };
+    try {
+      await stripe.checkout.sessions.update(stripeSessionId, {
+        metadata: {
+          scanId,
+          url,
+          status: 'completed',
+          // Store compressed summary in metadata (500-char limit per key)
+          aiSummary: JSON.stringify(meta).slice(0, 450),
+        },
+      }).catch(() => {}); // Non-fatal if this fails
+    } catch (_) {}
   } catch (error: any) {
     console.error('Trigger scan error:', error);
     db.prepare(`UPDATE scans SET status = 'failed' WHERE id = ?`).run(scanId);
