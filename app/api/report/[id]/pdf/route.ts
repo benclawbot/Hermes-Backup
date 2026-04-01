@@ -3,6 +3,9 @@ import { getDb } from '@/lib/db';
 import puppeteer from 'puppeteer-core';
 import chromium from '@sparticuz/chromium';
 
+// Node.js runtime required — puppeteer and @sparticuz/chromium are native modules
+export const runtime = 'nodejs';
+
 async function getScanWithResult(scanId: string) {
   const db = getDb();
   const scan = db.prepare('SELECT * FROM scans WHERE id = ?').get(scanId) as any;
