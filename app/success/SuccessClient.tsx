@@ -11,6 +11,7 @@ export default function SuccessClient() {
   const [sessionMode, setSessionMode] = useState<"payment" | "subscription" | null>(null);
   const [reportHtml, setReportHtml] = useState<string | null>(null);
   const [reportStatus, setReportStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [reportUrl, setReportUrl] = useState<string>("");
   const startedRef = useRef(false);
 
   // Fetch session mode
@@ -46,6 +47,7 @@ export default function SuccessClient() {
             const data = await r.json();
             if (data.reportHtml) {
               setReportHtml(data.reportHtml);
+              if (data.url) setReportUrl(data.url);
               setReportStatus("ready");
               return;
             }
@@ -105,11 +107,24 @@ export default function SuccessClient() {
           </div>
           <div className="flex items-center justify-center gap-4 mt-6">
             <button
-              onClick={() => {
+              onClick={async () => {
                 if (!scanId) return;
+                // Derive filename from scan URL at click time (not stale state)
+                let domain = scanId;
+                try {
+                  const res = await fetch(`/api/report/${encodeURIComponent(scanId)}`);
+                  if (res.ok) {
+                    const data = await res.json();
+                    if (data.url) {
+                      domain = new URL(data.url).hostname.replace(/[^a-zA-Z0-9]/g, '-');
+                    }
+                  }
+                } catch {}
+                const date = new Date().toISOString().split("T")[0];
+                const filename = `GDPR-Report-${domain}-${date}.pdf`;
                 const a = document.createElement("a");
                 a.href = `/api/report/${encodeURIComponent(scanId)}/pdf`;
-                a.download = "";
+                a.download = filename;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);

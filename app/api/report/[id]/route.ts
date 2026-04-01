@@ -19,7 +19,7 @@ export async function GET(
     try {
       const result = JSON.parse(scan.result_json);
       const html = generateReportHtml(scan.url || '', result);
-      return NextResponse.json({ reportHtml: html });
+      return NextResponse.json({ reportHtml: html, url: scan.url || '' });
     } catch (e: any) {
       console.error('DB parse failed:', e.message);
     }
@@ -40,8 +40,9 @@ export async function GET(
             db.prepare(`INSERT OR REPLACE INTO scans (id, url, status, email, stripe_session_id, result_json) VALUES (?, ?, 'completed', ?, ?, ?)`)
               .run(scanId, stripeSession.metadata?.url || scan?.url || '', stripeSession.customer_email || scan?.email || null, stripeSessionId, scanResultJson);
           } catch {}
-          const html = generateReportHtml(stripeSession.metadata?.url || scan?.url || '', result);
-          return NextResponse.json({ reportHtml: html });
+          const reportUrl = stripeSession.metadata?.url || scan?.url || '';
+          const html = generateReportHtml(reportUrl, result);
+          return NextResponse.json({ reportHtml: html, url: reportUrl });
         } catch (e: any) {
           console.error('Stripe metadata parse failed:', e.message);
         }
