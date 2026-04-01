@@ -25,7 +25,7 @@ export async function GET(
     }
   }
 
-  // Secondary: try Stripe metadata (works across Lambda instances)
+  // Secondary: look up by scan ID in Stripe metadata directly (DB may not be shared across Lambda instances)
   const stripeSessionId = scan?.stripe_session_id || sessionId;
   if (stripeSessionId) {
     try {
@@ -35,7 +35,7 @@ export async function GET(
       if (scanResultJson) {
         try {
           const result = JSON.parse(scanResultJson);
-          // Cache in DB
+          // Cache in DB if available
           try {
             db.prepare(`INSERT OR REPLACE INTO scans (id, url, status, email, stripe_session_id, result_json) VALUES (?, ?, 'completed', ?, ?, ?)`)
               .run(scanId, stripeSession.metadata?.url || scan?.url || '', stripeSession.customer_email || scan?.email || null, stripeSessionId, scanResultJson);

@@ -19,7 +19,12 @@ export async function GET(request: NextRequest) {
     });
 
     const session = await stripe.checkout.sessions.retrieve(sessionId);
-    return NextResponse.json({ mode: session.mode });
+    return NextResponse.json({
+      mode: session.mode,
+      scanId: session.metadata?.scanId || null,
+      url: session.metadata?.url || null,
+      customerEmail: session.customer_email || null,
+    });
   } catch (error: any) {
     console.error('Stripe session lookup error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
