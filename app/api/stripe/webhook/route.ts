@@ -68,29 +68,114 @@ export async function POST(request: NextRequest) {
           const customerId = session.customer as string;
           const customerEmail = session.customer_email ?? '';
 
+          // Retrieve subscription to get current_period_end
+          let periodEnd: string | null = null;
+          let cancelAtPeriodEnd = false;
+          try {
+            const subscription = await stripe.subscriptions.retrieve(session.subscription as string) as any;
+            periodEnd = subscription.current_period_end
+              ? new Date(subscription.current_period_end * 1000).toISOString()
+              : null;
+            cancelAtPeriodEnd = subscription.cancel_at_period_end;
+          } catch (_) {}
+
           const existingSub = db.prepare('SELECT id FROM subscribers WHERE stripe_customer_id = ?').get(customerId) as any;
           let subscriberId = existingSub?.id;
 
           if (!subscriberId) {
             subscriberId = uuidv4();
             db.prepare(`
-              INSERT INTO subscribers (id, stripe_customer_id, email, plan, status)
-              VALUES (?, ?, ?, 'monthly', 'active')
-            `).run(subscriberId, customerId, customerEmail);
+              INSERT INTO subscribers (id, stripe_customer_id, email, plan, status, current_period_end, cancel_at_period_end)
+              VALUES (?, ?, ?, 'monthly', 'active', ?, ?)
+            `).run(subscriberId, customerId, customerEmail, periodEnd, cancelAtPeriodEnd ? 1 : 0);
           } else {
             db.prepare(`
-              UPDATE subscribers SET status = 'active', updated_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
+              UPDATE subscribers
+              SET status = 'active',
+                  current_period_end = COALESCE(?, current_period_end),
+                  cancel_at_period_end = ?,
+                  updated_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
               WHERE id = ?
-            `).run(subscriberId);
+            `).run(periodEnd, cancelAtPeriodEnd ? 1 : 0, subscriberId);
           }
 
-          const token = uuidv4();
+          // Clear any expired token and create a fresh one
+          const token=uuidv4();
           db.prepare(`
-            INSERT OR REPLACE INTO subscriber_tokens (token, subscriber_id, created_at, last_used_at)
+            DELETE FROM subscriber_tokens WHERE subscriber_id = ?
+          `).run(subscriberId);
+          db.prepare(`
+            INSERT INTO subscriber_tokens (token, subscriber_id, created_at, last_used_at)
             VALUES (?, ?, strftime('%Y-%m-%dT%H:%M:%SZ', 'now'), strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
           `).run(token, subscriberId);
+        }
+        break;
+      }
 
-          // Subscriber dashboard link shown on success page — no email sent
+      case 'customer.subscription.updated': {
+        const subscription = event.data.object as Stripe.Subscription;
+        const customerId = subscription.customer as string;
+        const subAny = subscription as any;
+        const periodEnd = subAny.current_period_end
+          ? new Date(subAny.current_period_end * 1000).toISOString()
+          : null;
+        const cancelAtPeriodEnd = subAny.cancel_at_period_end ? 1 : 0;
+
+        const sub = db.prepare('SELECT id FROM subscribers WHERE stripe_customer_id = ?').get(customerId) as any;
+        if (sub) {
+          if (subscription.status === 'active') {
+            // Renewal or cancellation flipped back — extend period, clear cancel flag
+            db.prepare(`
+              UPDATE subscribers
+              SET status = 'active',
+                  current_period_end = ?,
+                  cancel_at_period_end = ?,
+                  updated_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
+              WHERE stripe_customer_id = ?
+            `).run(periodEnd, cancelAtPeriodEnd, customerId);
+            // Clear any previously-set expires_at on tokens
+            db.prepare(`UPDATE subscriber_tokens SET expires_at = NULL WHERE subscriber_id = ?`).run(sub.id);
+          } else if (subscription.status === 'canceled' || subscription.cancel_at_period_end) {
+            // Cancelled at period end — keep active until period_end, set expires_at on tokens
+            db.prepare(`
+              UPDATE subscribers
+              SET cancel_at_period_end = ?
+              WHERE stripe_customer_id = ?
+            `).run(cancelAtPeriodEnd, customerId);
+            // Set expires_at on all tokens for this subscriber
+            if (periodEnd) {
+              db.prepare(`UPDATE subscriber_tokens SET expires_at = ? WHERE subscriber_id = ?`).run(periodEnd, sub.id);
+            }
+          }
+        }
+        break;
+      }
+
+      case 'invoice.payment_succeeded': {
+        // Renewal payment confirmed — extend period_end
+        const invoice = event.data.object as Stripe.Invoice;
+        const invoiceAny = invoice as any;
+        const customerId = invoiceAny.customer as string;
+        if (invoiceAny.subscription) {
+          try {
+            const subscription = await stripe.subscriptions.retrieve(invoiceAny.subscription as string) as any;
+            const periodEnd = subscription.current_period_end
+              ? new Date(subscription.current_period_end * 1000).toISOString()
+              : null;
+            db.prepare(`
+              UPDATE subscribers
+              SET status = 'active',
+                  current_period_end = COALESCE(?, current_period_end),
+                  cancel_at_period_end = 0,
+                  updated_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
+              WHERE stripe_customer_id = ?
+            `).run(periodEnd, customerId);
+            // Clear expires_at on tokens on successful renewal
+            const sub = db.prepare('SELECT id FROM subscribers WHERE stripe_customer_id = ?').get(customerId) as any;
+            if (sub) {
+              db.prepare(`UPDATE subscriber_tokens SET expires_at = NULL WHERE subscriber_id = ?`).run(sub.id);
+            }
+          } catch (_) {}
         }
         break;
       }
@@ -98,10 +183,17 @@ export async function POST(request: NextRequest) {
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
-        db.prepare(`
-          UPDATE subscribers SET status = 'cancelled', updated_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
-          WHERE stripe_customer_id = ?
-        `).run(customerId);
+        const sub = db.prepare('SELECT id FROM subscribers WHERE stripe_customer_id = ?').get(customerId) as any;
+        if (sub) {
+          // Immediately revoke — set expires_at to now
+          db.prepare(`
+            UPDATE subscribers SET status = 'cancelled', updated_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
+            WHERE stripe_customer_id = ?
+          `).run(customerId);
+          db.prepare(`
+            UPDATE subscriber_tokens SET expires_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now') WHERE subscriber_id = ?
+          `).run(sub.id);
+        }
         break;
       }
 

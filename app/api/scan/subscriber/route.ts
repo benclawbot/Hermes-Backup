@@ -5,6 +5,47 @@ import { crawlPage } from '@/lib/crawler';
 import { runRuleBasedChecks } from '@/lib/gdpr-checks';
 import { analyzeWithAI } from '@/lib/ai-analysis';
 
+function verifySubscriberToken(token: string): { subscriberId: string; email: string } | null {
+  const db = getDb();
+  const rec = db.prepare(`
+    SELECT st.subscriber_id, st.expires_at, s.email, s.status
+    FROM subscriber_tokens st
+    JOIN subscribers s ON s.id = st.subscriber_id
+    WHERE st.token = ?
+  `).get(token) as any;
+
+  if (!rec) return null;
+  if (rec.status !== 'active') return null;
+  if (rec.expires_at && new Date(rec.expires_at) < new Date()) return null;
+  return { subscriberId: rec.subscriber_id, email: rec.email };
+}
+
+export async function GET(request: NextRequest) {
+  const token = request.headers.get('authorization')?.replace('Bearer ', '');
+
+  if (!token) {
+    return NextResponse.json({ error: 'Token required' }, { status: 401 });
+  }
+
+  const sub = verifySubscriberToken(token);
+  if (!sub) {
+    return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
+  }
+
+  const db = getDb();
+  db.prepare(`UPDATE subscriber_tokens SET last_used_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now') WHERE token = ?`).run(token);
+
+  const scans = db.prepare(`
+    SELECT id, url, status, created_at, completed_at
+    FROM scans
+    WHERE subscriber_id = ?
+    ORDER BY created_at DESC
+    LIMIT 50
+  `).all(sub.subscriberId);
+
+  return NextResponse.json({ scans });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -26,30 +67,17 @@ export async function POST(request: NextRequest) {
 
     const db = getDb();
 
-    // Validate token and find active subscriber
-    const tokenRecord = db.prepare(`
-      SELECT st.token, st.subscriber_id, s.status, s.email
-      FROM subscriber_tokens st
-      JOIN subscribers s ON s.id = st.subscriber_id
-      WHERE st.token = ?
-    `).get(token) as any;
-
-    if (!tokenRecord) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
-    }
-
-    if (tokenRecord.status !== 'active') {
-      return NextResponse.json({ error: 'Subscription not active' }, { status: 401 });
+    // Validate subscriber token using shared helper
+    const sub = verifySubscriberToken(token);
+    if (!sub) {
+      return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
     }
 
     // Update last_used_at
-    db.prepare(`
-      UPDATE subscriber_tokens SET last_used_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
-      WHERE token = ?
-    `).run(token);
+    db.prepare(`UPDATE subscriber_tokens SET last_used_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now') WHERE token = ?`).run(token);
 
-    const subscriberId = tokenRecord.subscriber_id;
-    const email = tokenRecord.email;
+    const subscriberId = sub.subscriberId;
+    const email = sub.email;
     const scanId = uuidv4();
 
     // Create scan record

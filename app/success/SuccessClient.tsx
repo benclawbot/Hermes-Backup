@@ -29,8 +29,10 @@ export default function SuccessClient() {
   }, [sessionId]);
 
   // Trigger scan + poll until ready, then redirect to report page
+  // Skip for subscriptions — they have no URL at signup time, redirect to dashboard instead
   useEffect(() => {
     if (!sessionId || !scanId || startedRef.current) return;
+    if (sessionMode === 'subscription') return;
     startedRef.current = true;
 
     // Trigger scan immediately

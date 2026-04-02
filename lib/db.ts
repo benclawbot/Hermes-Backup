@@ -61,6 +61,8 @@ function initializeSchema(db: any) {
       email TEXT NOT NULL,
       plan TEXT NOT NULL DEFAULT 'monthly',
       status TEXT NOT NULL DEFAULT 'active',
+      current_period_end TEXT,
+      cancel_at_period_end INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
       updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
     );
@@ -68,6 +70,7 @@ function initializeSchema(db: any) {
     CREATE TABLE IF NOT EXISTS subscriber_tokens (
       token TEXT PRIMARY KEY,
       subscriber_id TEXT NOT NULL,
+      expires_at TEXT,
       created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
       last_used_at TEXT,
       FOREIGN KEY (subscriber_id) REFERENCES subscribers(id)
