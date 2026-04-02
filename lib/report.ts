@@ -45,6 +45,11 @@ export function generateReportHtml(url: string, result: any): string {
     a { color: #4f8ef7; }
     .back { display: inline-block; margin-bottom: 20px; color: #666; text-decoration: none; font-size: 14px; }
     .back:hover { color: #4f8ef7; }
+    @media print {
+      .back { display: none; }
+      body { padding: 20px; }
+      .score { font-size: 72px; }
+    }
   </style>
 </head>
 <body>
