@@ -81,7 +81,7 @@ Return a JSON object with this exact structure:
 Be specific. Generic advice is not helpful. Focus on actionable fixes.`;
 
   const response = await getOpenAI().chat.completions.create({
-    model: 'MiniMax-Text-01',
+    model: 'MiniMax-M2.5',
     messages: [{ role: 'user', content: prompt }],
     temperature: 0.3,
   });
