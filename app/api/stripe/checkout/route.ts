@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
   try {
     const { url: websiteUrl, email, plan } = await request.json();
 
-    if (!websiteUrl) {
+    if (!websiteUrl && plan !== 'monthly') {
       return NextResponse.json({ error: 'URL is required' }, { status: 400 });
     }
 

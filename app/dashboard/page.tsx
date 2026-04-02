@@ -1,10 +1,21 @@
 import { Suspense } from "react";
 import { cookies } from "next/headers";
+import { type Viewport } from "next";
 import DashboardClient from "./DashboardClient";
 
-export default async function DashboardPage() {
+export const viewport: Viewport = {
+  themeColor: "#0f0f1a",
+};
+
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ token?: string }>;
+}) {
   const cookieStore = await cookies();
-  const sessionToken = cookieStore.get("session")?.value || "";
+  const cookieToken = cookieStore.get("session_token")?.value || "";
+  const { token: urlToken } = await searchParams;
+  const sessionToken = urlToken || cookieToken;
 
   return (
     <Suspense fallback={

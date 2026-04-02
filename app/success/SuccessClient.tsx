@@ -9,17 +9,21 @@ export default function SuccessClient() {
   const scanId = searchParams.get("scan_id");
 
   const [sessionMode, setSessionMode] = useState<"payment" | "subscription" | null>(null);
+  const [subscriberToken, setSubscriberToken] = useState<string | null>(null);
+  const [customerEmail, setCustomerEmail] = useState<string | null>(null);
   const [reportStatus, setReportStatus] = useState<"loading" | "error">("loading");
   const [reportError, setReportError] = useState<string>("");
   const startedRef = useRef(false);
 
-  // Fetch session mode
+  // Fetch session mode + subscriber token for subscriptions
   useEffect(() => {
     if (!sessionId) return;
     fetch(`/api/stripe/session?session_id=${encodeURIComponent(sessionId)}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.mode) setSessionMode(data.mode);
+        if (data.subscriberToken) setSubscriberToken(data.subscriberToken);
+        if (data.customerEmail) setCustomerEmail(data.customerEmail);
       })
       .catch(() => {});
   }, [sessionId]);
@@ -80,8 +84,11 @@ export default function SuccessClient() {
     setTimeout(poll, 3000);
   }, [sessionId, scanId]);
 
-  // Subscriptions → dashboard
+  // Subscriptions → dashboard with token
   if (sessionMode === "subscription") {
+    const dashboardUrl = subscriberToken
+      ? `/dashboard?token=${encodeURIComponent(subscriberToken)}`
+      : "/dashboard";
     return (
       <div className="min-h-screen bg-midnight flex items-center justify-center px-4">
         <div className="max-w-md w-full text-center">
@@ -91,10 +98,31 @@ export default function SuccessClient() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-white mb-2">Subscription Active!</h1>
-          <p className="text-white/60 mb-8">Your monthly subscription is confirmed.</p>
-          <a href="/login" className="inline-block px-6 py-3 bg-accent-blue text-white rounded-lg font-medium hover:bg-accent-blue/90 transition-all">
-            Access Dashboard
-          </a>
+          <p className="text-white/60 mb-2">Your monthly subscription is confirmed.</p>
+          {customerEmail && (
+            <p className="text-white/40 text-sm mb-6">{customerEmail}</p>
+          )}
+          {subscriberToken ? (
+            <>
+              <p className="text-white/60 text-sm mb-4">Save your dashboard access token:</p>
+              <div className="bg-white/5 border border-white/10 rounded-lg p-3 mb-6 text-left">
+                <code className="text-accent-blue text-xs break-all">{subscriberToken}</code>
+              </div>
+              <a
+                href={dashboardUrl}
+                className="inline-block px-6 py-3 bg-accent-blue text-white rounded-lg font-medium hover:bg-accent-blue/90 transition-all"
+              >
+                Go to Dashboard
+              </a>
+            </>
+          ) : (
+            <a
+              href="/dashboard"
+              className="inline-block px-6 py-3 bg-accent-blue text-white rounded-lg font-medium hover:bg-accent-blue/90 transition-all"
+            >
+              Access Dashboard
+            </a>
+          )}
         </div>
       </div>
     );
