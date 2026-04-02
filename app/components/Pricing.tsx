@@ -123,7 +123,16 @@ export function Pricing() {
               </ul>
 
               <button
-                onClick={() => handleCheckout(plan.plan)}
+                onClick={() => {
+                  if (plan.plan === 'single') {
+                    // Single scan requires a URL — scroll to the hero form at the top of the page
+                    const hero = document.getElementById('hero');
+                    if (hero) hero.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    else window.scrollTo({ top: 0, behavior: 'smooth' });
+                  } else {
+                    handleCheckout(plan.plan);
+                  }
+                }}
                 disabled={loading !== null}
                 className={`w-full rounded-lg py-3 px-6 font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                   plan.highlighted
