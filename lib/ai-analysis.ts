@@ -83,7 +83,6 @@ Be specific. Generic advice is not helpful. Focus on actionable fixes.`;
   const response = await getOpenAI().chat.completions.create({
     model: 'MiniMax-Text-01',
     messages: [{ role: 'user', content: prompt }],
-    response_format: { type: 'json_object' },
     temperature: 0.3,
   });
 
