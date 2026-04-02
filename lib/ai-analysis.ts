@@ -81,7 +81,7 @@ Return a JSON object with this exact structure:
 Be specific. Generic advice is not helpful. Focus on actionable fixes.`;
 
   const response = await getOpenAI().chat.completions.create({
-    model: 'MiniMax-M2.5',
+    model: 'MiniMax-Text-01',
     messages: [{ role: 'user', content: prompt }],
     response_format: { type: 'json_object' },
     temperature: 0.3,
@@ -100,14 +100,8 @@ Be specific. Generic advice is not helpful. Focus on actionable fixes.`;
   }
 
   // ── Defensive parse with validation ────────────────────────────────────────
-  // Sanitize common AI output issues before parsing
-  content = content
-    // Fix unescaped bare newlines inside strings (AI sometimes generates raw \n instead of \\n)
-    .replace(/(?<!\\)(\\\\)*\n(?!([\\\"\n]|\\\\[nrt\\\"\\\/bf]|\\\\u[0-9a-fA-F]{4}))/g, '\\n')
-    // Remove control characters (except necessary escapes)
-    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
-    // Fix bare backslashes that aren't part of valid escapes
-    .replace(/(?<!\\)(\\\\)*(?=[^nrt\"\\/bf\\u0-9a-fA-F])/g, '$1\\');
+  // Fix \u followed by single non-hex character (MiniMax sometimes generates \x instead of proper escapes)
+  content = content.replace(/\\u([0-9a-fA-F](?![0-9a-fA-F]{3}))/g, (_, c) => c);
 
   let parsed: AiAnalysisResult;
   try {
