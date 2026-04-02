@@ -149,10 +149,11 @@ async function triggerScan(scanId: string, url: string, stripeSessionId: string)
       scannedAt: new Date().toISOString(),
     };
 
-    // Compress result_json with gzip+base64 for corruption protection on Lambda /tmp
+    // Compress with gzip+base64 for corruption protection on Lambda /tmp (consistent with scan/route.ts)
     const rawJson = JSON.stringify(result);
-    const hash = require('crypto').createHash('sha256').update(rawJson).digest('hex').slice(0, 16);
-    const resultJson = rawJson + '|||HASH:' + hash;
+    JSON.parse(rawJson); // validate before storing
+    const compressed = require('zlib').gzipSync(Buffer.from(rawJson, 'utf8'));
+    const resultJson = compressed.toString('base64');
     db.prepare(`
       UPDATE scans
       SET status = 'completed', result_json = ?, completed_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
@@ -189,6 +190,15 @@ async function triggerScan(scanId: string, url: string, stripeSessionId: string)
   }
 }
 
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function generateReportHtml(url: string, result: any): string {
   const { ruleChecks, aiAnalysis } = result;
   const score = aiAnalysis?.gdprScore ?? 0;
@@ -196,17 +206,17 @@ function generateReportHtml(url: string, result: any): string {
 
   const checksHtml = ruleChecks.map((check: any) => `
     <div style="padding:12px;margin:8px 0;border-radius:8px;background:#f5f5f5;border-left:4px solid ${check.passed ? '#22c55e' : '#ef4444'};">
-      <strong>${check.name}</strong> — ${check.passed ? 'PASS' : 'FAIL'}
-      <p style="margin:4px 0 0 0;color:#666;">${check.detail}</p>
+      <strong>${escapeHtml(check.name)}</strong> — ${check.passed ? 'PASS' : 'FAIL'}
+      <p style="margin:4px 0 0 0;color:#666;">${escapeHtml(check.detail || '')}</p>
     </div>
   `).join('');
 
   const issuesHtml = aiAnalysis?.issues?.length
     ? aiAnalysis.issues.map((issue: any) => `
         <div style="padding:12px;margin:8px 0;border-radius:8px;background:#fef2f2;border-left:4px solid ${issue.severity === 'critical' ? '#ef4444' : issue.severity === 'warning' ? '#f59e0b' : '#3b82f6'};">
-          <strong>[${issue.severity.toUpperCase()}] ${issue.title}</strong>
-          <p style="margin:4px 0 0 0;color:#666;">${issue.description}</p>
-          <p style="margin:4px 0 0 0;"><strong>Fix:</strong> ${issue.fix}</p>
+          <strong>[${(issue.severity || 'info').toUpperCase()}] ${escapeHtml(issue.title || '')}</strong>
+          <p style="margin:4px 0 0 0;color:#666;">${escapeHtml(issue.description || '')}</p>
+          ${issue.fix ? `<p style="margin:4px 0 0 0;"><strong>Fix:</strong> ${escapeHtml(issue.fix)}</p>` : ''}
         </div>
       `).join('')
     : '';
