@@ -26,8 +26,9 @@ export async function POST(request: NextRequest) {
       // intentionally fall through to processing
     }
 
-    // In progress elsewhere — just report current state
-    if (scan.status === 'processing') {
+    // In progress elsewhere — report current state unless there's no result_json
+    // (stuck in processing from a previous partial failure — re-process it)
+    if (scan.status === 'processing' && scan.result_json) {
       return NextResponse.json({ status: 'processing' });
     }
 

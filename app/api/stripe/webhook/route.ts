@@ -57,12 +57,8 @@ export async function POST(request: NextRequest) {
             }
           }
 
-          // Trigger scan immediately, pass Stripe session ID so result can be stored in Stripe metadata
-          if (scanId && url) {
-            triggerScan(scanId, url, session.id).catch(err => {
-              console.error('Webhook scan trigger failed:', err.message);
-            });
-          }
+          // Scan is triggered by /api/scan/trigger on the /success page.
+          // The webhook just pre-creates the record so it exists before Stripe redirects.
         } else if (session.mode === 'subscription') {
           // Subscriber checkout
           const customerId = session.customer as string;
