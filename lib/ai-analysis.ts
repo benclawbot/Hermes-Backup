@@ -90,7 +90,7 @@ Be specific. Generic advice is not helpful. Focus on actionable fixes.`;
   let content = response.choices[0].message.content || '{}';
   // Strip thinking/reasoning tags if present (MiniMax sometimes prefixes with these)
   content = content.replace(/<thinking>[\s\S]*?<\/thinking>/gi, '').trim();
-  content = content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+  content = content.replace(/<think>[\s\S]*?<\/thinking>/gi, '').trim();
   // Remove any leading markdown code fences
   content = content.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').trim();
   // Extract JSON from potentially malformed response (e.g. with thinking text before/after)
@@ -100,6 +100,15 @@ Be specific. Generic advice is not helpful. Focus on actionable fixes.`;
   }
 
   // ── Defensive parse with validation ────────────────────────────────────────
+  // Sanitize common AI output issues before parsing
+  content = content
+    // Fix unescaped bare newlines inside strings (AI sometimes generates raw \n instead of \\n)
+    .replace(/(?<!\\)(\\\\)*\n(?!([\\\"\n]|\\\\[nrt\\\"\\\/bf]|\\\\u[0-9a-fA-F]{4}))/g, '\\n')
+    // Remove control characters (except necessary escapes)
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+    // Fix bare backslashes that aren't part of valid escapes
+    .replace(/(?<!\\)(\\\\)*(?=[^nrt\"\\/bf\\u0-9a-fA-F])/g, '$1\\');
+
   let parsed: AiAnalysisResult;
   try {
     parsed = JSON.parse(content) as AiAnalysisResult;
