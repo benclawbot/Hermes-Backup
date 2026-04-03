@@ -35,75 +35,74 @@ export async function POST(request: NextRequest) {
     // Mark as processing
     db.prepare(`UPDATE scans SET status = 'processing' WHERE id = ?`).run(scanId);
 
-    let result: any = null;
-    try {
-      const { crawlPage } = await import('@/lib/crawler');
-      const { runRuleBasedChecks } = await import('@/lib/gdpr-checks');
-      const { analyzeWithAI } = await import('@/lib/ai-analysis');
-
-      console.log(`[trigger] Starting scan ${scanId} for URL:`, scan.url || scan.metadata?.url);
-      const crawlResult = await crawlPage(scan.url || scan.metadata?.url);
-      console.log(`[trigger] Crawl done for ${scanId}, title:`, crawlResult.title);
-      const ruleChecks = runRuleBasedChecks(crawlResult);
-      const aiResult = await analyzeWithAI(crawlResult, ruleChecks);
-      console.log(`[trigger] AI analysis done for ${scanId}, score:`, aiResult.gdprScore);
-
-      result = {
-        crawl: {
-          title: crawlResult.title,
-          description: crawlResult.description,
-          h1s: crawlResult.h1s,
-          trackingScripts: crawlResult.trackingScripts,
-          formsCount: crawlResult.formsCount,
-          hasSSL: crawlResult.hasSSL,
-          statusCode: crawlResult.statusCode,
-        },
-        ruleChecks,
-        aiAnalysis: aiResult,
-        scannedAt: new Date().toISOString(),
-      };
-    } catch (err: any) {
-      console.error(`[trigger] Scan ${scanId} failed:`, err.message, err?.stack);
-      db.prepare(`UPDATE scans SET status = 'failed' WHERE id = ?`).run(scanId);
-      return NextResponse.json({ status: 'failed', error: err.message }, { status: 500 });
-    }
-
-    // Write to DB
-    db.prepare(`
-      UPDATE scans
-      SET status = 'completed', result_json = ?, completed_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
-      WHERE id = ?
-    `).run(JSON.stringify(result), scanId);
-
-    // Write to Stripe metadata — BLOCKING so the result is guaranteed available
-    // when the success page polls /api/report/[id] on any Lambda instance.
-    // Stripe metadata is the only cross-instance shared store in this architecture.
-    if (scan.stripe_session_id) {
+    // Run the actual scan in the background — fire and forget.
+    // Vercel serverless waits for setTimeout() callbacks to settle before terminating,
+    // so this will complete even after we return the HTTP response.
+    setTimeout(async () => {
+      let result: any = null;
       try {
-        const stripeKey = process.env.STRIPE_SECRET_KEY;
-        if (stripeKey) {
-          const stripe = new Stripe(stripeKey);
-          const serialized = JSON.stringify(result);
+        const { crawlPage } = await import('@/lib/crawler');
+        const { runRuleBasedChecks } = await import('@/lib/gdpr-checks');
+        const { analyzeWithAI } = await import('@/lib/ai-analysis');
 
-          // Stripe metadata has a 16KB limit per session.
-          // If result exceeds that, store a sentinel + rely on DB as primary.
-          if (serialized.length <= 15000) {
-            await stripe.checkout.sessions.update(scan.stripe_session_id, {
-              metadata: { scanResult: serialized },
-            });
-          } else {
-            // Result too large for metadata — DB is authoritative; log for observability
-            console.warn(`Scan result for ${scanId} (${serialized.length}B) exceeds Stripe metadata limit. DB is authoritative.`);
-          }
+        const { getDb: getDbBg } = await import('@/lib/db');
+        const dbBg = getDbBg();
+        // Re-read scan in this context (may be a different Lambda instance with fresh DB)
+        const scanBg = dbBg.prepare('SELECT * FROM scans WHERE id = ?').get(scanId) as any;
+        if (!scanBg) {
+          console.error(`[trigger] Background scan ${scanId}: scan not found`);
+          return;
         }
-      } catch (e: any) {
-        // DB write succeeded — report endpoint will still find the result.
-        // Log but don't fail the request.
-        console.error('Failed to update Stripe metadata:', e.message);
-      }
-    }
+        if (scanBg.status === 'completed') {
+          console.log(`[trigger] Background scan ${scanId}: already completed, skipping`);
+          return;
+        }
 
-    return NextResponse.json({ status: 'completed', result });
+        console.log(`[trigger] Background scan starting ${scanId} for URL:`, scanBg.url);
+        const crawlResult = await crawlPage(scanBg.url);
+        console.log(`[trigger] Crawl done for ${scanId}, title:`, crawlResult.title);
+        const ruleChecks = runRuleBasedChecks(crawlResult);
+        const aiResult = await analyzeWithAI(crawlResult, ruleChecks);
+        console.log(`[trigger] AI analysis done for ${scanId}, score:`, aiResult.gdprScore);
+
+        result = {
+          crawl: {
+            title: crawlResult.title,
+            description: crawlResult.description,
+            h1s: crawlResult.h1s,
+            trackingScripts: crawlResult.trackingScripts,
+            formsCount: crawlResult.formsCount,
+            hasSSL: crawlResult.hasSSL,
+            statusCode: crawlResult.statusCode,
+          },
+          ruleChecks,
+          aiAnalysis: aiResult,
+          scannedAt: new Date().toISOString(),
+        };
+
+        // Compress result for storage (same as webhook/route.ts pattern)
+        const rawJson = JSON.stringify(result);
+        const compressed = require('zlib').gzipSync(Buffer.from(rawJson, 'utf8'));
+        const resultJson = compressed.toString('base64');
+
+        dbBg.prepare(`
+          UPDATE scans
+          SET status = 'completed', result_json = ?, completed_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
+          WHERE id = ?
+        `).run(resultJson, scanId);
+
+        console.log(`[trigger] Background scan ${scanId} completed successfully`);
+      } catch (err: any) {
+        console.error(`[trigger] Background scan ${scanId} failed:`, err.message);
+        try {
+          const { getDb: getDbErr } = await import('@/lib/db');
+          getDbErr().prepare(`UPDATE scans SET status = 'failed' WHERE id = ?`).run(scanId);
+        } catch (_) {}
+      }
+    }, 0);
+
+    // Return immediately — the scan is running in the background
+    return NextResponse.json({ status: 'processing' });
   } catch (err: any) {
     console.error('Trigger error:', err?.message || err);
     return NextResponse.json({ error: err?.message || 'Trigger failed' }, { status: 500 });
