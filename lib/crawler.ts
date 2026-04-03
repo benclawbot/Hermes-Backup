@@ -912,7 +912,21 @@ async function crawlWithFetch(url: string): Promise<CrawlResult> {
 }
 
 export async function crawlPage(url: string): Promise<CrawlResult> {
-  // Try browser first
+  // On Vercel, try fetch first (browserless.io may be blocked by serverless network).
+  // curl fallback is inside crawlWithFetch and can bypass Node.js fetch restrictions.
+  if (IS_VERCEL) {
+    try {
+      return await crawlWithFetch(url);
+    } catch (fetchError: any) {
+      console.warn('Fetch failed, trying browser:', fetchError.message);
+      try {
+        return await crawlWithBrowser(url);
+      } catch (browserError: any) {
+        throw new Error(`Crawl failed: fetch(${fetchError.message}) browser(${browserError.message})`);
+      }
+    }
+  }
+  // Locally: try browser first (faster for JS-rendered sites)
   try {
     return await crawlWithBrowser(url);
   } catch (browserError: any) {

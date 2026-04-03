@@ -1,96 +1,386 @@
-export function generateReportHtml(url: string, result: any): string {
-  const { ruleChecks, aiAnalysis } = result;
-  const score = aiAnalysis?.gdprScore || 0;
-  const scoreColor = score >= 70 ? '#22c55e' : score >= 40 ? '#f59e0b' : '#ef4444';
-  const riskLabel = aiAnalysis?.riskLevel || 'unknown';
+import type { CrawlResult } from './crawler';
 
-  const checksHtml = ruleChecks.map((check: any) => `
-    <div style="padding:12px;margin:8px 0;border-radius:8px;background:#f5f5f5;border-left:4px solid ${check.passed ? '#22c55e' : '#ef4444'};">
-      <strong>${escapeHtml(check.name)}</strong> — ${check.passed ? 'PASS' : 'FAIL'}
-      <p style="margin:4px 0 0 0;color:#666;">${escapeHtml(check.detail || '')}</p>
-      ${check.recommendation ? `<p style="margin:4px 0 0 0;color:#888;font-style:italic;">Fix: ${escapeHtml(check.recommendation)}</p>` : ''}
+export interface RuleCheck {
+  id: string;
+  name: string;
+  passed: boolean;
+  detail: string;
+  recommendation?: string;
+  gdprArticle?: string;
+}
+
+export interface AIIssue {
+  severity: 'critical' | 'warning' | 'info';
+  title: string;
+  description: string;
+  fix?: string;
+  evidence?: string;
+  gdprArticle?: string;
+}
+
+export interface AIAnalysis {
+  gdprScore: number;
+  riskLevel: 'low' | 'medium' | 'high' | 'critical';
+  summary: string;
+  issues: AIIssue[];
+}
+
+export interface ScanResult {
+  crawl: CrawlResult;
+  ruleChecks: RuleCheck[];
+  aiAnalysis: AIAnalysis;
+  scannedAt: string;
+}
+
+const ACCENT = '#2563eb';
+const ACCENT_LIGHT = '#dbeafe';
+const SUCCESS = '#16a34a';
+const SUCCESS_BG = '#f0fdf4';
+const WARN = '#d97706';
+const WARN_BG = '#fffbeb';
+const FAIL = '#dc2626';
+const FAIL_BG = '#fef2f2';
+const INFO_BG = '#eff6ff';
+const TEXT = '#1e293b';
+const TEXT_MUTED = '#64748b';
+const BORDER = '#e2e8f0';
+const WHITE = '#ffffff';
+
+function esc(text: string | undefined | null): string {
+  if (!text) return '';
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function severityColor(s: string): string {
+  if (s === 'critical') return FAIL;
+  if (s === 'warning') return WARN;
+  return ACCENT;
+}
+
+function severityBg(s: string): string {
+  if (s === 'critical') return FAIL_BG;
+  if (s === 'warning') return WARN_BG;
+  return INFO_BG;
+}
+
+function scoreColor(score: number): string {
+  if (score >= 75) return SUCCESS;
+  if (score >= 50) return WARN;
+  return FAIL;
+}
+
+function riskLabel(risk: string): string {
+  const map: Record<string, string> = {
+    low: 'LOW RISK',
+    medium: 'MEDIUM RISK',
+    high: 'HIGH RISK',
+    critical: 'CRITICAL RISK',
+  };
+  return map[risk] || risk.toUpperCase();
+}
+
+function gdprArticleLabel(article: string | undefined): string {
+  if (!article) return '';
+  const labels: Record<string, string> = {
+    '5': 'Art. 5 — Principles of processing',
+    '6': 'Art. 6 — Lawfulness of processing',
+    '7': 'Art. 7 — Conditions for consent',
+    '12': 'Art. 12 — Transparent information',
+    '13': 'Art. 13 — Information provision',
+    '14': 'Art. 14 — Information to be provided',
+    '15': 'Art. 15 — Right of access',
+    '16': 'Art. 16 — Right to rectification',
+    '17': 'Art. 17 — Right to erasure',
+    '18': 'Art. 18 — Restriction of processing',
+    '20': 'Art. 20 — Right to data portability',
+    '21': 'Art. 21 — Objection to processing',
+    '22': 'Art. 22 — Automated decision-making',
+    '25': 'Art. 25 — Data protection by design',
+    '26': 'Art. 26 — Joint controllers',
+    '27': 'Art. 27 — Representatives of controllers',
+    '28': 'Art. 28 — Processor obligations',
+    '30': 'Art. 30 — Records of processing',
+    '32': 'Art. 32 — Security of processing',
+    '33': 'Art. 33 — Notification of breaches',
+    '35': 'Art. 35 — DPIA',
+    '44': 'Art. 44 — General principle',
+    '46': 'Art. 46 — Transfer mechanisms',
+    '47': 'Art. 47 — Binding corporate rules',
+    '49': 'Art. 49 — Derogations',
+    '13/26': 'Art. 13/26 — Data processor disclosure',
+  };
+  return labels[article] || `Art. ${article}`;
+}
+
+function checklistItem(text: string, status: 'done' | 'todo'): string {
+  const mark = status === 'done' ? '☑' : '☐';
+  const color = status === 'done' ? SUCCESS : TEXT_MUTED;
+  return `<div style="margin:4px 0;color:${color};">${mark} ${text}</div>`;
+}
+
+function card(children: string, bg = WHITE, border = BORDER): string {
+  return `<div style="background:${bg};border:1px solid ${border};border-radius:12px;padding:20px;margin-bottom:20px;">${children}</div>`;
+}
+
+function sectionTitle(text: string): string {
+  return `<div style="margin:36px 0 16px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <div style="width:4px;height:20px;background:${ACCENT};border-radius:2px;"></div>
+      <h2 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:700;color:${TEXT};margin:0;">${text}</h2>
     </div>
-  `).join('');
+  </div>`;
+}
 
-  const issuesHtml = aiAnalysis?.issues?.length
-    ? aiAnalysis.issues.map((issue: any) => `
-        <div style="padding:12px;margin:8px 0;border-radius:8px;background:#fef2f2;border-left:4px solid ${issue.severity === 'critical' ? '#ef4444' : issue.severity === 'warning' ? '#f59e0b' : '#3b82f6'};">
-          <strong>[${issue.severity?.toUpperCase() || 'INFO'}] ${escapeHtml(issue.title || '')}</strong>
-          <p style="margin:4px 0 0 0;color:#666;">${escapeHtml(issue.description || '')}</p>
-          ${issue.fix ? `<p style="margin:4px 0 0 0;"><strong>Fix:</strong> ${escapeHtml(issue.fix)}</p>` : ''}
+function h3(text: string): string {
+  return `<h3 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:600;color:${TEXT};margin:16px 0 8px;">${text}</h3>`;
+}
+
+function p(text: string): string {
+  return `<p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:${TEXT_MUTED};line-height:1.6;margin:0 0 12px;">${text}</p>`;
+}
+
+function scoreBarHtml(score: number): string {
+  const color = scoreColor(score);
+  const bars = Math.round(score / 10);
+  let html = `<div style="margin:16px 0;">`;
+  for (let i = 1; i <= 10; i++) {
+    const filled = i <= bars;
+    html += `<div style="display:inline-block;width:9%;height:24px;background:${filled ? color : BORDER};border-radius:3px;margin-right:1%;"></div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+export function generateReportHtml(url: string, result: ScanResult): string {
+  const { crawl, ruleChecks, aiAnalysis, scannedAt } = result;
+  const score = aiAnalysis?.gdprScore ?? 0;
+  const scoreColorVal = scoreColor(score);
+  const risk = aiAnalysis?.riskLevel ?? 'unknown';
+  const passCount = ruleChecks.filter(c => c.passed).length;
+  const failCount = ruleChecks.filter(c => !c.passed).length;
+  const issueCount = aiAnalysis?.issues?.length ?? 0;
+  const criticalIssues = aiAnalysis?.issues?.filter(i => i.severity === 'critical') ?? [];
+
+  const scanDate = new Date(scannedAt).toLocaleDateString('en-GB', {
+    timeZone: 'Europe/Zurich',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+
+  // ── Cover Page ─────────────────────────────────────────────────────────────
+  const coverPage = `
+  <div style="page-break-after:always;">
+  <div style="display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 100%);color:${WHITE};text-align:center;padding:60px;">
+      <div style="font-size:42px;font-weight:800;letter-spacing:-1px;margin-bottom:8px;">ComplyScan</div>
+      <div style="font-size:14px;opacity:0.7;letter-spacing:2px;text-transform:uppercase;margin-bottom:60px;">GDPR Compliance Report</div>
+
+      <div style="font-size:80px;font-weight:800;line-height:1;color:${scoreColorVal};">${score}</div>
+      <div style="font-size:14px;opacity:0.8;margin-bottom:8px;">out of 100 — Compliance Score</div>
+      <div style="display:inline-block;background:${scoreColorVal};color:${WHITE};padding:6px 20px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:1px;margin-top:12px;margin-bottom:60px;">
+        ${riskLabel(risk)}
+      </div>
+
+      <div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:24px 40px;width:100%;max-width:600px;margin-bottom:40px;">
+        <div style="font-size:11px;opacity:0.6;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Scanned Website</div>
+        <div style="font-size:16px;font-weight:600;">${esc(url)}</div>
+      </div>
+
+      <div style="display:flex;gap:40px;font-size:13px;opacity:0.7;">
+        <div><div style="font-size:11px;opacity:0.6;margin-bottom:4px;">DATE</div>${scanDate}</div>
+        <div><div style="font-size:11px;opacity:0.6;margin-bottom:4px;">AUTOMATED CHECKS</div>${passCount} passed / ${failCount} failed</div>
+        <div><div style="font-size:11px;opacity:0.6;margin-bottom:4px;">AI DETECTED ISSUES</div>${issueCount} findings</div>
+      </div>
+  </div>
+  </div>`;
+
+  // ── Executive Summary ──────────────────────────────────────────────────────
+  const execSummary = card(`
+    ${h3('Executive Summary')}
+    ${p(`This automated GDPR compliance scan was conducted on <strong>${esc(url)}</strong> on ${scanDate}. The scan uses a combination of rule-based automated checks and AI-powered analysis to identify potential GDPR compliance gaps.`)}
+    ${p(`The overall compliance score is <strong style="color:${scoreColorVal}">${score}/100</strong>, classified as <strong>${riskLabel(risk)}</strong>.`)}
+    ${p(`The automated rule engine performed ${ruleChecks.length} checks, of which <strong style="color:${SUCCESS}">${passCount} passed</strong> and <strong style="color:${FAIL}">${failCount} failed</strong>. The AI analysis identified <strong>${issueCount} additional findings</strong>${criticalIssues.length > 0 ? `, including <strong>${criticalIssues.length} critical</strong>` : ''}.`)}
+    ${aiAnalysis?.summary ? p(`<strong>AI Assessment:</strong> ${esc(aiAnalysis.summary)}`) : ''}
+  `);
+
+  // ── Score Breakdown ────────────────────────────────────────────────────────
+  const scoreBreakdown = card(`
+    ${h3('Compliance Score Breakdown')}
+    ${scoreBarHtml(score)}
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:${TEXT_MUTED};margin-bottom:16px;">
+      <span>0 — Critical Non-Compliance</span>
+      <span>50 — Partial Compliance</span>
+      <span>100 — Full Compliance</span>
+    </div>
+    ${score >= 75 ? p('✅ <strong>Good standing.</strong> Your website demonstrates reasonable GDPR compliance. Address the flagged items to reach full compliance.') : ''}
+    ${score >= 50 && score < 75 ? p('⚠️ <strong>Partial compliance.</strong> Several issues require attention. Prioritise the critical and high-severity findings below.') : ''}
+    ${score < 50 ? p('🚨 <strong>Significant compliance gaps.</strong> Immediate action is recommended. Critical issues are likely exposing your business to regulatory risk.') : ''}
+  `);
+
+  // ── Automated Checks ───────────────────────────────────────────────────────
+  const passedChecks = ruleChecks.filter(c => c.passed);
+  const failedChecks = ruleChecks.filter(c => !c.passed);
+
+  const checksSection = sectionTitle(`Automated Checks (${passCount} ✅ / ${failCount} ❌)`) +
+    failedChecks.map(check => card(`
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:${FAIL_BG};border:2px solid ${FAIL};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">❌</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:600;color:${TEXT};margin-bottom:4px;">${esc(check.name)}</div>
+          <div style="font-size:13px;color:${TEXT_MUTED};margin-bottom:${check.recommendation ? '8px' : '0'};">${esc(check.detail || '')}</div>
+          ${check.recommendation ? `<div style="background:#fef9c3;border-left:3px solid ${WARN};padding:8px 12px;border-radius:0 6px 6px 0;font-size:12px;color:#854d0e;"><strong>Recommendation:</strong> ${esc(check.recommendation)}</div>` : ''}
+          ${check.gdprArticle ? `<div style="font-size:11px;color:${ACCENT};margin-top:8px;">📋 ${gdprArticleLabel(check.gdprArticle)}</div>` : ''}
         </div>
-      `).join('')
+      </div>
+    `, FAIL_BG, FAIL)).join('') +
+    passedChecks.map(check => card(`
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:${SUCCESS_BG};border:2px solid ${SUCCESS};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">✅</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:600;color:${TEXT};margin-bottom:4px;">${esc(check.name)}</div>
+          <div style="font-size:13px;color:${TEXT_MUTED};">${esc(check.detail || 'Passed')}</div>
+          ${check.gdprArticle ? `<div style="font-size:11px;color:${ACCENT};margin-top:8px;">📋 ${gdprArticleLabel(check.gdprArticle)}</div>` : ''}
+        </div>
+      </div>
+    `, SUCCESS_BG, SUCCESS)).join('');
+
+  // ── AI-Detected Issues ─────────────────────────────────────────────────────
+  const aiIssuesSection = aiAnalysis?.issues?.length
+    ? sectionTitle(`AI-Detected Issues (${aiAnalysis.issues.length} Findings)`) +
+      aiAnalysis.issues.map((issue: AIIssue) => card(`
+        <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:8px;">
+          <div style="width:32px;height:32px;border-radius:50%;background:${severityBg(issue.severity)};border:2px solid ${severityColor(issue.severity)};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:${severityColor(issue.severity)};flex-shrink:0;">${issue.severity === 'critical' ? 'CRIT' : issue.severity === 'warning' ? 'WARN' : 'INFO'}</div>
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:600;color:${TEXT};margin-bottom:6px;">${esc(issue.title)}</div>
+            <div style="font-size:13px;color:${TEXT_MUTED};margin-bottom:${issue.fix || issue.gdprArticle ? '10px' : '0'};line-height:1.5;">${esc(issue.description)}</div>
+            ${issue.evidence ? `<div style="background:#f8fafc;border-radius:6px;padding:8px 10px;font-size:12px;color:#475569;font-family:monospace;margin-bottom:10px;word-break:break-all;">Evidence: ${esc(issue.evidence)}</div>` : ''}
+            ${issue.fix ? `<div style="background:#f0fdf4;border-left:3px solid ${SUCCESS};padding:10px 12px;border-radius:0 6px 6px 0;font-size:13px;color:#166534;"><strong>✅ Recommended Fix:</strong><br>${esc(issue.fix)}</div>` : ''}
+            ${issue.gdprArticle ? `<div style="font-size:11px;color:${ACCENT};margin-top:8px;">📋 ${gdprArticleLabel(issue.gdprArticle)}</div>` : ''}
+          </div>
+        </div>
+      `, severityBg(issue.severity), severityColor(issue.severity))).join('')
     : '';
+
+  // ── Privacy Policy Analysis ────────────────────────────────────────────────
+  const policySection = sectionTitle('Privacy Policy Analysis') +
+    card(`
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          ${h3('Website Information')}
+          <div style="font-size:13px;color:${TEXT_MUTED};line-height:1.8;">
+            ${crawl.title ? `<div><strong>Title:</strong> ${esc(crawl.title)}</div>` : ''}
+            <div><strong>URL:</strong> ${esc(url)}</div>
+            <div><strong>HTTPS:</strong> <span style="color:${crawl.hasSSL ? SUCCESS : FAIL};">${crawl.hasSSL ? '✅ Enabled' : '❌ Not enabled'}</span></div>
+            <div><strong>Status:</strong> ${crawl.statusCode || 'Unknown'}</div>
+            <div><strong>Forms found:</strong> ${crawl.formsCount}</div>
+            <div><strong>Labeled form inputs:</strong> ${crawl.formInputsLabeled} / ${crawl.totalFormInputs}</div>
+          </div>
+        </div>
+        <div>
+          ${h3('Policy Presence')}
+          <div style="font-size:13px;color:${TEXT_MUTED};line-height:1.8;">
+            <div><strong>Privacy Policy:</strong> <span style="color:${crawl.hasPrivacyPolicy ? SUCCESS : FAIL};">${crawl.hasPrivacyPolicy ? '✅ Found' : '❌ Missing'}</span></div>
+            ${crawl.privacyPolicyUrl ? `<div style="word-break:break-all;font-size:12px;"><strong>Policy URL:</strong> ${esc(crawl.privacyPolicyUrl)}</div>` : ''}
+            <div><strong>Cookie Policy:</strong> <span style="color:${crawl.hasCookiePolicyPage ? SUCCESS : WARN};">${crawl.hasCookiePolicyPage ? '✅ Found' : '⚠️ Not detected'}</span></div>
+            <div><strong>Cookie Banner:</strong> <span style="color:${crawl.hasCookieBanner ? SUCCESS : WARN};">${crawl.hasCookieBanner ? '✅ Detected' : '⚠️ Not detected'}</span></div>
+            ${crawl.cookieBannerText ? `<div style="font-size:12px;word-break:break-all;"><strong>Banner text:</strong> ${esc(crawl.cookieBannerText.slice(0, 100))}</div>` : ''}
+          </div>
+        </div>
+      </div>
+    `) +
+    card(`
+      ${h3('Tracking Scripts Detected')}
+      ${crawl.trackingScripts?.length
+        ? `<div style="display:flex;flex-wrap:wrap;gap:6px;">${crawl.trackingScripts.map((s: string) => `<span style="background:${INFO_BG};border:1px solid ${ACCENT};color:${ACCENT};padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;">${esc(s)}</span>`).join('')}</div>`
+        : `<div style="color:${SUCCESS};font-size:13px;">✅ No third-party tracking scripts detected.</div>`
+      }
+      ${crawl.thirdPartyEmbeds?.length ? `<div style="margin-top:12px;"><strong>Third-party embeds:</strong> ${crawl.thirdPartyEmbeds.map((e: string) => `<span style="background:${WARN_BG};color:${WARN};padding:2px 8px;border-radius:12px;font-size:11px;margin-right:4px;">${esc(e)}</span>`).join('')}</div>` : ''}
+    `);
+
+  // ── GDPR Quick Reference ───────────────────────────────────────────────────
+  const gdprRef = sectionTitle('GDPR Articles Quick Reference') +
+    card(`
+      <p style="margin:0 0 16px;font-size:13px;color:${TEXT_MUTED};">Key GDPR articles relevant to the findings above:</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;">
+        ${[
+          ['Art. 5', 'Principles of processing'],
+          ['Art. 6', 'Lawfulness of processing'],
+          ['Art. 7', 'Conditions for consent'],
+          ['Art. 12', 'Transparent information'],
+          ['Art. 13/14', 'Information provision'],
+          ['Art. 15', 'Right of access'],
+          ['Art. 17', 'Right to erasure'],
+          ['Art. 20', 'Right to data portability'],
+          ['Art. 25', 'Data protection by design'],
+          ['Art. 32', 'Security of processing'],
+          ['Art. 35', 'Data Protection Impact Assessment'],
+          ['Art. 46', 'Transfer mechanisms'],
+        ].map(([art, desc]) => `
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid ${BORDER};">
+            <span style="font-weight:700;color:${ACCENT};min-width:52px;">${art}</span>
+            <span style="color:${TEXT_MUTED};">${desc}</span>
+          </div>
+        `).join('')}
+      </div>
+    `, INFO_BG);
+
+  // ── Remediation Plan ────────────────────────────────────────────────────────
+  const remediationItems = [
+    ...failedChecks.map(c => ({ text: `Fix: ${c.name} — ${c.recommendation || 'See recommendation above'}`, done: false })),
+    ...(aiAnalysis?.issues?.filter((i: AIIssue) => i.fix).map((i: AIIssue) => ({ text: `AI Fix: ${i.title} — ${i.fix}`, done: false })) || []),
+  ];
+
+  const remediationSection = sectionTitle('Remediation Action Plan') +
+    card(`
+      <p style="margin:0 0 16px;font-size:13px;color:${TEXT_MUTED};">Use this checklist to address the findings in priority order:</p>
+      ${remediationItems.length
+        ? remediationItems.map((item: { text: string; done: boolean }) => checklistItem(item.text, item.done ? 'done' : 'todo')).join('')
+        : '<div style="color:#16a34a;font-size:14px;">✅ No remediation items — your site appears fully compliant!</div>'
+      }
+    `, WARN_BG, WARN);
+
+  // ── Footer ──────────────────────────────────────────────────────────────────
+  const footer = `
+  <div style="margin-top:60px;padding-top:20px;border-top:1px solid ${BORDER};display:flex;justify-content:space-between;align-items:center;font-size:11px;color:${TEXT_MUTED};">
+    <div>Generated by <strong>ComplyScan</strong> — GDPR compliance made effortless</div>
+    <div>Report generated: ${scanDate} · CONFIDENTIAL</div>
+  </div>`;
+
+  // ── Print Styles ────────────────────────────────────────────────────────────
+  const printStyles = `
+  @page { size: A4; margin: 18mm 15mm; }
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .no-print { display: none !important; }
+  }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 800px; margin: 0 auto; padding: 40px 24px; color: ${TEXT}; background: ${WHITE}; font-size: 13px; line-height: 1.5; }
+  a { color: ${ACCENT}; text-decoration: none; }
+  `;
 
   return `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GDPR Compliance Report — ${escapeHtml(url)}</title>
-  <style>
-    * { box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 800px; margin: 0 auto; padding: 40px 20px; color: #1a1a2e; background: #fff; }
-    .header { text-align: center; margin-bottom: 40px; }
-    .logo { font-size: 28px; font-weight: bold; color: #4f8ef7; }
-    .url { color: #666; margin-top: 4px; }
-    .score-section { text-align: center; margin-bottom: 40px; }
-    .score { font-size: 96px; font-weight: bold; color: ${scoreColor}; line-height: 1; }
-    .score-label { color: #666; font-size: 14px; margin-top: 4px; }
-    .risk-badge { display: inline-block; background: ${scoreColor}; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-top: 8px; text-transform: uppercase; }
-    .summary { background: #f9f9f9; padding: 20px; border-radius: 12px; margin-bottom: 30px; line-height: 1.6; }
-    .section { margin-bottom: 30px; }
-    .section h2 { color: #0f0f1a; border-bottom: 2px solid #4f8ef7; padding-bottom: 8px; margin-bottom: 16px; }
-    .footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 12px; text-align: center; }
-    a { color: #4f8ef7; }
-    .back { display: inline-block; margin-bottom: 20px; color: #666; text-decoration: none; font-size: 14px; }
-    .back:hover { color: #4f8ef7; }
-    @media print {
-      .back { display: none; }
-      body { padding: 20px; }
-      .score { font-size: 72px; }
-    }
-  </style>
+  <title>GDPR Compliance Report — ${esc(url)}</title>
+  <style>${printStyles}</style>
 </head>
 <body>
-  <a href="/dashboard" class="back">← Back to Dashboard</a>
-  <div class="header">
-    <div class="logo">ComplyScan</div>
-    <h1 style="font-size:22px;margin:12px 0 4px;">GDPR Compliance Report</h1>
-    <p class="url"><a href="${escapeHtml(url)}" target="_blank">${escapeHtml(url)}</a></p>
-  </div>
-
-  <div class="score-section">
-    <div class="score">${score}</div>
-    <div class="score-label">out of 100 — GDPR Compliance Score</div>
-    <div><span class="risk-badge">${riskLabel.toUpperCase()} RISK</span></div>
-  </div>
-
-  ${aiAnalysis?.summary ? `<div class="summary">${aiAnalysis.summary}</div>` : ''}
-
-  <div class="section">
-    <h2>Automated Checks</h2>
-    ${checksHtml}
-  </div>
-
-  ${issuesHtml ? `<div class="section">
-    <h2>AI-Detected Issues (${aiAnalysis.issues.length})</h2>
-    ${issuesHtml}
-  </div>` : ''}
-
-  <div class="footer">
-    <p>Generated by ComplyScan — GDPR compliance made effortless</p>
-    <p>Report generated: ${new Date().toLocaleDateString('en-GB', { timeZone: 'Europe/Zurich' })}</p>
-  </div>
+  ${coverPage}
+  ${execSummary}
+  ${scoreBreakdown}
+  ${checksSection}
+  ${aiIssuesSection}
+  ${policySection}
+  ${gdprRef}
+  ${remediationSection}
+  ${footer}
 </body>
 </html>`;
-}
-
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
 }
