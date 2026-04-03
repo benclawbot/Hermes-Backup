@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 
-// Extend timeout to 45s (scan takes ~30s) — works on Vercel Hobby
-export const maxDuration = 45;
+// Extend timeout to 60s (scan takes ~50s) — works on Vercel Hobby
+export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
   const { scanId, url, email } = await request.json();
