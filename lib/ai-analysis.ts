@@ -101,7 +101,11 @@ Be specific. Generic advice is not helpful. Focus on actionable fixes.`;
   // ── Defensive parse with validation ────────────────────────────────────────
   // Fix \u followed by single non-hex character (MiniMax sometimes generates \x instead of proper escapes)
   content = content.replace(/\\u([0-9a-fA-F](?![0-9a-fA-F]{3}))/g, (_, c) => c);
-
+  // Remove trailing commas before } or ]
+  content = content.replace(/,(\s*[}\]])/g, '$1');
+  // Remove any control characters
+  content = content.replace(/[\x00-\x1F\x7F]/g, '');
+  // Try parse with recovery: strip obvious malformed suffix after final }
   let parsed: AiAnalysisResult;
   try {
     parsed = JSON.parse(content) as AiAnalysisResult;
