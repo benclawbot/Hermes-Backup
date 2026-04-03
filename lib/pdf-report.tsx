@@ -1,5 +1,3 @@
-'use client';
-
 import {
   Document,
   Page,
@@ -411,17 +409,17 @@ const ReportDocument: React.FC<Props> = ({ url, result }) => {
           </View>
         </View>
 
-        {crawl?.trackingScripts?.length > 0 && (
+        {(crawl?.trackingScripts?.length ?? 0) > 0 && (
           <View style={[S.card, { marginTop: 10 }]}>
             <Text style={{ fontSize: 10, fontFamily: FONT_BOLD, color: C.text, marginBottom: 8 }}>Tracking Scripts Detected</Text>
-            <Text style={{ fontSize: 9, color: C.muted }}>{crawl.trackingScripts.join(' • ')}</Text>
+            <Text style={{ fontSize: 9, color: C.muted }}>{(crawl?.trackingScripts ?? []).join(' • ')}</Text>
           </View>
         )}
 
-        {crawl?.thirdPartyEmbeds?.length > 0 && (
+        {(crawl?.thirdPartyEmbeds?.length ?? 0) > 0 && (
           <View style={[S.card, { marginTop: 10 }]}>
             <Text style={{ fontSize: 10, fontFamily: FONT_BOLD, color: C.text, marginBottom: 8 }}>Third-Party Embeds</Text>
-            <Text style={{ fontSize: 9, color: C.muted }}>{crawl.thirdPartyEmbeds.join(' • ')}</Text>
+            <Text style={{ fontSize: 9, color: C.muted }}>{(crawl?.thirdPartyEmbeds ?? []).join(' • ')}</Text>
           </View>
         )}
 

@@ -59,8 +59,24 @@ export default function SuccessClient() {
         }
         const data = await r.json();
         if (data.status === "completed" || data.result) {
-          // Scan completed — redirect to report
-          window.location.href = `/report/${encodeURIComponent(scanId)}`;
+          // Store result in sessionStorage so report page loads without DB round-trip
+          if (data.result) {
+            try {
+              sessionStorage.setItem(`scan:${scanId}`, JSON.stringify(data.result));
+            } catch {}
+          }
+          // Compress result and embed in URL to survive cold-start Lambda (no DB needed for PDF)
+          if (data.result) {
+            try {
+              const raw = JSON.stringify(data.result);
+              const compressed = require('zlib').gzipSync(Buffer.from(raw, 'utf8')).toString('base64');
+              window.location.href = `/report/${encodeURIComponent(scanId)}?r=${compressed}`;
+            } catch {
+              window.location.href = `/report/${encodeURIComponent(scanId)}`;
+            }
+          } else {
+            window.location.href = `/report/${encodeURIComponent(scanId)}`;
+          }
         } else {
           setReportError("Scan did not return a result.");
           setReportStatus("error");

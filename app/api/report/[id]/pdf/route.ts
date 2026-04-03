@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
+import Stripe from 'stripe';
 
 async function getScanWithResult(scanId: string) {
   const db = getDb();
@@ -8,52 +9,45 @@ async function getScanWithResult(scanId: string) {
 
   let result: any;
   try {
-    const decoded = Buffer.from(scan.result_json, 'base64');
+    let rawJson = scan.result_json;
+    const hashIdx = rawJson.indexOf('|||HASH:');
+    if (hashIdx !== -1) rawJson = rawJson.slice(0, hashIdx);
+    const decoded = Buffer.from(rawJson, 'base64');
     if (decoded[0] === 0x1f && decoded[1] === 0x8b) {
       result = JSON.parse(require('zlib').gunzipSync(decoded).toString('utf8'));
     } else {
-      result = JSON.parse(scan.result_json);
+      result = JSON.parse(rawJson);
     }
   } catch {
     return null;
   }
 
-  // Try Stripe metadata as fallback
-  if (!result) {
-    try {
-      const Stripe = (await import('stripe')).default;
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
-      const stripeSession = await stripe.checkout.sessions.retrieve(scan.stripe_session_id || '');
-      const scanResultJson = stripeSession?.metadata?.scanResult;
-      if (scanResultJson) result = JSON.parse(scanResultJson);
-    } catch {}
-  }
-
   return { scan, result };
 }
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id: scanId } = await params;
-  const { searchParams } = new URL(request.url);
-  const format = searchParams.get('format') || 'pdf';
-
-  const data = await getScanWithResult(scanId);
-  if (!data) {
-    return NextResponse.json(
-      { error: 'Report not ready. Scan may still be processing. Please refresh the page.' },
-      { status: 404 }
-    );
+async function getResultFromStripe(stripeSessionId: string, scanId: string, db: ReturnType<typeof getDb>) {
+  try {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
+    const stripeSession = await stripe.checkout.sessions.retrieve(stripeSessionId);
+    const scanResultJson = stripeSession?.metadata?.scanResult;
+    if (!scanResultJson) return null;
+    const result = JSON.parse(scanResultJson);
+    try {
+      db.prepare(`INSERT OR REPLACE INTO scans (id, url, status, email, stripe_session_id, result_json) VALUES (?, ?, 'completed', ?, ?, ?)`)
+        .run(scanId, stripeSession.metadata?.url || '', stripeSession.customer_email || null, stripeSessionId, scanResultJson);
+    } catch {}
+    return result;
+  } catch {
+    return null;
   }
+}
 
-  const { scan, result } = data;
+async function generateFromResult(result: any, scanId: string, format: string) {
+  const url = result?.crawl?.url || result?.url || '';
 
-  // HTML fallback at ?format=html
   if (format === 'html') {
     const { generateReportHtml } = await import('@/lib/report');
-    const html = generateReportHtml(scan.url || '', result);
+    const html = generateReportHtml(url, result);
     return new NextResponse(html, {
       headers: {
         'Content-Type': 'text/html',
@@ -62,11 +56,10 @@ export async function GET(
     });
   }
 
-  // Real PDF via @react-pdf/renderer
   try {
     const { generateReportPdfBuffer } = await import('@/lib/pdf-report');
-    const pdfBuffer = await generateReportPdfBuffer(scan.url || '', result);
-    const safeName = (scan.url || 'report').replace(/[^a-zA-Z0-9.-]/g, '_').slice(0, 60);
+    const pdfBuffer = await generateReportPdfBuffer(url, result);
+    const safeName = (url || 'report').replace(/[^a-zA-Z0-9.-]/g, '_').slice(0, 60);
     return new NextResponse(new Uint8Array(pdfBuffer), {
       headers: {
         'Content-Type': 'application/pdf',
@@ -81,4 +74,57 @@ export async function GET(
       { status: 500 }
     );
   }
+}
+
+// ── POST: result passed in body (from report page — survives cold-start) ──
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id: scanId } = await params;
+  const { searchParams } = new URL(request.url);
+  const format = searchParams.get('format') || 'pdf';
+
+  let result: any;
+  try {
+    result = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
+
+  return generateFromResult(result, scanId, format);
+}
+
+// ── GET: DB lookup with Stripe fallback ──
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id: scanId } = await params;
+  const { searchParams } = new URL(request.url);
+  const format = searchParams.get('format') || 'pdf';
+  const sessionId = searchParams.get('session_id');
+  const db = getDb();
+
+  // 1. Try DB lookup
+  const data = await getScanWithResult(scanId);
+
+  // 2. Try Stripe fallback (DB may be empty due to Lambda cold-start)
+  let result = data?.result;
+  let scan = data?.scan;
+  if (!result) {
+    const stripeSessionId = (data?.scan as any)?.stripe_session_id || sessionId;
+    if (stripeSessionId) {
+      result = await getResultFromStripe(stripeSessionId, scanId, db);
+    }
+  }
+
+  if (!result) {
+    return NextResponse.json(
+      { error: 'Report not ready. Scan may still be processing. Please refresh the page.' },
+      { status: 404 }
+    );
+  }
+
+  return generateFromResult(result, scanId, format);
 }

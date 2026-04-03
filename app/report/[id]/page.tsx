@@ -1,20 +1,52 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 
 export default function ReportPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const scanId = Array.isArray(params.id) ? params.id[0] : params.id;
 
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [error, setError] = useState<string>("");
   const [reportHtml, setReportHtml] = useState<string | null>(null);
   const [url, setUrl] = useState<string>("");
+  const [pdfResult, setPdfResult] = useState<any>(null);
 
   useEffect(() => {
     if (!scanId) return;
 
+    // ── 1. ?r= param (gzip+base64 result from success page — survives Lambda cold-start) ──
+    const encodedResult = searchParams.get("r");
+    if (encodedResult) {
+      try {
+        const raw = Buffer.from(encodedResult, "base64");
+        // Detect gzip magic bytes
+        if (raw[0] === 0x1f && raw[1] === 0x8b) {
+          const decompressed = require("zlib").gunzipSync(raw).toString("utf8");
+          const result = JSON.parse(decompressed);
+          loadResult(result);
+          return;
+        }
+      } catch (e) {
+        console.error("Failed to decode ?r= result:", e);
+      }
+    }
+
+    // ── 2. sessionStorage (set by success page before redirect) ──
+    try {
+      const stored = sessionStorage.getItem(`scan:${scanId}`);
+      if (stored) {
+        const result = JSON.parse(stored);
+        loadResult(result);
+        return;
+      }
+    } catch (e) {
+      console.error("sessionStorage read failed:", e);
+    }
+
+    // ── 3. API polling (Lambda DB — may fail on cold-start) ──
     let attempts = 0;
     const maxAttempts = 90;
 
@@ -44,7 +76,56 @@ export default function ReportPage() {
     };
 
     poll();
-  }, [scanId]);
+
+    async function loadResult(result: any) {
+      setPdfResult(result);
+      if (result.crawl?.url) setUrl(result.crawl.url);
+      // Generate HTML report client-side
+      try {
+        const r = await fetch(`/api/report/${encodeURIComponent(scanId!)}/pdf?format=html`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(result),
+        });
+        if (r.ok) {
+          const html = await r.text();
+          setReportHtml(html);
+          setStatus("ready");
+        } else {
+          setStatus("error");
+        }
+      } catch {
+        setStatus("error");
+      }
+    }
+  }, [scanId, searchParams]);
+
+  const handleDownloadPdf = async () => {
+    if (pdfResult) {
+      // Use embedded result — no DB round-trip needed
+      try {
+        const r = await fetch(`/api/report/${encodeURIComponent(scanId!)}/pdf`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(pdfResult),
+        });
+        if (r.ok) {
+          const blob = await r.blob();
+          const blobUrl = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = blobUrl;
+          a.download = `GDPR-Report-${scanId}.pdf`;
+          a.click();
+          URL.revokeObjectURL(blobUrl);
+          return;
+        }
+      } catch (e) {
+        console.error("PDF download failed:", e);
+      }
+    }
+    // Fallback: open PDF URL in new tab
+    window.open(`/api/report/${encodeURIComponent(scanId || "")}/pdf`, "_blank");
+  };
 
   if (status === "error") {
     return (
@@ -100,16 +181,15 @@ export default function ReportPage() {
             </div>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
-            <a
-              href={`/api/report/${encodeURIComponent(scanId || '')}/pdf`}
-              download
+            <button
+              onClick={handleDownloadPdf}
               className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 text-white rounded-lg text-sm font-medium hover:bg-white/20 transition-all border border-white/10"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               Download PDF
-            </a>
+            </button>
             <a href="/" className="inline-flex items-center gap-2 px-4 py-2 bg-accent-blue text-white rounded-lg text-sm font-medium hover:bg-accent-blue/90 transition-all">
               Scan Another
             </a>
