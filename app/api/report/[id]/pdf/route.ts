@@ -37,6 +37,8 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id: scanId } = await params;
+  const { searchParams } = new URL(request.url);
+  const format = searchParams.get('format') || 'pdf';
 
   const data = await getScanWithResult(scanId);
   if (!data) {
@@ -48,16 +50,35 @@ export async function GET(
 
   const { scan, result } = data;
 
-  // Generate the HTML report
-  const { generateReportHtml } = await import('@/lib/report');
-  const html = generateReportHtml(scan.url || '', result);
+  // HTML fallback at ?format=html
+  if (format === 'html') {
+    const { generateReportHtml } = await import('@/lib/report');
+    const html = generateReportHtml(scan.url || '', result);
+    return new NextResponse(html, {
+      headers: {
+        'Content-Type': 'text/html',
+        'Content-Disposition': `inline; filename="GDPR-Report-${scanId}.html"`,
+      },
+    });
+  }
 
-  // Return HTML that the browser can print to PDF via window.print()
-  // No puppeteer/chromium needed — works on any platform
-  return new NextResponse(html, {
-    headers: {
-      'Content-Type': 'text/html',
-      'Content-Disposition': `inline; filename="GDPR-Report-${scanId}.html"`,
-    },
-  });
+  // Real PDF via @react-pdf/renderer
+  try {
+    const { generateReportPdfBuffer } = await import('@/lib/pdf-report');
+    const pdfBuffer = await generateReportPdfBuffer(scan.url || '', result);
+    const safeName = (scan.url || 'report').replace(/[^a-zA-Z0-9.-]/g, '_').slice(0, 60);
+    return new NextResponse(new Uint8Array(pdfBuffer), {
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="GDPR-Report-${safeName}.pdf"`,
+        'Content-Length': String(pdfBuffer.length),
+      },
+    });
+  } catch (err: any) {
+    console.error('PDF generation failed:', err);
+    return NextResponse.json(
+      { error: `PDF generation failed: ${err.message}` },
+      { status: 500 }
+    );
+  }
 }
