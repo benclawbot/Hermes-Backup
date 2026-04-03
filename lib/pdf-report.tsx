@@ -10,9 +10,6 @@ import {
   Circle,
   Path,
   Rect,
-  Defs,
-  LinearGradient,
-  Stop,
 } from '@react-pdf/renderer';
 import React from 'react';
 
@@ -42,9 +39,6 @@ const C = {
 };
 
 // ── SVG Icons ─────────────────────────────────────────────────────────────────
-// All icons use viewBox="0 0 24 24" for consistency
-// Emojis are NOT used — they don't render in Helvetica
-
 function IconCheck({ size = 16, color = C.green }: { size?: number; color?: string }) {
   return (
     <Svg viewBox="0 0 24 24" width={size} height={size}>
@@ -80,13 +74,7 @@ function IconWarn({ size = 14, color = C.amber }: { size?: number; color?: strin
   return (
     <Svg viewBox="0 0 24 24" width={size} height={size}>
       <Circle cx="12" cy="12" r="11" fill={color} />
-      <Path
-        d="M12 7v6M12 16v1"
-        stroke={C.white}
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        fill="none"
-      />
+      <Path d="M12 7v6M12 16v1" stroke={C.white} strokeWidth="2.5" strokeLinecap="round" fill="none" />
     </Svg>
   );
 }
@@ -95,13 +83,7 @@ function IconInfo({ size = 14, color = C.blue }: { size?: number; color?: string
   return (
     <Svg viewBox="0 0 24 24" width={size} height={size}>
       <Circle cx="12" cy="12" r="11" fill={color} />
-      <Path
-        d="M12 7v5M12 15v1"
-        stroke={C.white}
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        fill="none"
-      />
+      <Path d="M12 7v5M12 15v1" stroke={C.white} strokeWidth="2.5" strokeLinecap="round" fill="none" />
     </Svg>
   );
 }
@@ -118,7 +100,7 @@ function IconClipboard({ size = 11, color = C.blue }: { size?: number; color?: s
 
 function IconCheckbox({ checked = false, color = C.green }: { checked?: boolean; color?: string }) {
   return (
-    <Svg viewBox="0 0 24 24" width={12} height={12}>
+    <Svg viewBox="0 0 24 24" width={14} height={14}>
       <Rect
         x="2" y="2" width="20" height="20" rx="3"
         stroke={checked ? color : C.muted}
@@ -139,11 +121,24 @@ function IconCheckbox({ checked = false, color = C.green }: { checked?: boolean;
   );
 }
 
+function IconNum({ n, color = C.blue }: { n: number; color?: string }) {
+  return (
+    <Svg viewBox="0 0 24 24" width={16} height={16}>
+      <Circle cx="12" cy="12" r="11" fill={color} />
+      <Text
+        x="12" y="16"
+        style={{ fontSize: 9, fontFamily: FONT_BOLD, fill: C.white, textAnchor: 'middle' }}
+      >
+        {String(n).padStart(2, '0')}
+      </Text>
+    </Svg>
+  );
+}
+
 // ── Styles ────────────────────────────────────────────────────────────────────
 const S = StyleSheet.create({
-  // Cover — uses a layered gradient effect
   coverPage: { backgroundColor: C.coverBlue1, flex: 1 },
-  coverGradientLayer: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
+  coverPageOverlay: { position: 'absolute', top: 0, right: 0, width: '60%', bottom: 0, backgroundColor: C.coverBlue2, opacity: 0.4 },
   coverCenter: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 50 },
   coverLogo: { fontSize: 36, fontFamily: FONT_BOLD, color: C.white, marginBottom: 6 },
   coverBadge: { fontSize: 10, color: 'rgba(255,255,255,0.6)', letterSpacing: 3, marginBottom: 40 },
@@ -159,24 +154,16 @@ const S = StyleSheet.create({
   coverMetaValue: { fontSize: 11, color: C.white, fontFamily: FONT_BOLD },
   coverMetaIconRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
 
-  // Body pages
   page: { padding: 45, backgroundColor: C.white },
-  row: { flexDirection: 'row' },
-  col2: { flex: 1 },
-
-  // Section header
   sectionHeader: { flexDirection: 'row', alignItems: 'center', marginTop: 28, marginBottom: 14 },
   sectionBar: { width: 4, height: 18, backgroundColor: C.blue, borderRadius: 2, marginRight: 8 },
   sectionTitle: { fontSize: 14, fontFamily: FONT_BOLD, color: C.text },
 
-  // Cards
   card: { borderWidth: 1, borderColor: C.border, borderRadius: 8, padding: 14, marginBottom: 10 },
   cardGreen: { borderColor: C.green, backgroundColor: C.greenBg },
   cardRed: { borderColor: C.red, backgroundColor: C.redBg },
   cardAmber: { borderColor: C.amber, backgroundColor: C.amberBg },
-  cardBlue: { borderColor: C.blue, backgroundColor: '#eff6ff' },
 
-  // Check rows — HTML-style circular badge + content
   checkRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 10 },
   checkBadge: { width: 32, alignItems: 'center', marginRight: 10, marginTop: 1 },
   checkBody: { flex: 1 },
@@ -185,7 +172,6 @@ const S = StyleSheet.create({
   checkRec: { fontSize: 9, color: C.amberText, backgroundColor: C.amberBg, padding: '4 8', borderRadius: 4, marginTop: 4, lineHeight: 1.4 },
   checkArticle: { fontSize: 8, color: C.blue, marginTop: 4 },
 
-  // Issue rows — circular severity badge
   issueRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 10 },
   issueBadge: { width: 32, alignItems: 'center', marginRight: 10, marginTop: 1 },
   issueBody: { flex: 1 },
@@ -194,13 +180,11 @@ const S = StyleSheet.create({
   issueFix: { fontSize: 9, color: '#166534', backgroundColor: C.greenBg, padding: '4 8', borderRadius: 4, lineHeight: 1.4 },
   issueArticle: { fontSize: 8, color: C.blue, marginTop: 4 },
 
-  // Score bar
   scoreBar: { flexDirection: 'row', marginVertical: 10, gap: 4 },
   scoreSeg: { flex: 1, height: 14, borderRadius: 3 },
   scoreLegend: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 },
   scoreLegendText: { fontSize: 7, color: C.muted },
 
-  // Info grid
   infoGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 0 },
   infoCell: { width: '50%', flexDirection: 'row', paddingVertical: 5, borderBottomWidth: 1, borderBottomColor: C.border },
   infoLabel: { width: 90, fontSize: 9, color: C.muted },
@@ -208,27 +192,14 @@ const S = StyleSheet.create({
   infoGreen: { color: C.green },
   infoRed: { color: C.red },
 
-  // Remediation
-  remRow: { flexDirection: 'row', marginBottom: 6 },
-  remCheck: { marginRight: 8, marginTop: 1 },
-  remText: { fontSize: 9, color: C.text, flex: 1, lineHeight: 1.4 },
-
-  // GDPR table
   gdprRow: { flexDirection: 'row', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: C.border },
   gdprArt: { width: 50, fontSize: 9, fontFamily: FONT_BOLD, color: C.blue },
   gdprDesc: { flex: 1, fontSize: 9, color: C.muted },
 
-  // Footer
   footer: { position: 'absolute', bottom: 25, left: 45, right: 45, flexDirection: 'row', justifyContent: 'space-between', borderTopWidth: 1, borderTopColor: C.border, paddingTop: 8 },
   footerText: { fontSize: 8, color: C.muted },
   footerRight: { fontSize: 8, color: C.muted, fontFamily: FONT_OBLIQUE },
-
-  // Page number
   pageNumber: { position: 'absolute', bottom: 25, right: 45, fontSize: 8, color: C.muted },
-
-  // Chip/badge inline
-  chip: { padding: '2 8', borderRadius: 10, overflow: 'hidden' },
-  chipText: { fontSize: 9, fontFamily: FONT_BOLD },
 });
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -288,6 +259,22 @@ function scoreBarComponent(score: number) {
   );
 }
 
+// ── Remediaition item ─────────────────────────────────────────────────────────
+// Each action item gets its own visually distinct card
+function RemCard({ n, text, type }: { n: number; text: string; type: 'check' | 'ai' }) {
+  const color = type === 'check' ? C.amber : C.blue;
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8, backgroundColor: C.white, borderWidth: 1, borderColor: C.border, borderRadius: 8, borderLeftWidth: 4, borderLeftColor: color, padding: '10 12' }}>
+      <View style={{ width: 24, marginRight: 10, marginTop: 1 }}>
+        <Text style={{ fontSize: 9, fontFamily: FONT_BOLD, color: color }}>{String(n).padStart(2, '0')}</Text>
+      </View>
+      <View style={{ flex: 1 }}>
+        <Text style={{ fontSize: 9.5, color: C.text, lineHeight: 1.5 }}>{esc(text)}</Text>
+      </View>
+    </View>
+  );
+}
+
 // ── Document ──────────────────────────────────────────────────────────────────
 interface Props {
   url: string;
@@ -315,30 +302,24 @@ const ReportDocument: React.FC<Props> = ({ url, result }) => {
   const passedChecks = (ruleChecks || []).filter((c: any) => c.passed);
   const issues = aiAnalysis?.issues || [];
 
-  const remItems = [
-    ...failedChecks.map((c: any) => `Fix: ${c.name} — ${c.recommendation || 'See recommendation above'}`),
-    ...issues.filter((i: any) => i.fix).map((i: any) => `AI Fix: ${i.title} — ${i.fix}`),
+  // Build numbered remediation list — failed checks first, then AI issues
+  const remItems: Array<{ text: string; type: 'check' | 'ai' }> = [
+    ...failedChecks.map((c: any) => ({ text: `Fix: ${c.name} — ${c.recommendation || 'See recommendation above'}`, type: 'check' as const })),
+    ...issues.filter((i: any) => i.fix).map((i: any) => ({ text: `AI Fix: ${i.title} — ${i.fix}`, type: 'ai' as const })),
   ];
-
-  const hasGradient = true;
 
   return (
     <Document author="ComplyScan" title={`GDPR Report — ${url}`} subject="GDPR Compliance Report">
       {/* ── Cover Page ── */}
       <Page size="A4" style={S.coverPage}>
-        {/* Gradient overlay effect using layered shapes */}
-        {hasGradient && (
-          <View style={{ position: 'absolute', top: 0, right: 0, width: '60%', bottom: 0, backgroundColor: C.coverBlue2, opacity: 0.4 }} />
-        )}
+        <View style={S.coverPageOverlay} />
         <View style={S.coverCenter}>
           <Text style={S.coverLogo}>ComplyScan</Text>
           <Text style={S.coverBadge}>GDPR COMPLIANCE REPORT</Text>
 
-          {/* Score — colored to match risk */}
           <Text style={[S.coverScore, { color: sc }]}>{score}</Text>
           <Text style={S.coverScoreLabel}>out of 100 — Compliance Score</Text>
 
-          {/* Risk badge — solid colored pill */}
           <View style={[S.coverRiskBadge, { backgroundColor: sc }]}>
             <Text style={S.coverRiskText}>{riskLabel}</Text>
           </View>
@@ -446,7 +427,6 @@ const ReportDocument: React.FC<Props> = ({ url, result }) => {
           <Text style={S.sectionTitle}>Automated GDPR Checks</Text>
         </View>
 
-        {/* Header row for the check groups */}
         <View style={{ flexDirection: 'row', marginBottom: 10, gap: 8 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
             <IconCheck size={14} color={C.green} />
@@ -738,7 +718,7 @@ const ReportDocument: React.FC<Props> = ({ url, result }) => {
         </View>
       </Page>
 
-      {/* ── Page 7: Remediation Plan ── */}
+      {/* ── Page 7: Remediation Plan (redesigned) ── */}
       {remItems.length > 0 && (
         <Page size="A4" style={S.page}>
           <View style={S.sectionHeader}>
@@ -746,23 +726,24 @@ const ReportDocument: React.FC<Props> = ({ url, result }) => {
             <Text style={S.sectionTitle}>Remediation Action Plan</Text>
           </View>
 
-          <View style={[S.card, { backgroundColor: C.amberBg }]}>
-            <Text style={{ fontSize: 9, color: C.muted, marginBottom: 10 }}>
-              Address findings in priority order. Mark each item complete after implementing the fix.
-            </Text>
-            {remItems.map((item: string, i: number) => (
-              <View key={i} style={S.remRow}>
-                <View style={S.remCheck}>
-                  <IconCheckbox checked={false} color={C.muted} />
-                </View>
-                <Text style={S.remText}>{esc(item)}</Text>
+          <Text style={{ fontSize: 9, color: C.muted, marginBottom: 14 }}>
+            {remItems.length} action{remItems.length !== 1 ? 's' : ''} required. Address in priority order.
+          </Text>
+
+          {/* Two-column grid for remediation cards */}
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 0 }}>
+            {remItems.map((item, i) => (
+              <View key={i} style={{ width: '100%', marginBottom: 8 }}>
+                <RemCard n={i + 1} text={item.text} type={item.type} />
               </View>
             ))}
           </View>
 
-          <Text style={{ fontSize: 9, color: C.muted, marginTop: 16, lineHeight: 1.6 }}>
-            After fixing issues, re-run the scan at no additional cost to verify remediation.
-          </Text>
+          <View style={{ marginTop: 16, padding: 12, backgroundColor: '#f8fafc', borderRadius: 8, borderLeftWidth: 3, borderLeftColor: C.blue }}>
+            <Text style={{ fontSize: 9, color: C.muted, lineHeight: 1.6 }}>
+              After fixing issues, re-run the scan at no additional cost to verify remediation.
+            </Text>
+          </View>
 
           <Text style={S.pageNumber}>7</Text>
           <View style={S.footer}>
@@ -778,7 +759,6 @@ const ReportDocument: React.FC<Props> = ({ url, result }) => {
 export { ReportDocument };
 export type { Props as ReportDocumentProps };
 
-// ── Generate PDF buffer ───────────────────────────────────────────────────────
 export async function generateReportPdfBuffer(url: string, result: any): Promise<Buffer> {
   const doc = <ReportDocument url={url} result={result} />;
   const blob = await pdf(doc).toBlob();

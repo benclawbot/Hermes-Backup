@@ -161,14 +161,16 @@ export default function SuccessClient() {
           </>
         ) : (
           <>
-            <div className="w-16 h-16 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg className="w-8 h-8 text-success" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
+            <div className="relative w-16 h-16 mx-auto mb-6">
+              {/* Spinning ring */}
+              <div className="absolute inset-0 rounded-full border-4 border-white/10" />
+              <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-accent-blue animate-spin" style={{ animationDuration: '1s' }} />
+              {/* Inner dot */}
+              <div className="absolute inset-3 rounded-full bg-accent-blue/30" />
             </div>
             <h1 className="text-2xl font-bold text-white mb-2">Payment Confirmed!</h1>
             <p className="text-white/60 mb-2">Running your GDPR compliance scan…</p>
-            <p className="text-white/40 text-sm">This takes about 30 seconds. Please wait.</p>
+            <p className="text-white/40 text-sm">This takes about 30 seconds. Please don't close this page.</p>
             {scanId && (
               <p className="text-white/30 text-xs mt-4">Scan ID: {scanId.substring(0, 8)}…</p>
             )}
