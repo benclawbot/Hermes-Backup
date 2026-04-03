@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
         const customerEmail = session.customer_email || '';
 
         if (session.mode === 'payment') {
-          // One-time scan — upsert scan with 'pending' so the trigger knows to run it.
+          // One-time scan — upsert scan record
           if (scanId) {
             const existing = db.prepare('SELECT id FROM scans WHERE id = ?').get(scanId);
             if (existing) {
@@ -55,10 +55,58 @@ export async function POST(request: NextRequest) {
                 VALUES (?, ?, 'pending', ?, ?)
               `).run(scanId, url || '', customerEmail || null, session.id);
             }
-          }
 
-          // Scan is triggered by /api/scan/trigger on the /success page.
-          // The webhook just pre-creates the record so it exists before Stripe redirects.
+            // Run the scan synchronously inside the webhook.
+            // Stripe allows up to 30 seconds for webhook response.
+            // The scan will be complete (or mostly complete) before the user
+            // reaches the /success page, so the report loads instantly.
+            const scanRecord = db.prepare('SELECT * FROM scans WHERE id = ?').get(scanId) as any;
+            if (scanRecord && scanRecord.status === 'pending') {
+              try {
+                db.prepare(`UPDATE scans SET status = 'processing' WHERE id = ?`).run(scanId);
+
+                const { crawlPage } = await import('@/lib/crawler');
+                const { runRuleBasedChecks } = await import('@/lib/gdpr-checks');
+                const { analyzeWithAI } = await import('@/lib/ai-analysis');
+
+                const crawlResult = await crawlPage(scanRecord.url);
+                const ruleChecks = runRuleBasedChecks(crawlResult);
+                const aiResult = await analyzeWithAI(crawlResult, ruleChecks);
+
+                const result = {
+                  crawl: {
+                    title: crawlResult.title,
+                    description: crawlResult.description,
+                    h1s: crawlResult.h1s,
+                    trackingScripts: crawlResult.trackingScripts,
+                    formsCount: crawlResult.formsCount,
+                    hasSSL: crawlResult.hasSSL,
+                    statusCode: crawlResult.statusCode,
+                  },
+                  ruleChecks,
+                  aiAnalysis: aiResult,
+                  scannedAt: new Date().toISOString(),
+                };
+
+                // gzip+base64 storage (consistent with report reader)
+                const rawJson = JSON.stringify(result);
+                const compressed = require('zlib').gzipSync(Buffer.from(rawJson, 'utf8'));
+                const resultJson = compressed.toString('base64');
+
+                db.prepare(`
+                  UPDATE scans
+                  SET status = 'completed', result_json = ?,
+                      completed_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
+                  WHERE id = ?
+                `).run(resultJson, scanId);
+
+                console.log(`Webhook scan complete for ${scanId}: score=${aiResult.gdprScore}`);
+              } catch (scanErr: any) {
+                console.error(`Webhook scan failed for ${scanId}:`, scanErr.message);
+                db.prepare(`UPDATE scans SET status = 'failed' WHERE id = ?`).run(scanId);
+              }
+            }
+          }
         } else if (session.mode === 'subscription') {
           // Subscriber checkout
           const customerId = session.customer as string;
