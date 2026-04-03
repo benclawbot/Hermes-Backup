@@ -150,15 +150,19 @@ export default function ReportPage() {
     return (
       <div className="min-h-screen bg-midnight flex items-center justify-center px-4">
         <div className="max-w-md w-full text-center">
-          <div className="w-16 h-16 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-8 h-8 text-success animate-spin" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-            </svg>
+          {/* Outer ring */}
+          <div className="relative w-20 h-20 mx-auto mb-8">
+            <div className="absolute inset-0 rounded-full border-4 border-white/10" />
+            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-accent-blue animate-spin" style={{ animationDuration: '1.2s' }} />
+            {/* Inner content */}
+            <div className="absolute inset-0 rounded-full flex items-center justify-center">
+              <div className="w-3 h-3 bg-accent-blue rounded-full opacity-60" />
+            </div>
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2">Your GDPR Report is Being Prepared…</h1>
-          <p className="text-white/60 mb-2">This may take up to 90 seconds while your site is being scanned.</p>
-          {scanId && <p className="text-white/30 text-xs">Scan ID: {scanId.substring(0, 8)}…</p>}
+          <h1 className="text-2xl font-bold text-white mb-3">Preparing Your GDPR Report</h1>
+          <p className="text-white/50 mb-1">Analysing your website for compliance issues…</p>
+          <p className="text-white/30 text-sm">This takes up to 90 seconds. Please don&apos;t close this page.</p>
+          {scanId && <p className="text-white/20 text-xs mt-4">Scan ID: {scanId.substring(0, 8)}…</p>}
         </div>
       </div>
     );

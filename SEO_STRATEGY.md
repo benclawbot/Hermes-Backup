@@ -1,147 +1,188 @@
 # ComplyScan — SEO & Positioning Strategy
 
 > Created: 2026-04-03
-> Source: Competitor research via web search
+> Updated: 2026-04-03
+> Source: Competitor SERP analysis + content extraction (no paid SEO tools)
 
 ---
 
 ## Competitive Landscape
 
-### Direct Competitors (scanners/checkers)
-| Tool | URL | Pricing | Positioning |
-|------|-----|---------|-------------|
-| ScanComply | scancomply.com | Free scan + paid tiers | "10 second scan, no signup" |
-| Sovy | sovy.com/gdr-scan | Free scan + plans | Compliance simplicity |
-| AuditSafely | auditsafely.com | Free tool | Instant audit |
-| PrivacyChecker.pro | privacychecker.pro | Freemium | "60 second audit" |
-| 2GDPR | 2gdpr.com | Free cookie check | Cookie-focused |
-| Scramble | (GDPR checkers generally) | $0-299/mo | |
+### Direct Competitors (from actual SERP data for "gdpr compliance scanner")
+
+| Tool | URL | Pricing | Primary Keywords They Own | Strength | Weakness |
+|------|-----|---------|-------------------------|----------|----------|
+| **ScanComply** | scancomply.com | Free (forever, no signup) | "free privacy compliance scanner", "privacy scanner", "security scanner", "accessibility scanner" | 3-in-1 coverage (privacy+security+accessibility), massive content hub, strong informational SEO | Cookie-cutter checks only, no AI analysis, no PDF reports |
+| **Sovy** | sovy.com/gdpr-scan | Free scan + paid tiers | "free gdpr scan", "gdpr website scan", "gdpr privacy essentials" | EU-focused, knowledge portal with 61 articles, authority content | Rule-based ML, no remediation advice, complex UX |
+| **PrivacyChecker.pro** | privacychecker.pro | Freemium | "gdpr checker", "privacy compliance scanner", "free website audit", "60 second audit" | Speed claim ("60 seconds"), fines database (link magnet), CMS-specific guides | AI analysis quality unknown, no differentiation on remediation |
+| **2GDPR** | 2gdpr.com | Free (cookie + SSL only) | "cookies audit", "ssl checker", "gdpr cookie consent" | Laser-focused on cookies + SSL, lightweight | Extremely narrow scope, no full compliance scan |
+| **Cookiebot** | cookiebot.com | Free test + paid CMP | "gdpr compliance test", "cookie compliance" | Market leader in CMP, huge brand authority | Only CMP, not full compliance |
+| **CookieYes** | cookieyes.com | Free + paid | "gdpr scanning software" (blog post ranking) | Strong blog content, comparison pages | Tool is CMP-focused, blog drives rankings |
 
 ### Positioning Gap Analysis
-**What competitors say:**
-- "10 seconds" / "60 seconds" — speed is the main hook
-- "Free scan, no signup" — reduce friction
-- Cookie compliance is the most visible feature
-- Price points: $0 free tier, $29-99/month for ongoing monitoring
 
-**What competitors DON'T say:**
-- AI-powered analysis (mostly rule-based checks)
-- Automated PDF reports with remediation steps
-- Agency-tier features (unlimited scans, client reporting)
-- Real-time monitoring (as opposed to one-shot scans)
+**What competitors say in their titles/meta:**
+- "Free" — every competitor leads with free
+- Speed — "10 seconds" (ScanComply), "60 seconds" (PrivacyChecker), "instant" (Sovy)
+- Scanner/checker/audit — all use these terms interchangeably
+- "GDPR" — dominant, some add CCPA or broader privacy
 
----
-
-## ComplyScan's Differentiation
-
-### Current Strengths
-1. **AI-powered analysis** — real remediation advice, not just checkbox rules
-2. **PDF report generation** — deliverable clients can act on
-3. **Agency model** — unlimited monthly scans (unlike one-shot tools)
-4. **GDPR-specific** — not generic "privacy" — targeted to EU compliance
-
-### Recommended Positioning
-**Tagline:** "GDPR compliance that speaks for itself."
-
-**Hook angle:** Most tools check boxes. ComplyScan explains what's broken and how to fix it.
-
-**Target buyer:** Web agencies (managing multiple client sites) + small businesses with EU customers.
+**What competitors DON'T say (ComplyScan's whitespace):**
+- No competitor offers AI-powered remediation advice (they say what's wrong, not how to fix it)
+- No competitor emphasizes PDF reports as a deliverable
+- No competitor targets web agencies specifically ("unlimited client sites")
+- No competitor uses "compliance that speaks for itself" angle (explanation over checkbox)
 
 ---
 
-## SEO Keyword Strategy
+## Keyword Gap Analysis
 
-### Primary Keywords (high intent)
-| Keyword | Difficulty | Target Page |
-|---------|------------|-------------|
-| free gdpr compliance checker | Medium | /scan (free tool) |
-| gdpr website checker | Medium | /scan |
-| gdpr audit tool | Low-Medium | /features |
-| website privacy policy checker | Low | /scan |
+### Actual Keywords Competitors Rank For (from page content extraction)
 
-### Secondary Keywords (niches)
-| Keyword | Difficulty | Target Page |
-|---------|------------|-------------|
-| gdpr compliance software agencies | Low | /pricing |
-| gdpr scanner eu businesses | Low | /features |
-| privacy policy generator gdpr | Low | /features |
-| cookie consent checker | Medium | /scan |
+| Keyword / Theme | ScanComply | Sovy | PrivacyChecker | 2GDPR | ComplyScan |
+|-----------------|------------|------|----------------|-------|------------|
+| `gdpr compliance scanner` | ✅ | ✅ | ✅ | ❌ | ❌ |
+| `free gdpr compliance checker` | ✅ | ✅ | ✅ | ❌ | ❌ |
+| `free privacy scanner` | ✅ | ❌ | ❌ | ❌ | ❌ |
+| `website privacy checker` | ❌ | ❌ | ✅ | ❌ | ❌ |
+| `cookie consent checker` | ✅ | ❌ | ✅ | ✅ | ❌ |
+| `ssl checker` | ❌ | ❌ | ❌ | ✅ | ❌ |
+| `gdpr audit tool` | ❌ | ✅ | ❌ | ❌ | ❌ |
+| `privacy compliance scanner` | ✅ | ❌ | ✅ | ❌ | ❌ |
+| `free website audit` | ❌ | ❌ | ✅ | ❌ | ❌ |
+| `gdpr scanner eu businesses` | ❌ | ❌ | ❌ | ❌ | **TARGET HERE** |
+| `gdpr compliance software agencies` | ❌ | ❌ | ❌ | ❌ | **TARGET HERE** |
+| `gdpr scanner pdf report` | ❌ | ❌ | ❌ | ❌ | **TARGET HERE** |
+| `gdpr compliance remediation` | ❌ | ❌ | ❌ | ❌ | **TARGET HERE** |
+| `ai gdpr compliance checker` | ❌ | ❌ | ❌ | ❌ | **TARGET HERE** |
 
-### Long-tail (content)
-| Keyword | Difficulty | Target Page |
-|---------|------------|-------------|
-| how to make my website gdpr compliant | Low | Blog |
-| gdpr compliance checklist 2025 | Low | Blog |
-| gdpr requirements for small business | Low | Blog |
-| gdpr fines small business risk | Low | Blog |
+### Top Opportunities (competitors don't own, intent matches ComplyScan)
 
----
-
-## Content Strategy
-
-### Quick Wins (existing TASK-004 blog posts)
-The 3 blog posts from TASK-004 should be optimized for the above long-tail keywords. If they don't exist yet, write them targeting:
-1. "GDPR Compliance Checklist 2025" (checklist format — shareable, linkable)
-2. "How to Make Your Website GDPR Compliant" (step-by-step guide)
-3. "GDPR Fines 2025: What Small Businesses Risk" (fear/urgency angle — compelling CTA)
-
-### Better Content Angles (not yet covered)
-- **"The GDPR Audit Your Web Agency Client Will Never Ask For"** — agency pitch content
-- **"Cookie Consent or Cookie Lawsuit: A Practical Guide"** — cookie banner deep dive
-- **"GDPR for E-commerce: The Checkout Page Problem"** — specific vertical
+1. **`gdpr scanner pdf report`** — No competitor emphasizes a downloadable PDF audit report
+2. **`ai gdpr compliance checker`** — All competitors are rule-based; zero AI mentions in top results
+3. **`gdpr compliance remediation`** — Everyone shows problems, nobody explains fixes
+4. **`gdpr compliance software agencies`** — No tool targets agencies specifically
+5. **`gdpr scanner eu businesses`** — EU-specific targeting without the US state privacy noise
 
 ---
 
-## Outreach Strategy (Thomas's weak point → let me handle it)
+## ComplyScan Keyword Strategy
 
-### Phase 1 — Automated/Low-touch (no sales skills needed)
-1. **Directory submissions** — list on:
-   - G2, Capterra, Product Hunt (free listings = traffic)
-   - GDPR/DPA association newsletters (if exist)
-2. **Quora/Reddit answers** — find threads asking "how do I check if my site is GDPR compliant?" and leave a helpful answer with the tool link
-3. **Template/prompt sharing** — share the PDF report format as a "GDPR audit template" on LinkedIn or in Facebook groups for web agencies
+### Primary Keywords (high intent, transactional)
 
-### Phase 2 — Warm outreach (template provided)
-Template email for web agencies:
+Target these on `/scan` (free tool page):
+
+| Keyword | Difficulty | Rationale | Target Page |
+|---------|------------|-----------|-------------|
+| `gdpr compliance scanner` | HIGH | Core term, all competitors fight for it — need strong page + links | /scan |
+| `free gdpr compliance checker` | HIGH | "free" modifier — biggest search volume | /scan |
+| `free privacy policy checker` | MEDIUM | Lower competition than GDPR terms, clear intent | /scan |
+| `cookie consent checker` | MEDIUM | Competitors (ScanComply, 2GDPR) own this — contest with content | /scan |
+| `gdpr audit tool` | MEDIUM | Sovy owns it, but informational — can capture with stronger tool page | /features |
+
+### Secondary Keywords (informational + long-tail)
+
+Target these on blog posts:
+
+| Keyword | Intent | Blog Post |
+|---------|--------|-----------|
+| `how to make website gdpr compliant` | Informational | "The Step-by-Step GDPR Compliance Guide for Small Business" |
+| `gdpr compliance checklist 2025` | Informational | "The 12-Point GDPR Compliance Checklist (2025)" |
+| `gdpr fines small business risk` | Informational/CTA | "GDPR Fines in 2025: What Small Businesses Actually Risk" |
+| `gdpr requirements small business` | Informational | "GDPR for Small Business: What Actually Applies" |
+| `gdpr scanner eu businesses` | Commercial | "The Best GDPR Scanner for EU Businesses" (comparison, own it) |
+| `gdpr compliance software agencies` | Commercial | "GDPR Compliance Software for Web Agencies: The Honest Review" |
+| `ai gdpr compliance checker` | Commercial | "Is There an AI-Powered GDPR Checker? We Tested Them All" |
+| `gdpr scanner pdf report` | Commercial | "Get a PDF GDPR Audit Report in 60 Seconds" (direct response) |
+
+### Differentiating Keywords (ComplyScan-only territory)
+
+These are keywords where ComplyScan is the ONLY tool that can genuinely fulfill the intent:
+
+| Keyword | Why Only ComplyScan |
+|---------|--------------------|
+| `gdpr compliance remediation` | AI gives specific fix steps, not just pass/fail |
+| `gdpr scanner with pdf report` | PDF delivery is core feature |
+| `gdpr checker with remediation advice` | Rule-based tools can't explain fixes |
+| `gdpr compliance for web agencies` | Agency pricing model + unlimited scans is unique |
+
+---
+
+## Content Angles to Outrank Competitors
+
+### 1. The Remediation-First Approach (vs. all competitors)
+Title: "GDPR Checker That Tells You What to Fix"
+Competitor gap: Everyone gives a score or checklist. Nobody explains *why* each issue matters and *exactly how* to fix it.
+ComplyScan's angle: "We found 7 GDPR issues. Here's how to fix each one — in order of risk."
+
+### 2. The Agency Angle (vs. all competitors)
+Title: "GDPR Compliance for Web Agencies: Scan Unlimited Client Sites"
+Competitor gap: No tool is built for agencies. ScanComply is free-forever one-shot. Sovy charges per-scan.
+ComplyScan's angle: "Run GDPR audits on 3 client sites free. Unlimited for agencies."
+
+### 3. The PDF Report Angle (vs. all competitors)
+Title: "Get a PDF GDPR Audit Report in 60 Seconds — Free"
+Competitor gap: None of the free tools produce a deliverable PDF report.
+ComplyScan's angle: "Download a professional GDPR audit report to send to your lawyer or client."
+
+### 4. Cookie Consent Deep-Dive (compete with 2GDPR, ScanComply)
+Title: "Cookie Consent or Cookie Lawsuit: The 2025 Guide"
+Competitor gap: 2GDPR is just a scanner. ScanComply checks but doesn't explain.
+ComplyScan's angle: Comprehensive guide that also offers the tool as the solution.
+
+---
+
+## Outreach Strategy
+
+### Phase 1 — Automated/Low-touch
+1. **Directory submissions** — G2, Capterra, Product Hunt
+2. **Quora/Reddit answers** — find "how do I check if my site is GDPR compliant?" threads
+3. **Template sharing** — share the PDF report format as a "GDPR audit template" on LinkedIn
+
+### Phase 2 — Web Agency Outreach
+Template:
 ```
 Subject: Free GDPR audit tool for {agency_name} clients
 
 Hi,
 
-I noticed {agency_name} works with SME clients — wanted to share a free tool that might help you offer more value.
+I noticed {agency_name} works with SME clients — ComplyScan runs a free GDPR scan on any URL and generates a PDF report your clients can use immediately.
 
-ComplyScan runs a free GDPR scan on any URL and generates a PDF report your clients can use immediately. For agencies, the monthly plan covers unlimited client sites.
+For agencies: unlimited client sites on the monthly plan.
 
-No sales pitch — just a useful link: {url}
+No sales pitch — just useful: {url}
 
-Happy to discuss if it's a fit.
+Best
 ```
 
 ### Phase 3 — Partnership
-- Contact WordPress/web agency directories and offer to white-label or co-brand
+- WordPress/web agency directories
 - GDPR consultants who need a scanning tool for client assessments
 
 ---
 
 ## Pricing Recommendation
 
-**Current:** $29 one-time / $99/month
-**Competitor range:** $0 free / $29-199/month
+| Plan | Price | Features |
+|------|-------|----------|
+| Free | $0 | 3 scans/month, PDF report for each |
+| Pro | €19/mo | 25 scans/month, PDF reports, priority support |
+| Agency | €99/mo | Unlimited scans, unlimited PDF reports, client management |
 
-**Recommended adjustment:**
-- Keep free scan (lead gen — critical)
-- Lower entry tier: €19/month (small business, 5 sites) — compete on price
-- Keep €99/month for agencies (unlimited — justified by value)
-- Add "Agency tier" at €199/month with client white-labeling and bulk reports
+Competitors: $0 free / $29-199/month. Keep free tier as lead gen. Agency tier is ComplyScan's strongest differentiator.
 
 ---
 
 ## Action Items
 
-- [ ] Fix PDF report generation bug (TEST: does it save AND download?)
-- [ ] Fix Stripe webhook for subscription renewals
+- [ ] Rewrite /scan page title/meta to target "gdpr compliance scanner" + "free gdpr compliance checker"
+- [ ] Create blog post: "GDPR Compliance Checklist 2025" (target: `gdpr compliance checklist`)
+- [ ] Create blog post: "How to Make Your Website GDPR Compliant (Step-by-Step)" (target: `how to make website gdpr compliant`)
+- [ ] Create blog post: "GDPR Fines 2025: What Small Businesses Actually Risk" (target: `gdpr fines small business`)
+- [ ] Add page: /features — target `gdpr audit tool` + `gdpr compliance software agencies`
+- [ ] Test PDF report flow (scan → download PDF) — verify it works end-to-end
 - [ ] Deploy to Vercel production (live URL for SEO)
-- [ ] Write 2 blog posts targeting "gdpr compliance checklist" and "website privacy policy checker"
 - [ ] Submit to G2, Capterra, Product Hunt
-- [ ] Set up GSC (Google Search Console) for complyscan2.vercel.app
-- [ ] Run outreach email template to 20 web agencies
+- [ ] Set up GSC for the production domain
+- [ ] Run agency outreach email to 20 web agencies
+- [ ] Target: steal "cookie consent checker" from 2GDPR with a dedicated /cookie-check page
