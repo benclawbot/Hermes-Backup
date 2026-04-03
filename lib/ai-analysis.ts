@@ -47,10 +47,13 @@ function validateResult(obj: unknown): obj is AiAnalysisResult {
 }
 
 export async function analyzeWithAI(crawlResult: any, ruleBasedChecks: any[]): Promise<AiAnalysisResult> {
-  // Truncate HTML and escape it — prevents prompt corruption and JSON generation breakage
+  // Strip large/binary fields and HTTP response headers — these are already analyzed
+  // by rule-based checks and confuse the LLM when it comments on them in plain text.
+  const { securityHeaders, screenshots: _s, ...rest } = crawlResult ?? {};
+  void securityHeaders; // already excluded
   const truncated = {
-    ...crawlResult,
-    html: crawlResult.html ? escapeHtml(crawlResult.html.substring(0, 3000)) + '...[truncated]' : '',
+    ...rest,
+    html: rest.html ? escapeHtml(rest.html.substring(0, 3000)) + '...[truncated]' : '',
     screenshots: [], // Exclude screenshots from AI analysis
   };
 
