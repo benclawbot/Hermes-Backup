@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     params.append('mode', plan === 'monthly' ? 'subscription' : 'payment');
     params.append('line_items[0][price]', priceId);
     params.append('line_items[0][quantity]', '1');
-    params.append('success_url', appUrl + '/success?session_id={CHECKOUT_SESSION_ID}&scan_id=' + scanId);
+    params.append('success_url', appUrl + '/success?session_id={CHECKOUT_SESSION_ID}&scan_id=' + scanId + '&plan=' + plan);
     params.append('cancel_url', appUrl + '/?cancelled=true');
     params.append('metadata[scanId]', scanId);
     params.append('metadata[url]', websiteUrl);

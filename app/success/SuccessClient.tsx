@@ -7,32 +7,36 @@ export default function SuccessClient() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
   const scanId = searchParams.get("scan_id");
+  const plan = searchParams.get("plan");
 
-  const [sessionMode, setSessionMode] = useState<"payment" | "subscription" | null>(null);
   const [subscriberToken, setSubscriberToken] = useState<string | null>(null);
   const [customerEmail, setCustomerEmail] = useState<string | null>(null);
   const [reportStatus, setReportStatus] = useState<"loading" | "error">("loading");
   const [reportError, setReportError] = useState<string>("");
   const startedRef = useRef(false);
 
-  // Fetch session mode + subscriber token for subscriptions
+  // Try to fetch subscriber info (used for subscriptions).
+  // This is best-effort — if it fails, we still proceed with password setup.
+  // We no longer depend on this for single-scan flow.
   useEffect(() => {
     if (!sessionId) return;
     fetch(`/api/stripe/session?session_id=${encodeURIComponent(sessionId)}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) return { subscriberToken: null, customerEmail: null } as any;
+        return res.json() as Promise<{ subscriberToken?: string; customerEmail?: string }>;
+      })
       .then((data) => {
-        if (data.mode) setSessionMode(data.mode);
-        if (data.subscriberToken) setSubscriberToken(data.subscriberToken);
-        if (data.customerEmail) setCustomerEmail(data.customerEmail);
+        if (data?.subscriberToken) setSubscriberToken(data.subscriberToken);
+        if (data?.customerEmail) setCustomerEmail(data.customerEmail);
       })
       .catch(() => {});
   }, [sessionId]);
 
-  // Trigger scan + poll until ready, then redirect to report page
-  // Skip for subscriptions — they have no URL at signup time, redirect to dashboard instead
+  // Trigger scan + poll until ready, then redirect to report page.
+  // plan='monthly' (subscription) skips this entirely — those users go to dashboard.
   useEffect(() => {
     if (!sessionId || !scanId || startedRef.current) return;
-    if (sessionMode === 'subscription') return;
+    if (plan === 'monthly') return;
     startedRef.current = true;
 
     // Trigger scan immediately
@@ -98,7 +102,7 @@ export default function SuccessClient() {
   }, [sessionId, scanId]);
 
   // Subscriptions → dashboard with token
-  if (sessionMode === "subscription") {
+  if (plan === 'monthly') {
     const dashboardUrl = subscriberToken
       ? `/dashboard?token=${encodeURIComponent(subscriberToken)}`
       : "/dashboard";
