@@ -29,6 +29,9 @@ export async function POST(request: NextRequest) {
     const token = uuidv4();
     db.prepare('INSERT INTO sessions (token, user_id) VALUES (?, ?)').run(token, user.id);
 
+    // Link any unlinked scans with this email to the user account
+    db.prepare('UPDATE scans SET user_id = ? WHERE email = ? AND (user_id IS NULL OR user_id = ?)').run(user.id, email, user.id);
+
     const response = NextResponse.json({ ok: true, token });
     response.cookies.set('session', token, {
       httpOnly: true,

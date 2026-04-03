@@ -75,6 +75,15 @@ function initializeSchema(db: any) {
       last_used_at TEXT,
       FOREIGN KEY (subscriber_id) REFERENCES subscribers(id)
     );
+
+    CREATE TABLE IF NOT EXISTS agency_clients (
+      id TEXT PRIMARY KEY,
+      agency_subscriber_id TEXT NOT NULL,
+      name TEXT NOT NULL,
+      url TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+      FOREIGN KEY (agency_subscriber_id) REFERENCES subscribers(id)
+    );
   `);
 }
 

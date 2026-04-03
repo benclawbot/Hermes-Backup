@@ -1,0 +1,391 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { CheckCircle, XCircle, AlertTriangle, FileText, RefreshCw, Lock } from "lucide-react";
+
+interface Props {
+  scanId: string;
+  url: string;
+  email: string | null;
+  status: string;
+  result: any;
+}
+
+function ScoreCard({ score }: { score: number }) {
+  const color = score >= 80 ? "text-green-400" : score >= 60 ? "text-yellow-400" : "text-red-400";
+  const label = score >= 80 ? "Good" : score >= 60 ? "Needs Work" : "Critical";
+
+  return (
+    <div className="bg-midnight-light border border-white/10 rounded-2xl p-8 text-center">
+      <div className={`text-6xl font-bold font-heading ${color} mb-2`}>{score}</div>
+      <div className="text-white/40 text-sm uppercase tracking-wider">GDPR Score</div>
+      <div className={`text-sm font-medium mt-2 ${color}`}>{label}</div>
+    </div>
+  );
+}
+
+function IssueList({ issues, severity }: { issues: any[]; severity: "critical" | "warning" | "info" }) {
+  const icons = { critical: XCircle, warning: AlertTriangle, info: CheckCircle };
+  const colors = {
+    critical: "border-red-500/30 bg-red-500/5",
+    warning: "border-yellow-500/30 bg-yellow-500/5",
+    info: "border-blue-500/30 bg-blue-500/5",
+  };
+  const iconColors = {
+    critical: "text-red-400",
+    warning: "text-yellow-400",
+    info: "text-blue-400",
+  };
+  const Icon = icons[severity];
+
+  if (!issues.length) return null;
+
+  return (
+    <div className={`rounded-xl border p-4 ${colors[severity]}`}>
+      <div className="flex items-center gap-2 mb-3">
+        <Icon className={`w-4 h-4 ${iconColors[severity]}`} />
+        <span className="font-semibold text-white capitalize">{severity} Issues</span>
+        <span className="text-white/30 text-xs">({issues.length})</span>
+      </div>
+      <ul className="space-y-2">
+        {issues.map((issue: any, i: number) => (
+          <li key={i} className="text-sm text-white/70 flex items-start gap-2">
+            <span className="text-white/30 mt-0.5 shrink-0">—</span>
+            <div>
+              <span className="text-white font-medium">{issue.rule}: </span>
+              {issue.message}
+              {issue.fix && (
+                <div className="mt-1 text-xs text-white/40 bg-white/5 rounded px-2 py-1">
+                  Fix: {issue.fix}
+                </div>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function FindingsSection({ result }: { result: any }) {
+  const critical = (result.ruleChecks || []).filter(
+    (c: any) => c.severity === "critical" || c.severity === "error"
+  );
+  const warnings = (result.ruleChecks || []).filter((c: any) => c.severity === "warning");
+  const passed = (result.ruleChecks || []).filter((c: any) => c.severity === "pass" || c.severity === "info");
+
+  const score = result.aiAnalysis?.score ?? result.ruleChecks?.length
+    ? Math.max(0, 100 - critical.length * 25 - warnings.length * 10)
+    : null;
+
+  return (
+    <div className="space-y-6">
+      {score !== null && <ScoreCard score={score} />}
+
+      {critical.length > 0 && <IssueList issues={critical} severity="critical" />}
+      {warnings.length > 0 && <IssueList issues={warnings} severity="warning" />}
+      {passed.length > 0 && <IssueList issues={passed} severity="info" />}
+
+      {result.aiAnalysis && (
+        <div className="bg-midnight-light border border-white/10 rounded-xl p-6">
+          <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+            <FileText className="w-4 h-4 text-accent-blue" />
+            AI Analysis
+          </h3>
+          <p className="text-white/60 text-sm whitespace-pre-wrap">
+            {result.aiAnalysis.summary || result.aiAnalysis.text || "No summary available."}
+          </p>
+          {result.aiAnalysis.topRisks?.length > 0 && (
+            <div className="mt-4">
+              <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Top Risks</p>
+              <ul className="space-y-1">
+                {result.aiAnalysis.topRisks.map((risk: string, i: number) => (
+                  <li key={i} className="text-sm text-white/70 flex items-start gap-2">
+                    <span className="text-red-400 mt-0.5">!</span>
+                    {risk}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function ScanResultsClient({ scanId, url, email, status, result }: Props) {
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showAccountModal, setShowAccountModal] = useState(false);
+  const [accountEmail, setAccountEmail] = useState(email || "");
+  const [accountPassword, setAccountPassword] = useState("");
+  const [accountError, setAccountError] = useState("");
+  const [accountLoading, setAccountLoading] = useState(false);
+  const [accountSuccess, setAccountSuccess] = useState(false);
+
+  const handleGetFullReport = () => {
+    setShowUpgradeModal(true);
+  };
+
+  const handlePurchasePDF = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, email, plan: 'pdf', scanId }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert(data.error || 'Failed to start checkout. Please try again.');
+      }
+    } catch {
+      alert('Failed to start checkout. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateAccount = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAccountError("");
+    setAccountLoading(true);
+    try {
+      const res = await fetch('/api/auth/claim-scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: accountEmail, password: accountPassword, scanId }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setAccountError(data.error || 'Failed to create account.');
+        return;
+      }
+      setAccountSuccess(true);
+      setTimeout(() => {
+        window.location.href = `/dashboard?token=${encodeURIComponent(data.token)}`;
+      }, 1200);
+    } catch {
+      setAccountError('Network error. Please try again.');
+    } finally {
+      setAccountLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-midnight">
+      {/* Header */}
+      <header className="border-b border-white/10 bg-midnight-light">
+        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+          <Link href="/" className="font-heading text-xl font-bold text-white hover:text-accent-glow transition-colors">
+            ComplyScan
+          </Link>
+          <Link
+            href="/login"
+            className="text-sm text-white/50 hover:text-white/70 transition-colors"
+          >
+            Dashboard →
+          </Link>
+        </div>
+      </header>
+
+      <main className="max-w-4xl mx-auto px-4 py-10">
+        {status === "processing" && (
+          <div className="text-center py-20">
+            <div className="inline-flex items-center gap-3 text-white/60">
+              <RefreshCw className="w-5 h-5 animate-spin" />
+              <span>Scan in progress — this page will update automatically...</span>
+            </div>
+            <meta httpEquiv="refresh" content="10" />
+          </div>
+        )}
+
+        {status === "failed" && (
+          <div className="text-center py-20">
+            <XCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-white mb-2">Scan Failed</h1>
+            <p className="text-white/60 mb-6">We couldn't scan this website. It may be down or blocking our crawler.</p>
+            <Link href="/" className="px-6 py-3 bg-accent-blue text-white rounded-lg font-medium hover:bg-accent-glow transition-all">
+              Try another URL
+            </Link>
+          </div>
+        )}
+
+        {status === "completed" && result && (
+          <>
+            {/* Summary banner */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 bg-midnight-light border border-white/10 rounded-2xl p-6">
+              <div>
+                <h1 className="text-2xl font-bold text-white mb-1">GDPR Compliance Report</h1>
+                <p className="text-white/40 text-sm">{url}</p>
+                {email && <p className="text-white/30 text-xs mt-1">Sent to {email}</p>}
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleGetFullReport}
+                  className="rounded-lg bg-accent-blue px-5 py-2.5 font-semibold text-white hover:bg-accent-glow transition-all text-sm flex items-center gap-2"
+                >
+                  <FileText className="w-4 h-4" />
+                  Get Full PDF Report
+                </button>
+                <Link
+                  href="/"
+                  className="rounded-lg bg-white/10 px-5 py-2.5 font-semibold text-white hover:bg-white/20 transition-all text-sm"
+                >
+                  Scan Another
+                </Link>
+              </div>
+            </div>
+
+            {/* Save results banner */}
+            {!accountSuccess && (
+              <div className="mb-6 bg-gradient-to-r from-accent-blue/10 via-midnight-light to-midnight-light border border-accent-blue/20 rounded-2xl p-5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <p className="text-white font-semibold mb-1">Save your scan results</p>
+                    <p className="text-white/50 text-sm">Create a free account to access your reports anytime and track compliance over time.</p>
+                  </div>
+                  <button
+                    onClick={() => setShowAccountModal(true)}
+                    className="rounded-lg bg-accent-blue px-5 py-2.5 font-semibold text-white hover:bg-accent-glow transition-all text-sm shrink-0"
+                  >
+                    Create Free Account
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Key findings */}
+            <div className="mb-8">
+              <h2 className="text-xl font-semibold text-white mb-4">Key Findings</h2>
+              <FindingsSection result={result} />
+            </div>
+
+            {/* Upgrade CTA */}
+            <div className="bg-gradient-to-r from-accent-blue/20 via-midnight-light to-midnight-light border border-accent-blue/30 rounded-2xl p-8 text-center">
+              <Lock className="w-8 h-8 text-accent-blue mx-auto mb-3" />
+              <h3 className="text-xl font-bold text-white mb-2">Unlock the Full Report</h3>
+              <p className="text-white/50 text-sm mb-6 max-w-md mx-auto">
+                This scan shows a preview of your GDPR compliance status.
+                Get the complete PDF report with issue details, fix recommendations,
+                and legal references for <span className="text-white font-semibold">€9</span>.
+              </p>
+              <button
+                onClick={handlePurchasePDF}
+                disabled={loading}
+                className="rounded-lg bg-accent-blue px-8 py-3 font-semibold text-white hover:bg-accent-glow transition-all shadow-lg shadow-accent-blue/30 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? "Redirecting..." : "Get PDF Report — €9"}
+              </button>
+              <p className="text-white/30 text-xs mt-3">Secure payment via Stripe · Instant delivery</p>
+            </div>
+          </>
+        )}
+
+        {status === "completed" && !result && (
+          <div className="text-center py-12">
+            <p className="text-white/50">Loading results...</p>
+          </div>
+        )}
+      </main>
+
+      {/* Simple inline modal backdrop */}
+      {showUpgradeModal && (
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4" onClick={() => setShowUpgradeModal(false)}>
+          <div className="bg-midnight-light border border-white/20 rounded-2xl p-8 max-w-md w-full" onClick={e => e.stopPropagation()}>
+            <Lock className="w-8 h-8 text-accent-blue mx-auto mb-3" />
+            <h3 className="text-xl font-bold text-white mb-2 text-center">Unlock Full PDF Report</h3>
+            <p className="text-white/50 text-sm mb-6 text-center">
+              Complete report with legal references, detailed fix guides, and executive summary for €9.
+            </p>
+            <button
+              onClick={handlePurchasePDF}
+              disabled={loading}
+              className="w-full rounded-lg bg-accent-blue py-3 font-semibold text-white hover:bg-accent-glow transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? "Redirecting..." : "Continue to Payment — €9"}
+            </button>
+            <button
+              onClick={() => setShowUpgradeModal(false)}
+              className="w-full mt-3 text-center text-white/30 text-sm hover:text-white/60 transition-colors"
+            >
+              Maybe later
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Create Account Modal */}
+      {showAccountModal && (
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4" onClick={() => setShowAccountModal(false)}>
+          <div className="bg-midnight-light border border-white/20 rounded-2xl p-8 max-w-md w-full" onClick={e => e.stopPropagation()}>
+            <h3 className="text-xl font-bold text-white mb-2 text-center">Save Your Scan Results</h3>
+            <p className="text-white/50 text-sm mb-6 text-center">
+              Create a free account to access your report and all future scans.
+            </p>
+
+            {accountSuccess ? (
+              <div className="text-center">
+                <div className="w-12 h-12 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="w-6 h-6 text-success" />
+                </div>
+                <p className="text-white font-semibold mb-1">Account created!</p>
+                <p className="text-white/50 text-sm">Redirecting to your dashboard...</p>
+              </div>
+            ) : (
+              <form onSubmit={handleCreateAccount} className="space-y-4">
+                <div>
+                  <label className="block text-white/50 text-xs mb-1 uppercase tracking-wider">Email</label>
+                  <input
+                    type="email"
+                    value={accountEmail}
+                    onChange={e => setAccountEmail(e.target.value)}
+                    required
+                    className="w-full rounded-lg bg-midnight border border-white/20 px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-accent-blue transition-all"
+                    placeholder="your@email.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-white/50 text-xs mb-1 uppercase tracking-wider">Password</label>
+                  <input
+                    type="password"
+                    value={accountPassword}
+                    onChange={e => setAccountPassword(e.target.value)}
+                    required
+                    minLength={8}
+                    className="w-full rounded-lg bg-midnight border border-white/20 px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-accent-blue transition-all"
+                    placeholder="Min. 8 characters"
+                  />
+                </div>
+                {accountError && <p className="text-red-400 text-sm">{accountError}</p>}
+                <button
+                  type="submit"
+                  disabled={accountLoading}
+                  className="w-full rounded-lg bg-accent-blue py-3 font-semibold text-white hover:bg-accent-glow transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {accountLoading ? "Creating account..." : "Create Free Account"}
+                </button>
+                <p className="text-center text-white/30 text-xs">
+                  Already have an account?{" "}
+                  <Link href="/login" className="text-accent-blue hover:text-accent-glow transition-colors">
+                    Sign in
+                  </Link>
+                </p>
+              </form>
+            )}
+            <button
+              onClick={() => setShowAccountModal(false)}
+              className="w-full mt-3 text-center text-white/30 text-sm hover:text-white/60 transition-colors"
+            >
+              {accountSuccess ? "Close" : "Maybe later"}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

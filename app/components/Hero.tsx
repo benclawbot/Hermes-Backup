@@ -8,32 +8,38 @@ export function Hero() {
   const [url, setUrl] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!url) return;
 
     setLoading(true);
+    setError("");
 
     try {
-      const res = await fetch('/api/stripe/checkout', {
+      const res = await fetch('/api/scan/free', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url, email: email || undefined, plan: 'single' }),
+        body: JSON.stringify({ url, email: email || undefined }),
       });
 
       const data = await res.json();
 
-      if (data.url) {
-        // Use replace to prevent back-button issues
-        window.location.href = data.url;
+      if (!res.ok) {
+        if (data.code === 'LIMIT_REACHED') {
+          setError(`You've used your 3 free scans this month. Upgrade to Pro for unlimited scans.`);
+        } else {
+          setError(data.error || 'Something went wrong. Please try again.');
+        }
         return;
-      } else {
-        alert(data.error || 'Something went wrong. Please try again.');
       }
+
+      // Redirect to free results page
+      window.location.href = `/scan-results/${encodeURIComponent(data.scanId)}`;
     } catch (err) {
-      console.error('Checkout error:', err);
-      alert('Failed to start checkout. Is the server running?');
+      console.error('Free scan error:', err);
+      setError('Failed to start scan. Is the server running?');
     } finally {
       setLoading(false);
     }
@@ -57,16 +63,13 @@ export function Hero() {
 
         {/* Subheadline */}
         <p className="text-lg sm:text-xl text-white/70 mb-10 max-w-2xl mx-auto">
-          Instant automated scan. No signup required.{" "}
-          <span className="text-white font-medium">
-            €20M GDPR fines won&apos;t check.
-          </span>
+          Free GDPR compliance scan. No credit card. Get your full PDF report from €9.
         </p>
 
         {/* URL Input Form */}
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col gap-3 max-w-xl mx-auto mb-6"
+          className="flex flex-col gap-3 max-w-xl mx-auto mb-4"
         >
           <input
             type="url"
@@ -82,18 +85,23 @@ export function Hero() {
             name="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="your@email.com"
+            placeholder="your@email.com (required for your report)"
             required
             className="rounded-lg bg-midnight-light border border-white/20 px-5 py-4 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-transparent transition-all"
           />
+          {error && (
+            <p className="text-red-400 text-sm text-left">{error}</p>
+          )}
           <button
             type="submit"
             disabled={loading}
             className="rounded-lg bg-accent-blue px-8 py-4 font-semibold text-white hover:bg-accent-glow transition-all shadow-lg shadow-accent-blue/30 hover:shadow-accent-blue/50 whitespace-nowrap glow-accent disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Redirecting to payment...' : 'Scan Now — $29'}
+            {loading ? 'Running scan...' : 'Scan Free →'}
           </button>
         </form>
+
+        <p className="text-white/30 text-xs mb-6">3 free scans per month · No credit card required</p>
 
         {/* Subscriber login link */}
         <div className="mb-6">

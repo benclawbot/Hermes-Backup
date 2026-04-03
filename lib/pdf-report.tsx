@@ -154,65 +154,66 @@ const S = StyleSheet.create({
   coverMetaValue: { fontSize: 11, color: C.white, fontFamily: FONT_BOLD },
   coverMetaIconRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
 
-  page: { padding: 45, backgroundColor: C.white },
-  sectionHeader: { flexDirection: 'row', alignItems: 'center', marginTop: 28, marginBottom: 14 },
-  sectionBar: { width: 4, height: 18, backgroundColor: C.blue, borderRadius: 2, marginRight: 8 },
-  sectionTitle: { fontSize: 14, fontFamily: FONT_BOLD, color: C.text },
+  page: { padding: 50, backgroundColor: C.white },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', marginTop: 30, marginBottom: 16 },
+  sectionBar: { width: 5, height: 20, backgroundColor: C.blue, borderRadius: 3, marginRight: 10 },
+  sectionTitle: { fontSize: 16, fontFamily: FONT_BOLD, color: C.text },
 
-  card: { borderWidth: 1, borderColor: C.border, borderRadius: 8, padding: 14, marginBottom: 10 },
+  card: { borderWidth: 1, borderColor: C.border, borderRadius: 12, padding: 18, marginBottom: 14 },
   cardGreen: { borderColor: C.green, backgroundColor: C.greenBg },
   cardRed: { borderColor: C.red, backgroundColor: C.redBg },
   cardAmber: { borderColor: C.amber, backgroundColor: C.amberBg },
 
-  checkRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 10 },
-  checkBadge: { width: 32, alignItems: 'center', marginRight: 10, marginTop: 1 },
+  checkRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 12 },
+  checkBadge: { width: 36, alignItems: 'center', marginRight: 12, marginTop: 2 },
   checkBody: { flex: 1 },
-  checkName: { fontSize: 10, fontFamily: FONT_BOLD, color: C.text, marginBottom: 2 },
-  checkDetail: { fontSize: 9, color: C.muted, lineHeight: 1.4 },
-  checkRec: { fontSize: 9, color: C.amberText, backgroundColor: C.amberBg, padding: '4 8', borderRadius: 4, marginTop: 4, lineHeight: 1.4 },
-  checkArticle: { fontSize: 8, color: C.blue, marginTop: 4 },
+  checkName: { fontSize: 13, fontFamily: FONT_BOLD, color: C.text, marginBottom: 4 },
+  checkDetail: { fontSize: 12, color: C.muted, lineHeight: 1.6 },
+  checkRec: { fontSize: 11.5, color: C.amberText, backgroundColor: C.amberBg, padding: '6 10', borderRadius: 6, marginTop: 6, lineHeight: 1.5 },
+  checkArticle: { fontSize: 11, color: C.blue, marginTop: 6 },
 
-  issueRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 10 },
-  issueBadge: { width: 32, alignItems: 'center', marginRight: 10, marginTop: 1 },
+  issueRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 12 },
+  issueBadge: { width: 36, alignItems: 'center', marginRight: 12, marginTop: 2 },
   issueBody: { flex: 1 },
-  issueTitle: { fontSize: 10, fontFamily: FONT_BOLD, color: C.text, marginBottom: 3 },
-  issueDesc: { fontSize: 9, color: C.muted, lineHeight: 1.4, marginBottom: 4 },
-  issueFix: { fontSize: 9, color: '#166534', backgroundColor: C.greenBg, padding: '4 8', borderRadius: 4, lineHeight: 1.4 },
-  issueArticle: { fontSize: 8, color: C.blue, marginTop: 4 },
+  issueTitle: { fontSize: 13, fontFamily: FONT_BOLD, color: C.text, marginBottom: 4 },
+  issueDesc: { fontSize: 12, color: C.muted, lineHeight: 1.6, marginBottom: 6 },
+  issueFix: { fontSize: 11.5, color: '#166534', backgroundColor: C.greenBg, padding: '6 10', borderRadius: 6, lineHeight: 1.5 },
+  issueArticle: { fontSize: 11, color: C.blue, marginTop: 6 },
 
-  scoreBar: { flexDirection: 'row', marginVertical: 10, gap: 4 },
-  scoreSeg: { flex: 1, height: 14, borderRadius: 3 },
-  scoreLegend: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 },
-  scoreLegendText: { fontSize: 7, color: C.muted },
+  scoreBar: { flexDirection: 'row', marginVertical: 14, gap: 5 },
+  scoreSeg: { flex: 1, height: 18, borderRadius: 4 },
+  scoreLegend: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 },
+  scoreLegendText: { fontSize: 10, color: C.muted },
 
   // ── Remediation ─────────────────────────────────────────────────────────────
-  remSectionHeader: { flexDirection: 'row', alignItems: 'center', marginTop: 24, marginBottom: 6 },
-  remSectionBar: { width: 4, height: 18, backgroundColor: C.blue, borderRadius: 2, marginRight: 8 },
-  remSectionTitle: { fontSize: 14, fontFamily: FONT_BOLD, color: C.text },
-  remIntro: { fontSize: 9.5, color: C.muted, marginBottom: 16, lineHeight: 1.5 },
-  remGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  remCard: { width: '47%', backgroundColor: C.white, borderWidth: 1, borderColor: C.border, borderRadius: 10, borderLeftWidth: 4, padding: '12 14', marginBottom: 4 },
+  remSectionHeader: { flexDirection: 'row', alignItems: 'center', marginTop: 32, marginBottom: 12 },
+  remSectionBar: { width: 4, height: 20, backgroundColor: C.blue, borderRadius: 2, marginRight: 10 },
+  remSectionTitle: { fontSize: 16, fontFamily: FONT_BOLD, color: C.text },
+  remIntro: { fontSize: 11, color: C.muted, marginBottom: 20, lineHeight: 1.7 },
+  remGrid: { gap: 12 },
+  remCard: { backgroundColor: C.white, borderWidth: 1, borderColor: C.border, borderRadius: 12, borderLeftWidth: 4, padding: '16 18', marginBottom: 10 },
   remCardAi: { borderLeftColor: C.blue },
   remCardCheck: { borderLeftColor: C.amber },
-  remCardNum: { fontSize: 9, fontFamily: FONT_BOLD, color: C.muted, marginBottom: 6 },
-  remCardText: { fontSize: 9.5, color: C.text, lineHeight: 1.6 },
-  remNote: { marginTop: 20, padding: 14, backgroundColor: '#f8fafc', borderRadius: 10, borderLeftWidth: 3, borderLeftColor: C.blue },
-  remNoteText: { fontSize: 9.5, color: C.muted, lineHeight: 1.6 },
+  remCardNum: { fontSize: 10, fontFamily: FONT_BOLD, color: C.muted, marginBottom: 8 },
+  remCardText: { fontSize: 12.5, color: C.text, lineHeight: 1.7 },
+  remNote: { marginTop: 28, padding: 16, backgroundColor: '#f8fafc', borderRadius: 10, borderLeftWidth: 3, borderLeftColor: C.blue },
+  remNoteText: { fontSize: 11, color: C.muted, lineHeight: 1.7 },
 
   infoGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 0 },
-  infoCell: { width: '50%', flexDirection: 'row', paddingVertical: 5, borderBottomWidth: 1, borderBottomColor: C.border },
-  infoLabel: { width: 90, fontSize: 9, color: C.muted },
-  infoValue: { flex: 1, fontSize: 9, color: C.text, fontFamily: FONT_BOLD },
+  infoCell: { width: '50%', flexDirection: 'row', paddingVertical: 7, borderBottomWidth: 1, borderBottomColor: C.border },
+  infoLabel: { width: 110, fontSize: 11, color: C.muted },
+  infoValue: { flex: 1, fontSize: 11, color: C.text, fontFamily: FONT_BOLD },
   infoGreen: { color: C.green },
   infoRed: { color: C.red },
 
-  gdprRow: { flexDirection: 'row', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: C.border },
-  gdprArt: { width: 50, fontSize: 9, fontFamily: FONT_BOLD, color: C.blue },
-  gdprDesc: { flex: 1, fontSize: 9, color: C.muted },
+  gdprRow: { flexDirection: 'row', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: C.border },
+  gdprArt: { width: 60, fontSize: 11, fontFamily: FONT_BOLD, color: C.blue },
+  gdprDesc: { flex: 1, fontSize: 11, color: C.muted },
 
-  footer: { position: 'absolute', bottom: 25, left: 45, right: 45, flexDirection: 'row', justifyContent: 'space-between', borderTopWidth: 1, borderTopColor: C.border, paddingTop: 8 },
+  footer: { position: 'absolute', bottom: 25, left: 45, right: 45, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderTopWidth: 1, borderTopColor: C.border, paddingTop: 8 },
   footerText: { fontSize: 8, color: C.muted },
   footerRight: { fontSize: 8, color: C.muted, fontFamily: FONT_OBLIQUE },
+  footerUrl: { fontSize: 7.5, color: C.muted },
   pageNumber: { position: 'absolute', bottom: 25, right: 45, fontSize: 8, color: C.muted },
   pageNumberCenter: { position: 'absolute', bottom: 25, left: 0, right: 0, textAlign: 'center', fontSize: 8, color: C.muted },
 });
@@ -274,13 +275,39 @@ function scoreBarComponent(score: number) {
   );
 }
 
+// ── White-label options ─────────────────────────────────────────────────────────
+export interface WhiteLabelOptions {
+  companyName?: string;
+  logoUrl?: string;
+}
+
+export interface GenerateReportPdfOptions {
+  whiteLabel?: WhiteLabelOptions;
+}
+
 // ── Document ──────────────────────────────────────────────────────────────────
 interface Props {
   url: string;
   result: any;
+  whiteLabel?: WhiteLabelOptions;
 }
 
-const ReportDocument: React.FC<Props> = ({ url, result }) => {
+function getBranding(whiteLabel?: WhiteLabelOptions) {
+  if (whiteLabel?.companyName) {
+    return {
+      logoText: whiteLabel.companyName,
+      footerText: `Generated by ${whiteLabel.companyName} — Compliance Report`,
+      remNoteText: `After fixing the above issues, re-run the compliance scan at no additional cost to verify your remediation efforts.`,
+    };
+  }
+  return {
+    logoText: 'ComplyScan',
+    footerText: 'Generated by ComplyScan — GDPR compliance made effortless',
+    remNoteText: 'After fixing the above issues, re-run the ComplyScan GDPR compliance scan at no additional cost to verify your remediation efforts.',
+  };
+}
+
+const ReportDocument: React.FC<Props> = ({ url, result, whiteLabel }) => {
   const { crawl, ruleChecks, aiAnalysis, scannedAt } = result;
   const score = aiAnalysis?.gdprScore ?? 0;
   const sc = scoreColorFn(score);
@@ -369,7 +396,10 @@ const ReportDocument: React.FC<Props> = ({ url, result }) => {
           </View>
         </View>
         <View style={S.footer}>
-          <Text style={S.footerText}>Generated by ComplyScan — GDPR compliance made effortless</Text>
+          <View>
+            <Text style={S.footerText}>Generated by ComplyScan — GDPR compliance made effortless</Text>
+            <Text style={S.footerUrl}>{esc(url)}</Text>
+          </View>
           <Text style={S.footerRight}>CONFIDENTIAL</Text>
         </View>
       </Page>
@@ -382,17 +412,20 @@ const ReportDocument: React.FC<Props> = ({ url, result }) => {
         </View>
 
         <View style={[S.card, { backgroundColor: '#f8fafc' }]}>
-          <Text style={{ fontSize: 10, color: C.muted, lineHeight: 1.6, marginBottom: 8 }}>
-            This automated GDPR compliance scan was conducted on{' '}
-            <Text style={{ fontFamily: FONT_BOLD }}>{esc(url)}</Text> on {scanDate}.
+          <View style={{ marginBottom: 12 }}>
+            <Text style={{ fontSize: 9, color: C.muted, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>Scanned Website</Text>
+            <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: C.blue }}>{esc(url)}</Text>
+          </View>
+          <Text style={{ fontSize: 12, color: C.muted, lineHeight: 1.7, marginBottom: 10 }}>
+            This automated GDPR compliance scan was conducted on {scanDate}.
             The scan combines rule-based automated checks with AI-powered analysis.
           </Text>
-          <Text style={{ fontSize: 10, color: C.muted, lineHeight: 1.6, marginBottom: 8 }}>
+          <Text style={{ fontSize: 12, color: C.muted, lineHeight: 1.7, marginBottom: 10 }}>
             Overall compliance score:{' '}
             <Text style={{ fontFamily: FONT_BOLD, color: sc }}>{score}/100</Text> — classified as{' '}
             <Text style={{ fontFamily: FONT_BOLD, color: sc }}>{riskLabel}</Text>.
           </Text>
-          <Text style={{ fontSize: 10, color: C.muted, lineHeight: 1.6 }}>
+          <Text style={{ fontSize: 12, color: C.muted, lineHeight: 1.7 }}>
             {ruleChecks?.length || 0} automated checks performed:{' '}
             <Text style={{ color: C.green }}>{passCount} passed</Text>,{' '}
             <Text style={{ color: C.red }}>{failCount} failed</Text>.{' '}
@@ -407,7 +440,7 @@ const ReportDocument: React.FC<Props> = ({ url, result }) => {
 
         <View style={[S.card]}>
           {scoreBarComponent(score)}
-          <Text style={{ fontSize: 9, color: C.muted, marginTop: 8, lineHeight: 1.5 }}>
+          <Text style={{ fontSize: 11, color: C.muted, marginTop: 10, lineHeight: 1.6 }}>
             {score >= 75
               ? 'Good standing. Your website demonstrates reasonable GDPR compliance. Address the flagged items to reach full compliance.'
               : score >= 50
@@ -423,14 +456,17 @@ const ReportDocument: React.FC<Props> = ({ url, result }) => {
               <Text style={S.sectionTitle}>AI Assessment</Text>
             </View>
             <View style={[S.card, { backgroundColor: '#f8fafc' }]}>
-              <Text style={{ fontSize: 10, color: C.muted, lineHeight: 1.6 }}>{esc(aiAnalysis.summary)}</Text>
+              <Text style={{ fontSize: 12, color: C.muted, lineHeight: 1.7 }}>{esc(aiAnalysis.summary)}</Text>
             </View>
           </>
         )}
 
         <Text style={S.pageNumber}>{++p} / {totalPages}</Text>
         <View style={S.footer}>
-          <Text style={S.footerText}>Generated by ComplyScan — GDPR compliance made effortless</Text>
+          <View>
+            <Text style={S.footerText}>Generated by ComplyScan — GDPR compliance made effortless</Text>
+            <Text style={S.footerUrl}>{esc(url)}</Text>
+          </View>
           <Text style={S.footerRight}>{scanDate}</Text>
         </View>
       </Page>
@@ -442,20 +478,20 @@ const ReportDocument: React.FC<Props> = ({ url, result }) => {
           <Text style={S.sectionTitle}>Automated GDPR Checks</Text>
         </View>
 
-        <View style={{ flexDirection: 'row', marginBottom: 10, gap: 8 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <IconCheck size={14} color={C.green} />
-            <Text style={{ fontSize: 9, fontFamily: FONT_BOLD, color: C.green }}>{passCount} Passed</Text>
+        <View style={{ flexDirection: 'row', marginBottom: 14, gap: 12 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <IconCheck size={16} color={C.green} />
+            <Text style={{ fontSize: 12, fontFamily: FONT_BOLD, color: C.green }}>{passCount} Passed</Text>
           </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <IconX size={14} color={C.red} />
-            <Text style={{ fontSize: 9, fontFamily: FONT_BOLD, color: C.red }}>{failCount} Failed</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <IconX size={16} color={C.red} />
+            <Text style={{ fontSize: 12, fontFamily: FONT_BOLD, color: C.red }}>{failCount} Failed</Text>
           </View>
         </View>
 
         {failedChecks.length > 0 && (
           <>
-            <Text style={{ fontSize: 9, color: C.red, fontFamily: FONT_BOLD, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1 }}>
+            <Text style={{ fontSize: 10, color: C.red, fontFamily: FONT_BOLD, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 1 }}>
               Failed Checks
             </Text>
             {failedChecks.map((check: any, i: number) => (
@@ -485,7 +521,7 @@ const ReportDocument: React.FC<Props> = ({ url, result }) => {
 
         {passedChecks.length > 0 && (
           <>
-            <Text style={{ fontSize: 9, color: C.green, fontFamily: FONT_BOLD, marginTop: 16, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1 }}>
+            <Text style={{ fontSize: 10, color: C.green, fontFamily: FONT_BOLD, marginTop: 18, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 1 }}>
               Passed Checks
             </Text>
             {passedChecks.map((check: any, i: number) => (
@@ -559,7 +595,10 @@ const ReportDocument: React.FC<Props> = ({ url, result }) => {
 
           <Text style={S.pageNumber}>{++p} / {totalPages}</Text>
           <View style={S.footer}>
-            <Text style={S.footerText}>Generated by ComplyScan — GDPR compliance made effortless</Text>
+            <View>
+              <Text style={S.footerText}>Generated by ComplyScan — GDPR compliance made effortless</Text>
+              <Text style={S.footerUrl}>{esc(url)}</Text>
+            </View>
             <Text style={S.footerRight}>{scanDate}</Text>
           </View>
         </Page>
@@ -573,7 +612,7 @@ const ReportDocument: React.FC<Props> = ({ url, result }) => {
         </View>
 
         <View style={[S.card]}>
-          <Text style={{ fontSize: 10, fontFamily: FONT_BOLD, color: C.text, marginBottom: 10 }}>General Information</Text>
+          <Text style={{ fontSize: 12, fontFamily: FONT_BOLD, color: C.text, marginBottom: 12 }}>General Information</Text>
           <View style={S.infoGrid}>
             <View style={S.infoCell}>
               <Text style={S.infoLabel}>Website URL</Text>
@@ -611,8 +650,8 @@ const ReportDocument: React.FC<Props> = ({ url, result }) => {
           </View>
         </View>
 
-        <View style={[S.card, { marginTop: 10 }]}>
-          <Text style={{ fontSize: 10, fontFamily: FONT_BOLD, color: C.text, marginBottom: 10 }}>Privacy & Cookie Policies</Text>
+        <View style={[S.card, { marginTop: 12 }]}>
+          <Text style={{ fontSize: 12, fontFamily: FONT_BOLD, color: C.text, marginBottom: 12 }}>Privacy & Cookie Policies</Text>
           <View style={S.infoGrid}>
             <View style={S.infoCell}>
               <Text style={S.infoLabel}>Privacy Policy</Text>
@@ -670,22 +709,25 @@ const ReportDocument: React.FC<Props> = ({ url, result }) => {
         </View>
 
         {(crawl?.trackingScripts?.length ?? 0) > 0 && (
-          <View style={[S.card, { marginTop: 10 }]}>
-            <Text style={{ fontSize: 10, fontFamily: FONT_BOLD, color: C.text, marginBottom: 8 }}>Tracking Scripts Detected</Text>
-            <Text style={{ fontSize: 9, color: C.muted }}>{(crawl?.trackingScripts ?? []).join(' · ')}</Text>
+          <View style={[S.card, { marginTop: 12 }]}>
+            <Text style={{ fontSize: 12, fontFamily: FONT_BOLD, color: C.text, marginBottom: 10 }}>Tracking Scripts Detected</Text>
+            <Text style={{ fontSize: 11, color: C.muted }}>{(crawl?.trackingScripts ?? []).join(' · ')}</Text>
           </View>
         )}
 
         {(crawl?.thirdPartyEmbeds?.length ?? 0) > 0 && (
-          <View style={[S.card, { marginTop: 10 }]}>
-            <Text style={{ fontSize: 10, fontFamily: FONT_BOLD, color: C.text, marginBottom: 8 }}>Third-Party Embeds</Text>
-            <Text style={{ fontSize: 9, color: C.muted }}>{(crawl?.thirdPartyEmbeds ?? []).join(' · ')}</Text>
+          <View style={[S.card, { marginTop: 12 }]}>
+            <Text style={{ fontSize: 12, fontFamily: FONT_BOLD, color: C.text, marginBottom: 10 }}>Third-Party Embeds</Text>
+            <Text style={{ fontSize: 11, color: C.muted }}>{(crawl?.thirdPartyEmbeds ?? []).join(' · ')}</Text>
           </View>
         )}
 
         <Text style={S.pageNumber}>{++p} / {totalPages}</Text>
         <View style={S.footer}>
-          <Text style={S.footerText}>Generated by ComplyScan — GDPR compliance made effortless</Text>
+          <View>
+            <Text style={S.footerText}>Generated by ComplyScan — GDPR compliance made effortless</Text>
+            <Text style={S.footerUrl}>{esc(url)}</Text>
+          </View>
           <Text style={S.footerRight}>{scanDate}</Text>
         </View>
       </Page>
@@ -728,7 +770,10 @@ const ReportDocument: React.FC<Props> = ({ url, result }) => {
 
         <Text style={S.pageNumber}>{++p} / {totalPages}</Text>
         <View style={S.footer}>
-          <Text style={S.footerText}>Generated by ComplyScan — GDPR compliance made effortless</Text>
+          <View>
+            <Text style={S.footerText}>Generated by ComplyScan — GDPR compliance made effortless</Text>
+            <Text style={S.footerUrl}>{esc(url)}</Text>
+          </View>
           <Text style={S.footerRight}>{scanDate}</Text>
         </View>
       </Page>
@@ -775,7 +820,10 @@ const ReportDocument: React.FC<Props> = ({ url, result }) => {
 
           <Text style={S.pageNumber}>{++p} / {totalPages}</Text>
           <View style={S.footer}>
-            <Text style={S.footerText}>Generated by ComplyScan — GDPR compliance made effortless</Text>
+            <View>
+              <Text style={S.footerText}>Generated by ComplyScan — GDPR compliance made effortless</Text>
+              <Text style={S.footerUrl}>{esc(url)}</Text>
+            </View>
             <Text style={S.footerRight}>{scanDate}</Text>
           </View>
         </Page>

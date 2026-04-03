@@ -5,36 +5,56 @@ import { useState } from "react";
 
 const plans = [
   {
-    name: "Single Scan",
-    price: "$29",
-    period: "per scan",
+    name: "Free",
+    price: "€0",
+    period: "forever",
     description:
-      "One-time full GDPR compliance scan with PDF report and unlimited retakes if you fix issues.",
+      "3 GDPR compliance scans per month. See your issues and severity ratings. Upgrade to unlock the full PDF report.",
     features: [
-      "1 full GDPR compliance scan",
-      "PDF report with issue details",
-      "Severity ratings for each finding",
-      "Fix suggestions for every issue",
-      "Unlimited retakes after fixes",
+      "3 scans per month",
+      "Issue detection & severity",
+      "AI-powered analysis",
+      "Basic fix suggestions",
+      "No credit card required",
     ],
-    plan: "single" as const,
-    cta: "Start Single Scan",
+    plan: "free" as const,
+    cta: "Scan Free",
+    ctaAction: "scroll",
   },
   {
-    name: "Monthly Monitor",
-    price: "$99",
+    name: "Pro",
+    price: "€9",
+    period: "per report",
+    description:
+      "Full PDF report with legal references, detailed fix guides, and executive summary. One-time purchase per scan.",
+    features: [
+      "Full PDF compliance report",
+      "Legal article references",
+      "Detailed fix recommendations",
+      "Executive summary",
+      "Priority email support",
+    ],
+    plan: "pdf" as const,
+    cta: "Get PDF Report",
+    ctaAction: "checkout",
+    highlighted: false,
+  },
+  {
+    name: "Agency",
+    price: "€99",
     period: "per month",
     description:
-      "Continuous compliance monitoring for active websites. Unlimited scans, monthly reports, and priority support.",
+      "Unlimited scans for all your client websites. White-label reports, client management, and priority support.",
     features: [
-      "Unlimited scans per month",
-      "Monthly compliance reports",
-      "Priority email support",
-      "New issue alerts",
+      "Unlimited scans",
+      "White-label PDF reports",
+      "Manage up to 50 clients",
       "Historical scan comparison",
+      "Priority email support",
     ],
     plan: "monthly" as const,
-    cta: "Start Monthly Monitor",
+    cta: "Start Agency",
+    ctaAction: "checkout",
     highlighted: true,
   },
 ];
@@ -42,14 +62,14 @@ const plans = [
 export function Pricing() {
   const [loading, setLoading] = useState<string | null>(null);
 
-  const handleCheckout = async (plan: 'single' | 'monthly', url?: string) => {
+  const handleCheckout = async (plan: 'pdf' | 'monthly') => {
     setLoading(plan);
 
     try {
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: url || '', email: undefined, plan }),
+        body: JSON.stringify({ url: '', email: undefined, plan }),
       });
 
       const data = await res.json();
@@ -74,12 +94,12 @@ export function Pricing() {
             Simple, Transparent Pricing
           </h2>
           <p className="text-white/60 text-lg max-w-xl mx-auto">
-            Pay once for a single scan, or subscribe for continuous monitoring.
+            Start free, upgrade when you need the full report.
             No hidden fees.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {plans.map((plan) => (
             <div
               key={plan.name}
@@ -124,19 +144,20 @@ export function Pricing() {
 
               <button
                 onClick={() => {
-                  if (plan.plan === 'single') {
-                    // Single scan requires a URL — scroll to the hero form at the top of the page
+                  if (plan.ctaAction === 'scroll') {
                     const hero = document.getElementById('hero');
                     if (hero) hero.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     else window.scrollTo({ top: 0, behavior: 'smooth' });
                   } else {
-                    handleCheckout(plan.plan);
+                    handleCheckout(plan.plan as 'pdf' | 'monthly');
                   }
                 }}
                 disabled={loading !== null}
                 className={`w-full rounded-lg py-3 px-6 font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                   plan.highlighted
                     ? "bg-accent-blue text-white hover:bg-accent-glow shadow-lg shadow-accent-blue/30"
+                    : plan.plan === 'free'
+                    ? "bg-white/10 text-white hover:bg-white/20 border border-white/20"
                     : "bg-white/10 text-white hover:bg-white/20 border border-white/20"
                 }`}
               >

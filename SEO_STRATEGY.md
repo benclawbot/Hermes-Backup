@@ -2,6 +2,7 @@
 
 > Created: 2026-04-03
 > Updated: 2026-04-03
+> Canonical domain: **ComplyScan.ch** (Thomas owns — connect in Vercel dashboard)
 > Source: Competitor SERP analysis + content extraction (no paid SEO tools)
 
 ---

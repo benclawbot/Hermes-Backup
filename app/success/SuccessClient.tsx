@@ -31,10 +31,37 @@ export default function SuccessClient() {
       .catch(() => {});
   }, [sessionId]);
 
-  // Single-scan: run scan synchronously and redirect to report.
-  // maxDuration = 45 on the trigger route allows 30s scan to complete.
+  // PDF purchase: scan already exists → redirect to report
   useEffect(() => {
-    if (!sessionId || !scanId || plan === "monthly") return;
+    if (!scanId || plan !== "pdf") return;
+    if (sessionId) {
+      // Verify the scan is completed, then redirect
+      fetch(`/api/scan/trigger`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ scanId, url: url || "", email: email || "" }),
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.status === "completed" || data.result) {
+            window.location.href = `/report/${encodeURIComponent(scanId)}?session_id=${encodeURIComponent(sessionId || '')}`;
+          } else {
+            setReportError("Scan not found. Please contact support.");
+            setReportStatus("error");
+          }
+        })
+        .catch(() => {
+          // On error, try redirecting anyway — the report page will show current state
+          window.location.href = `/report/${encodeURIComponent(scanId)}?session_id=${encodeURIComponent(sessionId || '')}`;
+        });
+    } else {
+      window.location.href = `/report/${encodeURIComponent(scanId)}`;
+    }
+  }, [scanId, plan, sessionId, url, email]);
+
+  // Single-scan (legacy): run scan synchronously and redirect to report.
+  useEffect(() => {
+    if (!sessionId || !scanId || plan === "monthly" || plan === "pdf") return;
     if (!url) {
       setReportError("Missing scan URL. Please contact support.");
       setReportStatus("error");
@@ -43,7 +70,6 @@ export default function SuccessClient() {
 
     let cancelled = false;
 
-    // Run the scan synchronously — the trigger endpoint waits for it to complete
     fetch("/api/scan/trigger", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -59,13 +85,11 @@ export default function SuccessClient() {
         }
         const data = await r.json();
         if (data.status === "completed" || data.result) {
-          // Store result in sessionStorage so report page loads without DB round-trip
           if (data.result) {
             try {
               sessionStorage.setItem(`scan:${scanId}`, JSON.stringify(data.result));
             } catch {}
           }
-          // Compress result and embed in URL to survive cold-start Lambda (no DB needed for PDF)
           if (data.result) {
             try {
               const raw = JSON.stringify(data.result);
@@ -82,7 +106,7 @@ export default function SuccessClient() {
           setReportStatus("error");
         }
       })
-      .catch((err) => {
+      .catch(() => {
         if (cancelled) return;
         setReportError("Network error. Please check your connection and try again.");
         setReportStatus("error");
