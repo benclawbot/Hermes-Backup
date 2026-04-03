@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
-import { getDb } from '@/lib/db';
 import Stripe from 'stripe';
 
 export async function POST(request: NextRequest) {
@@ -24,29 +23,28 @@ export async function POST(request: NextRequest) {
     }
 
     const scanId = uuidv4();
-    // Detect local dev vs Vercel: VERCEL is set automatically on Vercel infrastructure
-    const isLocal = !process.env.VERCEL;
-    const appUrl = isLocal
-      ? 'http://localhost:3000'
-      : (process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app').trim();
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app').trim();
     const stripe = new Stripe(stripeKey);
 
-    // Pre-create scan record so webhook / success page can find it
-    const db = getDb();
-    db.prepare(`
-      INSERT INTO scans (id, url, status, email, stripe_session_id)
-      VALUES (?, ?, 'pending', ?, NULL)
-    `).run(scanId, websiteUrl, email || null);
-
-    // Build Stripe checkout session params
+    // Build Stripe checkout session params.
+    // Note: scan record is NOT pre-created here. The success page creates it in its
+    // own Lambda invocation to avoid SQLite ephemerality issues across Lambda instances.
+    // URL + email are passed as query params so the success page has them.
     const params = new URLSearchParams();
     params.append('mode', plan === 'monthly' ? 'subscription' : 'payment');
     params.append('line_items[0][price]', priceId);
     params.append('line_items[0][quantity]', '1');
-    params.append('success_url', appUrl + '/success?session_id={CHECKOUT_SESSION_ID}&scan_id=' + scanId + '&plan=' + plan);
+    const successUrl = new URL(appUrl + '/success');
+    successUrl.searchParams.set('session_id', '{CHECKOUT_SESSION_ID}');
+    successUrl.searchParams.set('scan_id', scanId);
+    successUrl.searchParams.set('plan', plan);
+    // Pass URL + email so success page can create scan without depending on checkout's DB
+    if (websiteUrl) successUrl.searchParams.set('url', websiteUrl);
+    if (email) successUrl.searchParams.set('email', email);
+    params.append('success_url', successUrl.toString());
     params.append('cancel_url', appUrl + '/?cancelled=true');
     params.append('metadata[scanId]', scanId);
-    params.append('metadata[url]', websiteUrl);
+    params.append('metadata[url]', websiteUrl || '');
     if (email) params.append('customer_email', email);
 
     if (plan === 'monthly') {
@@ -83,10 +81,6 @@ export async function POST(request: NextRequest) {
     }
 
     const sessionId = sessionData.id;
-
-    // Update scan with Stripe session ID
-    db.prepare(`UPDATE scans SET stripe_session_id = ? WHERE id = ?`).run(sessionId, scanId);
-
     return NextResponse.json({ url: sessionData.url, sessionId, scanId });
   } catch (err: any) {
     console.error('Checkout error:', err?.message || err);

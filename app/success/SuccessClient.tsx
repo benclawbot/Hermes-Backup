@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 export default function SuccessClient() {
@@ -8,16 +8,15 @@ export default function SuccessClient() {
   const sessionId = searchParams.get("session_id");
   const scanId = searchParams.get("scan_id");
   const plan = searchParams.get("plan");
+  const url = searchParams.get("url");
+  const email = searchParams.get("email");
 
   const [subscriberToken, setSubscriberToken] = useState<string | null>(null);
   const [customerEmail, setCustomerEmail] = useState<string | null>(null);
   const [reportStatus, setReportStatus] = useState<"loading" | "error">("loading");
   const [reportError, setReportError] = useState<string>("");
-  const startedRef = useRef(false);
 
-  // Try to fetch subscriber info (used for subscriptions).
-  // This is best-effort — if it fails, we still proceed with password setup.
-  // We no longer depend on this for single-scan flow.
+  // Subscriptions → dashboard
   useEffect(() => {
     if (!sessionId) return;
     fetch(`/api/stripe/session?session_id=${encodeURIComponent(sessionId)}`)
@@ -32,77 +31,54 @@ export default function SuccessClient() {
       .catch(() => {});
   }, [sessionId]);
 
-  // Trigger scan + poll until ready, then redirect to report page.
-  // plan='monthly' (subscription) skips this entirely — those users go to dashboard.
+  // Single-scan: run scan synchronously and redirect to report.
+  // maxDuration = 45 on the trigger route allows 30s scan to complete.
   useEffect(() => {
-    if (!sessionId || !scanId || startedRef.current) return;
-    if (plan === 'monthly') return;
-    startedRef.current = true;
+    if (!sessionId || !scanId || plan === "monthly") return;
+    if (!url) {
+      setReportError("Missing scan URL. Please contact support.");
+      setReportStatus("error");
+      return;
+    }
 
-    // Trigger scan immediately
-    let triggerFailed = false;
+    let cancelled = false;
+
+    // Run the scan synchronously — the trigger endpoint waits for it to complete
     fetch("/api/scan/trigger", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ scanId }),
-    }).then(async (r) => {
-      if (!r.ok) {
-        const err = await r.json().catch(() => ({}));
-        triggerFailed = true;
-        const msg = err.error || "Scan failed. Please try again.";
-        console.error('[/success] Trigger failed:', r.status, msg);
-        setReportError(msg);
+      body: JSON.stringify({ scanId, url, email }),
+    })
+      .then(async (r) => {
+        if (cancelled) return;
+        if (!r.ok) {
+          const err = await r.json().catch(() => ({}));
+          setReportError(err.error || "Scan failed. Please try again.");
+          setReportStatus("error");
+          return;
+        }
+        const data = await r.json();
+        if (data.status === "completed" || data.result) {
+          // Scan completed — redirect to report
+          window.location.href = `/report/${encodeURIComponent(scanId)}`;
+        } else {
+          setReportError("Scan did not return a result.");
+          setReportStatus("error");
+        }
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setReportError("Network error. Please check your connection and try again.");
         setReportStatus("error");
-        return;
-      }
-      const data = await r.json().catch(() => ({}));
-      console.log('[/success] Trigger result:', data.status);
-    }).catch((err) => {
-      triggerFailed = true;
-      console.error('[/success] Trigger network error:', err);
-      setReportError("Network error. Please check your connection and try again.");
-      setReportStatus("error");
-    });
+      });
 
-    let attempts = 0;
-    const maxAttempts = 90;
-
-    const poll = () => {
-      if (triggerFailed) return;
-      fetch(`/api/report/${encodeURIComponent(scanId)}?session_id=${encodeURIComponent(sessionId)}`)
-        .then(async (r) => {
-          console.log(`[/success] Poll attempt ${attempts + 1}: HTTP ${r.status}`);
-          if (r.ok) {
-            const data = await r.json();
-            if (data.reportHtml) {
-              console.log('[/success] Report ready, redirecting...');
-              window.location.href = `/report/${encodeURIComponent(scanId)}`;
-              return;
-            }
-          } else {
-            const err = await r.json().catch(() => ({}));
-            console.log(`[/success] Poll not ready: ${r.status} — ${err.error || 'no content'}`);
-          }
-          attempts++;
-          if (attempts < maxAttempts) {
-            setTimeout(poll, 1000);
-          } else {
-            console.error('[/success] Polling timed out after', maxAttempts, 'attempts');
-            setReportStatus("error");
-          }
-        })
-        .catch((err) => {
-          console.error('[/success] Poll network error:', err);
-          attempts++;
-          if (attempts >= maxAttempts) setReportStatus("error");
-        });
+    return () => {
+      cancelled = true;
     };
+  }, [sessionId, scanId, plan, url, email]);
 
-    setTimeout(poll, 3000);
-  }, [sessionId, scanId]);
-
-  // Subscriptions → dashboard with token
-  if (plan === 'monthly') {
+  // Subscription flow
+  if (plan === "monthly") {
     const dashboardUrl = subscriberToken
       ? `/dashboard?token=${encodeURIComponent(subscriberToken)}`
       : "/dashboard";
@@ -175,9 +151,10 @@ export default function SuccessClient() {
               </svg>
             </div>
             <h1 className="text-2xl font-bold text-white mb-2">Payment Confirmed!</h1>
-            <p className="text-white/60 mb-2">Loading your GDPR compliance report…</p>
+            <p className="text-white/60 mb-2">Running your GDPR compliance scan…</p>
+            <p className="text-white/40 text-sm">This takes about 30 seconds. Please wait.</p>
             {scanId && (
-              <p className="text-white/30 text-xs">Scan ID: {scanId.substring(0, 8)}…</p>
+              <p className="text-white/30 text-xs mt-4">Scan ID: {scanId.substring(0, 8)}…</p>
             )}
           </>
         )}
