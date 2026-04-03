@@ -41,9 +41,12 @@ export async function POST(request: NextRequest) {
       const { runRuleBasedChecks } = await import('@/lib/gdpr-checks');
       const { analyzeWithAI } = await import('@/lib/ai-analysis');
 
+      console.log(`[trigger] Starting scan ${scanId} for URL:`, scan.url || scan.metadata?.url);
       const crawlResult = await crawlPage(scan.url || scan.metadata?.url);
+      console.log(`[trigger] Crawl done for ${scanId}, title:`, crawlResult.title);
       const ruleChecks = runRuleBasedChecks(crawlResult);
       const aiResult = await analyzeWithAI(crawlResult, ruleChecks);
+      console.log(`[trigger] AI analysis done for ${scanId}, score:`, aiResult.gdprScore);
 
       result = {
         crawl: {
@@ -60,7 +63,7 @@ export async function POST(request: NextRequest) {
         scannedAt: new Date().toISOString(),
       };
     } catch (err: any) {
-      console.error('Scan error:', err.message);
+      console.error(`[trigger] Scan ${scanId} failed:`, err.message, err?.stack);
       db.prepare(`UPDATE scans SET status = 'failed' WHERE id = ?`).run(scanId);
       return NextResponse.json({ status: 'failed', error: err.message }, { status: 500 });
     }

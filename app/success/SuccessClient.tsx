@@ -45,12 +45,17 @@ export default function SuccessClient() {
       if (!r.ok) {
         const err = await r.json().catch(() => ({}));
         triggerFailed = true;
-        setReportError(err.error || "Scan failed. Please try again.");
+        const msg = err.error || "Scan failed. Please try again.";
+        console.error('[/success] Trigger failed:', r.status, msg);
+        setReportError(msg);
         setReportStatus("error");
         return;
       }
-    }).catch(() => {
+      const data = await r.json().catch(() => ({}));
+      console.log('[/success] Trigger result:', data.status);
+    }).catch((err) => {
       triggerFailed = true;
+      console.error('[/success] Trigger network error:', err);
       setReportError("Network error. Please check your connection and try again.");
       setReportStatus("error");
     });
@@ -62,22 +67,28 @@ export default function SuccessClient() {
       if (triggerFailed) return;
       fetch(`/api/report/${encodeURIComponent(scanId)}?session_id=${encodeURIComponent(sessionId)}`)
         .then(async (r) => {
+          console.log(`[/success] Poll attempt ${attempts + 1}: HTTP ${r.status}`);
           if (r.ok) {
             const data = await r.json();
             if (data.reportHtml) {
-              // Redirect to dedicated report page instead of showing inline
+              console.log('[/success] Report ready, redirecting...');
               window.location.href = `/report/${encodeURIComponent(scanId)}`;
               return;
             }
+          } else {
+            const err = await r.json().catch(() => ({}));
+            console.log(`[/success] Poll not ready: ${r.status} — ${err.error || 'no content'}`);
           }
           attempts++;
           if (attempts < maxAttempts) {
             setTimeout(poll, 1000);
           } else {
+            console.error('[/success] Polling timed out after', maxAttempts, 'attempts');
             setReportStatus("error");
           }
         })
-        .catch(() => {
+        .catch((err) => {
+          console.error('[/success] Poll network error:', err);
           attempts++;
           if (attempts >= maxAttempts) setReportStatus("error");
         });
