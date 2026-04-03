@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
           scannedAt: new Date().toISOString(),
         };
 
-        // Compress result for storage (same as webhook/route.ts pattern)
+        // Compress with gzip+base64 (consistent format expected by report reader)
         const rawJson = JSON.stringify(result);
         const compressed = require('zlib').gzipSync(Buffer.from(rawJson, 'utf8'));
         const resultJson = compressed.toString('base64');
