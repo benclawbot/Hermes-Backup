@@ -44,7 +44,12 @@ export default function SuccessClient() {
         .then(r => r.json())
         .then(data => {
           if (data.status === "completed" || data.result) {
-            window.location.href = `/report/${encodeURIComponent(scanId)}?session_id=${encodeURIComponent(sessionId || '')}`;
+            // Store in sessionStorage for cold-start resilience
+            try { sessionStorage.setItem(`scan:${scanId}`, JSON.stringify(data.result)); } catch {}
+            // Embed result in URL (same approach as free-scan flow) to survive cold-starts
+            const rawJson = JSON.stringify(data.result);
+            const encoded = Buffer.from(rawJson, "utf8").toString("base64");
+            window.location.href = `/report/${encodeURIComponent(scanId)}?r=${encoded}&session_id=${encodeURIComponent(sessionId || '')}`;
           } else {
             setReportError("Scan not found. Please contact support.");
             setReportStatus("error");
