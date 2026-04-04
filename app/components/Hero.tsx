@@ -39,12 +39,10 @@ export function Hero() {
       }
 
       // Embed result in URL to survive Vercel serverless cold-starts (ephemeral FS)
-      // Use raw deflate (no header) so Python can decode it directly
+      // Plain base64 — simple and reliable, ~18KB fits well within URL limits
       const rawJson = JSON.stringify(data.result);
-      const compressed = Buffer.from(
-        require("zlib").deflateSync(Buffer.from(rawJson, "utf8"))
-      ).toString("base64");
-      window.location.href = `/scan-results/${encodeURIComponent(data.scanId)}?r=${compressed}`;
+      const encoded = Buffer.from(rawJson, "utf8").toString("base64");
+      window.location.href = `/scan-results/${encodeURIComponent(data.scanId)}?r=${encoded}`;
     } catch {
       setError("Failed to start scan. Is the server running?");
     } finally {
