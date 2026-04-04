@@ -76,7 +76,7 @@ export async function analyzeWithAI(crawlResult: any, ruleBasedChecks: any[]): P
 
   const truncated = {
     ...rest,
-    html: rest.html ? rest.html.substring(0, 3000) + '...[truncated]' : '',
+    html: rest.html ? rest.html.substring(0, 1500) + '...[truncated]' : '',
     screenshots: [], // Exclude screenshots from AI analysis
   };
   const escaped = jsonEscape(truncated) as typeof truncated;
@@ -184,13 +184,88 @@ Be specific. Generic advice is not helpful. Focus on actionable fixes.`;
 
   content = repairJson(content);
 
-  // Try parse with recovery: strip obvious malformed suffix after final }
+  // ── Truncation recovery ─────────────────────────────────────────────────────
+  // MiniMax can truncate mid-JSON when output is too long. Detect and repair.
+  let needsTruncationRepair = false;
+  try {
+    JSON.parse(content);
+  } catch {
+    // Truncated if: unbalanced braces/brackets, or last char is not a proper closer
+    const lastChar = content.trim().slice(-1);
+    needsTruncationRepair = (
+      (content.match(/\{/g) || []).length > (content.match(/\}/g) || []).length ||
+      (content.match(/\[/g) || []).length > (content.match(/\]/g) || []).length ||
+      (lastChar !== '"' && lastChar !== '}' && lastChar !== ']')
+    );
+  }
+
+  if (needsTruncationRepair) {
+    let repaired = content.trim();
+
+    // Find the last property that appears complete (key: value,)
+    // and truncate to that point, closing arrays/objects
+    const lastPropMatch = repaired.match(/("[\w]+":\s*(?:"[^"]*"|[\d.]+|true|false|null|\{[^}]*\}|\[[^\]]*\])(?=\s*,\s*"[\w]+"))/);
+    let truncateAt = repaired.length;
+
+    if (lastPropMatch) {
+      // We found a complete last property before the truncation
+      // Find where it ends (the comma after it)
+      const lastCompleteProp = lastPropMatch[0];
+      const propEndIdx = repaired.lastIndexOf(lastCompleteProp) + lastCompleteProp.length;
+      // Find the comma after
+      const commaAfter = repaired.indexOf(',', propEndIdx);
+      if (commaAfter > 0) {
+        truncateAt = commaAfter + 1;
+      } else {
+        truncateAt = propEndIdx;
+      }
+    } else {
+      // Fallback: find last complete "key": "value" pair and close from there
+      const allMatches = [...repaired.matchAll(/("[\w]+":\s*"[^"\\]*(?:\\.[^"\\]*)*")/g)];
+      if (allMatches.length > 0) {
+        const last = allMatches[allMatches.length - 1];
+        const afterLast = repaired.indexOf('"', last.index + last[0].length);
+        if (afterLast > 0) {
+          truncateAt = afterLast + 1;
+        }
+      }
+    }
+
+    repaired = repaired.substring(0, truncateAt);
+
+    // Add placeholders for any missing required fields
+    if (!repaired.includes('"issues"')) {
+      repaired += '"issues": []';
+    }
+    if (!repaired.includes('"positives"')) {
+      repaired += ',"positives": []';
+    }
+    if (!repaired.includes('"riskLevel"')) {
+      repaired += ',"riskLevel": "medium"';
+    }
+    if (!repaired.includes('"gdprScore"')) {
+      repaired += ',"gdprScore": 50';
+    }
+
+    // Close any open structures
+    const openBraces = (repaired.match(/\{/g) || []).length;
+    const closeBraces = (repaired.match(/\}/g) || []).length;
+    const openBrackets = (repaired.match(/\[/g) || []).length;
+    const closeBrackets = (repaired.match(/\]/g) || []).length;
+
+    for (let i = 0; i < openBrackets - closeBrackets; i++) repaired += ']';
+    for (let i = 0; i < openBraces - closeBraces; i++) repaired += '}';
+
+    content = repaired;
+  }
+
+  // Try parse with recovery
   let parsed: AiAnalysisResult;
   try {
     parsed = JSON.parse(content) as AiAnalysisResult;
   } catch (parseErr: unknown) {
     const errMsg = parseErr instanceof Error ? parseErr.message : String(parseErr);
-    throw new Error(`AI response JSON parse failed: ${errMsg} | content preview: ${content.substring(0, 200)}`);
+    throw new Error(`AI response JSON parse failed: ${errMsg} | content preview: ${content.substring(0, 300)}`);
   }
 
   if (!validateResult(parsed)) {
