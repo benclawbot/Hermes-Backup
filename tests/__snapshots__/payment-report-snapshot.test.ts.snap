@@ -60,16 +60,16 @@ exports[`generateReportHtml — high-risk / low score > matches saved snapshot f
     </div>
     
     
-    <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#64748b;line-height:1.6;margin:0 0 12px;">🚨 <strong>Significant compliance gaps.</strong> Immediate action is recommended. Critical issues are likely exposing your business to regulatory risk.</p>
+    <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#64748b;line-height:1.6;margin:0 0 12px;"><svg width="16" height="16" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="11" fill="#dc2626"/><path d="M12 8v5M12 16v.01" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg> <strong>Significant compliance gaps.</strong> Immediate action is recommended. Critical issues are likely exposing your business to regulatory risk.</p>
   </div>
   <div style="margin:36px 0 16px;">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
       <div style="width:4px;height:20px;background:#2563eb;border-radius:2px;"></div>
-      <h2 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:700;color:#1e293b;margin:0;">Automated Checks (2 ✅ / 1 ❌)</h2>
+      <h2 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:700;color:#1e293b;margin:0;">Automated Checks (<svg width="14" height="14" viewBox="0 0 24 24" style="vertical-align:middle"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg> 2 / <svg width="14" height="14" viewBox="0 0 24 24" style="vertical-align:middle"><circle cx="12" cy="12" r="11" fill="#dc2626"/><path d="M8 8l8 8M16 8l-8 8" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg> 1)</h2>
     </div>
   </div><div style="background:#fef2f2;border:1px solid #dc2626;border-radius:12px;padding:20px;margin-bottom:20px;">
       <div style="display:flex;align-items:flex-start;gap:12px;">
-        <div style="width:32px;height:32px;border-radius:50%;background:#fef2f2;border:2px solid #dc2626;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">❌</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:#fef2f2;border:2px solid #dc2626;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#dc2626"/><path d="M8 8l8 8M16 8l-8 8" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg></div>
         <div style="flex:1;">
           <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:4px;">Privacy Policy</div>
           <div style="font-size:13px;color:#64748b;margin-bottom:8px;">No privacy policy found</div>
@@ -79,7 +79,7 @@ exports[`generateReportHtml — high-risk / low score > matches saved snapshot f
       </div>
     </div><div style="background:#f0fdf4;border:1px solid #16a34a;border-radius:12px;padding:20px;margin-bottom:20px;">
       <div style="display:flex;align-items:flex-start;gap:12px;">
-        <div style="width:32px;height:32px;border-radius:50%;background:#f0fdf4;border:2px solid #16a34a;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">✅</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:#f0fdf4;border:2px solid #16a34a;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div>
         <div style="flex:1;">
           <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:4px;">HTTPS</div>
           <div style="font-size:13px;color:#64748b;">Site uses HTTPS</div>
@@ -88,7 +88,7 @@ exports[`generateReportHtml — high-risk / low score > matches saved snapshot f
       </div>
     </div><div style="background:#f0fdf4;border:1px solid #16a34a;border-radius:12px;padding:20px;margin-bottom:20px;">
       <div style="display:flex;align-items:flex-start;gap:12px;">
-        <div style="width:32px;height:32px;border-radius:50%;background:#f0fdf4;border:2px solid #16a34a;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">✅</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:#f0fdf4;border:2px solid #16a34a;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div>
         <div style="flex:1;">
           <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:4px;">Cookie Consent</div>
           <div style="font-size:13px;color:#64748b;">Cookie consent banner detected</div>
@@ -108,7 +108,7 @@ exports[`generateReportHtml — high-risk / low score > matches saved snapshot f
             <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:6px;">No SSL</div>
             <div style="font-size:13px;color:#64748b;margin-bottom:10px;line-height:1.5;">Site is not served over HTTPS.</div>
             
-            <div style="background:#f0fdf4;border-left:3px solid #16a34a;padding:10px 12px;border-radius:0 6px 6px 0;font-size:13px;color:#166534;"><strong>✅ Recommended Fix:</strong><br>Install an SSL certificate.</div>
+            <div style="background:#f0fdf4;border-left:3px solid #16a34a;padding:10px 12px;border-radius:0 6px 6px 0;font-size:13px;color:#166534;"><strong><svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:3px"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Recommended Fix:</strong><br>Install an SSL certificate.</div>
             
           </div>
         </div>
@@ -119,7 +119,7 @@ exports[`generateReportHtml — high-risk / low score > matches saved snapshot f
             <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:6px;">Missing Privacy Policy</div>
             <div style="font-size:13px;color:#64748b;margin-bottom:10px;line-height:1.5;">No privacy policy page was found.</div>
             
-            <div style="background:#f0fdf4;border-left:3px solid #16a34a;padding:10px 12px;border-radius:0 6px 6px 0;font-size:13px;color:#166534;"><strong>✅ Recommended Fix:</strong><br>Add a privacy policy page.</div>
+            <div style="background:#f0fdf4;border-left:3px solid #16a34a;padding:10px 12px;border-radius:0 6px 6px 0;font-size:13px;color:#166534;"><strong><svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:3px"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Recommended Fix:</strong><br>Add a privacy policy page.</div>
             
           </div>
         </div>
@@ -130,7 +130,7 @@ exports[`generateReportHtml — high-risk / low score > matches saved snapshot f
             <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:6px;">Tracking scripts found</div>
             <div style="font-size:13px;color:#64748b;margin-bottom:10px;line-height:1.5;">3rd-party tracking detected.</div>
             
-            <div style="background:#f0fdf4;border-left:3px solid #16a34a;padding:10px 12px;border-radius:0 6px 6px 0;font-size:13px;color:#166534;"><strong>✅ Recommended Fix:</strong><br>Review and minimize tracking scripts.</div>
+            <div style="background:#f0fdf4;border-left:3px solid #16a34a;padding:10px 12px;border-radius:0 6px 6px 0;font-size:13px;color:#166534;"><strong><svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:3px"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Recommended Fix:</strong><br>Review and minimize tracking scripts.</div>
             
           </div>
         </div>
@@ -147,7 +147,7 @@ exports[`generateReportHtml — high-risk / low score > matches saved snapshot f
           <div style="font-size:13px;color:#64748b;line-height:1.8;">
             <div><strong>Title:</strong> Example Domain</div>
             <div><strong>URL:</strong> https://example.com</div>
-            <div><strong>HTTPS:</strong> <span style="color:#16a34a;">✅ Enabled</span></div>
+            <div><strong>HTTPS:</strong> <span style="color:#16a34a;"><svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg> Enabled</span></div>
             <div><strong>Status:</strong> 200</div>
             <div><strong>Forms found:</strong> 0</div>
             <div><strong>Labeled form inputs:</strong> undefined / undefined</div>
@@ -156,17 +156,17 @@ exports[`generateReportHtml — high-risk / low score > matches saved snapshot f
         <div>
           <h3 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:600;color:#1e293b;margin:16px 0 8px;">Policy Presence</h3>
           <div style="font-size:13px;color:#64748b;line-height:1.8;">
-            <div><strong>Privacy Policy:</strong> <span style="color:#dc2626;">❌ Missing</span></div>
+            <div><strong>Privacy Policy:</strong> <span style="color:#dc2626;"><svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle"><circle cx="12" cy="12" r="11" fill="#dc2626"/><path d="M8 8l8 8M16 8l-8 8" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg> Missing</span></div>
             
-            <div><strong>Cookie Policy:</strong> <span style="color:#d97706;">⚠️ Not detected</span></div>
-            <div><strong>Cookie Banner:</strong> <span style="color:#d97706;">⚠️ Not detected</span></div>
+            <div><strong>Cookie Policy:</strong> <span style="color:#d97706;"><svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle"><circle cx="12" cy="12" r="11" fill="#d97706"/><path d="M12 8v5M12 16v.01" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg> Not detected</span></div>
+            <div><strong>Cookie Banner:</strong> <span style="color:#d97706;"><svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle"><circle cx="12" cy="12" r="11" fill="#d97706"/><path d="M12 8v5M12 16v.01" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg> Not detected</span></div>
             
           </div>
         </div>
       </div>
     </div><div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:20px;">
       <h3 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:600;color:#1e293b;margin:16px 0 8px;">Tracking Scripts Detected</h3>
-      <div style="color:#16a34a;font-size:13px;">✅ No third-party tracking scripts detected.</div>
+      <div style="color:#16a34a;font-size:13px;"><svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>No third-party tracking scripts detected.</div>
       
     </div>
   <div style="margin:36px 0 16px;">
@@ -317,17 +317,17 @@ exports[`generateReportHtml — standard medium-risk report > matches saved snap
       <span>100 — Full Compliance</span>
     </div>
     
-    <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#64748b;line-height:1.6;margin:0 0 12px;">⚠️ <strong>Partial compliance.</strong> Several issues require attention. Prioritise the critical and high-severity findings below.</p>
+    <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#64748b;line-height:1.6;margin:0 0 12px;"><svg width="16" height="16" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="11" fill="#d97706"/><path d="M12 8v5M12 16v.01" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg> <strong>Partial compliance.</strong> Several issues require attention. Prioritise the critical and high-severity findings below.</p>
     
   </div>
   <div style="margin:36px 0 16px;">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
       <div style="width:4px;height:20px;background:#2563eb;border-radius:2px;"></div>
-      <h2 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:700;color:#1e293b;margin:0;">Automated Checks (2 ✅ / 1 ❌)</h2>
+      <h2 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:700;color:#1e293b;margin:0;">Automated Checks (<svg width="14" height="14" viewBox="0 0 24 24" style="vertical-align:middle"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg> 2 / <svg width="14" height="14" viewBox="0 0 24 24" style="vertical-align:middle"><circle cx="12" cy="12" r="11" fill="#dc2626"/><path d="M8 8l8 8M16 8l-8 8" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg> 1)</h2>
     </div>
   </div><div style="background:#fef2f2;border:1px solid #dc2626;border-radius:12px;padding:20px;margin-bottom:20px;">
       <div style="display:flex;align-items:flex-start;gap:12px;">
-        <div style="width:32px;height:32px;border-radius:50%;background:#fef2f2;border:2px solid #dc2626;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">❌</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:#fef2f2;border:2px solid #dc2626;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#dc2626"/><path d="M8 8l8 8M16 8l-8 8" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg></div>
         <div style="flex:1;">
           <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:4px;">Privacy Policy</div>
           <div style="font-size:13px;color:#64748b;margin-bottom:8px;">No privacy policy found</div>
@@ -337,7 +337,7 @@ exports[`generateReportHtml — standard medium-risk report > matches saved snap
       </div>
     </div><div style="background:#f0fdf4;border:1px solid #16a34a;border-radius:12px;padding:20px;margin-bottom:20px;">
       <div style="display:flex;align-items:flex-start;gap:12px;">
-        <div style="width:32px;height:32px;border-radius:50%;background:#f0fdf4;border:2px solid #16a34a;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">✅</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:#f0fdf4;border:2px solid #16a34a;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div>
         <div style="flex:1;">
           <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:4px;">HTTPS</div>
           <div style="font-size:13px;color:#64748b;">Site uses HTTPS</div>
@@ -346,7 +346,7 @@ exports[`generateReportHtml — standard medium-risk report > matches saved snap
       </div>
     </div><div style="background:#f0fdf4;border:1px solid #16a34a;border-radius:12px;padding:20px;margin-bottom:20px;">
       <div style="display:flex;align-items:flex-start;gap:12px;">
-        <div style="width:32px;height:32px;border-radius:50%;background:#f0fdf4;border:2px solid #16a34a;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">✅</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:#f0fdf4;border:2px solid #16a34a;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div>
         <div style="flex:1;">
           <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:4px;">Cookie Consent</div>
           <div style="font-size:13px;color:#64748b;">Cookie consent banner detected</div>
@@ -366,7 +366,7 @@ exports[`generateReportHtml — standard medium-risk report > matches saved snap
             <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:6px;">Missing Privacy Policy</div>
             <div style="font-size:13px;color:#64748b;margin-bottom:10px;line-height:1.5;">No privacy policy page was found.</div>
             
-            <div style="background:#f0fdf4;border-left:3px solid #16a34a;padding:10px 12px;border-radius:0 6px 6px 0;font-size:13px;color:#166534;"><strong>✅ Recommended Fix:</strong><br>Add a privacy policy page at /privacy or /privacy-policy</div>
+            <div style="background:#f0fdf4;border-left:3px solid #16a34a;padding:10px 12px;border-radius:0 6px 6px 0;font-size:13px;color:#166534;"><strong><svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:3px"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Recommended Fix:</strong><br>Add a privacy policy page at /privacy or /privacy-policy</div>
             
           </div>
         </div>
@@ -383,7 +383,7 @@ exports[`generateReportHtml — standard medium-risk report > matches saved snap
           <div style="font-size:13px;color:#64748b;line-height:1.8;">
             <div><strong>Title:</strong> Example Domain</div>
             <div><strong>URL:</strong> https://example.com</div>
-            <div><strong>HTTPS:</strong> <span style="color:#16a34a;">✅ Enabled</span></div>
+            <div><strong>HTTPS:</strong> <span style="color:#16a34a;"><svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg> Enabled</span></div>
             <div><strong>Status:</strong> 200</div>
             <div><strong>Forms found:</strong> 0</div>
             <div><strong>Labeled form inputs:</strong> undefined / undefined</div>
@@ -392,17 +392,17 @@ exports[`generateReportHtml — standard medium-risk report > matches saved snap
         <div>
           <h3 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:600;color:#1e293b;margin:16px 0 8px;">Policy Presence</h3>
           <div style="font-size:13px;color:#64748b;line-height:1.8;">
-            <div><strong>Privacy Policy:</strong> <span style="color:#dc2626;">❌ Missing</span></div>
+            <div><strong>Privacy Policy:</strong> <span style="color:#dc2626;"><svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle"><circle cx="12" cy="12" r="11" fill="#dc2626"/><path d="M8 8l8 8M16 8l-8 8" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg> Missing</span></div>
             
-            <div><strong>Cookie Policy:</strong> <span style="color:#d97706;">⚠️ Not detected</span></div>
-            <div><strong>Cookie Banner:</strong> <span style="color:#d97706;">⚠️ Not detected</span></div>
+            <div><strong>Cookie Policy:</strong> <span style="color:#d97706;"><svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle"><circle cx="12" cy="12" r="11" fill="#d97706"/><path d="M12 8v5M12 16v.01" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg> Not detected</span></div>
+            <div><strong>Cookie Banner:</strong> <span style="color:#d97706;"><svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle"><circle cx="12" cy="12" r="11" fill="#d97706"/><path d="M12 8v5M12 16v.01" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg> Not detected</span></div>
             
           </div>
         </div>
       </div>
     </div><div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:20px;">
       <h3 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:600;color:#1e293b;margin:16px 0 8px;">Tracking Scripts Detected</h3>
-      <div style="color:#16a34a;font-size:13px;">✅ No third-party tracking scripts detected.</div>
+      <div style="color:#16a34a;font-size:13px;"><svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>No third-party tracking scripts detected.</div>
       
     </div>
   <div style="margin:36px 0 16px;">

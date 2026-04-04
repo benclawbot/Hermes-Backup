@@ -265,7 +265,23 @@ Be specific. Generic advice is not helpful. Focus on actionable fixes.`;
     parsed = JSON.parse(content) as AiAnalysisResult;
   } catch (parseErr: unknown) {
     const errMsg = parseErr instanceof Error ? parseErr.message : String(parseErr);
-    throw new Error(`AI response JSON parse failed: ${errMsg} | content preview: ${content.substring(0, 300)}`);
+    // Fallback: try to extract a minimal valid result from the raw text.
+    // MiniMax sometimes returns valid JSON in a summary field embedded in text.
+    const summaryMatch = content.match(/"summary"\s*:\s*"([^"\\]*(\\.[^"\\]*)*)"/);
+    const scoreMatch = content.match(/"gdprScore"\s*:\s*(\d+)/);
+    if (summaryMatch || scoreMatch) {
+      parsed = {
+        summary: summaryMatch
+          ? summaryMatch[1].replace(/\\n/g, ' ').replace(/\\"/g, '"').substring(0, 2000)
+          : 'AI analysis unavailable. Please try again.',
+        gdprScore: scoreMatch ? Math.max(0, Math.min(100, parseInt(scoreMatch[1], 10))) : 50,
+        riskLevel: 'medium',
+        issues: [],
+        positives: [],
+      };
+    } else {
+      throw new Error(`AI response JSON parse failed: ${errMsg} | content preview: ${content.substring(0, 300)}`);
+    }
   }
 
   if (!validateResult(parsed)) {
