@@ -46,10 +46,10 @@ export default function SuccessClient() {
           if (data.status === "completed" || data.result) {
             // Store in sessionStorage for cold-start resilience
             try { sessionStorage.setItem(`scan:${scanId}`, JSON.stringify(data.result)); } catch {}
-            // Embed result in URL (same approach as free-scan flow) to survive cold-starts
+            // Embed result in URL (gzip+base64) to survive cold-starts
             const rawJson = JSON.stringify(data.result);
-            const encoded = Buffer.from(rawJson, "utf8").toString("base64");
-            window.location.href = `/report/${encodeURIComponent(scanId)}?r=${encoded}&session_id=${encodeURIComponent(sessionId || '')}`;
+            const compressed = require('zlib').gzipSync(Buffer.from(rawJson, 'utf8')).toString('base64');
+            window.location.href = `/report/${encodeURIComponent(scanId)}?r=${compressed}&session_id=${encodeURIComponent(sessionId || '')}`;
           } else {
             setReportError("Scan not found. Please contact support.");
             setReportStatus("error");

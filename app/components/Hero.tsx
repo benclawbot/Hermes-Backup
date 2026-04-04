@@ -39,9 +39,10 @@ export function Hero() {
       }
 
       // Embed result in URL to survive Vercel serverless cold-starts (ephemeral FS)
-      // Plain base64 — simple and reliable, ~18KB fits well within URL limits
+      // Gzip + base64: ~70% smaller than plain base64, ensures proxies don't truncate the URL
       const rawJson = JSON.stringify(data.result);
-      const encoded = Buffer.from(rawJson, "utf8").toString("base64");
+      const compressed = require('zlib').gzipSync(Buffer.from(rawJson, 'utf8'));
+      const encoded = compressed.toString('base64');
       window.location.href = `/scan-results/${encodeURIComponent(data.scanId)}?r=${encoded}`;
     } catch {
       setError("Failed to start scan. Is the server running?");

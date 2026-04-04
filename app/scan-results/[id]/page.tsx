@@ -8,10 +8,16 @@ interface Props {
 }
 
 // Server-side: decode ?r= param to avoid DB dependency on cold-starts
+// Supports both gzip+base64 (Hero.tsx, ~70% smaller) and plain base64 (legacy)
 function decodeResultFromParam(encoded: string): any | null {
   try {
-    // Plain base64 JSON (Hero.tsx uses Buffer.from().toString("base64"))
-    return JSON.parse(Buffer.from(encoded, "base64").toString("utf8"));
+    const decoded = Buffer.from(encoded, 'base64');
+    // gzip magic bytes: 0x1f 0x8b
+    if (decoded[0] === 0x1f && decoded[1] === 0x8b) {
+      return JSON.parse(require('zlib').gunzipSync(decoded).toString('utf8'));
+    }
+    // Plain base64 JSON (legacy)
+    return JSON.parse(decoded.toString('utf8'));
   } catch {
     return null;
   }
