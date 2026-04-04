@@ -39,7 +39,7 @@ export function Hero() {
       }
 
       // Embed result in URL to survive Vercel serverless cold-starts (ephemeral FS)
-      // Gzip + base64: ~70% smaller than plain base64, ensures proxies don't truncate the URL
+      // gzipSync produces RFC 1952 gzip format — detected by page.tsx via magic bytes 0x1f 0x8b
       const rawJson = JSON.stringify(data.result);
       const compressed = require('zlib').gzipSync(Buffer.from(rawJson, 'utf8'));
       const encoded = compressed.toString('base64');
