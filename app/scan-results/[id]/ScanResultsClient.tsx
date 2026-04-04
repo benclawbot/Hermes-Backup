@@ -286,14 +286,14 @@ export default function ScanResultsClient({ scanId, url, email, status, result }
               <p className="text-white/50 text-sm mb-6 max-w-md mx-auto">
                 This scan shows a preview of your GDPR compliance status.
                 Get the complete PDF report with issue details, fix recommendations,
-                and legal references for <span className="text-white font-semibold">€9</span>.
+                and legal references for <span className="text-white font-semibold">$29</span>.
               </p>
               <button
                 onClick={handlePurchasePDF}
                 disabled={loading}
                 className="rounded-lg bg-accent-blue px-8 py-3 font-semibold text-white hover:bg-accent-glow transition-all shadow-lg shadow-accent-blue/30 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Redirecting..." : "Get PDF Report — €9"}
+                {loading ? "Redirecting..." : "Get PDF Report — $29"}
               </button>
               <p className="text-white/30 text-xs mt-3">Secure payment via Stripe · Instant delivery</p>
             </div>
@@ -314,14 +314,14 @@ export default function ScanResultsClient({ scanId, url, email, status, result }
             <Lock className="w-8 h-8 text-accent-blue mx-auto mb-3" />
             <h3 className="text-xl font-bold text-white mb-2 text-center">Unlock Full PDF Report</h3>
             <p className="text-white/50 text-sm mb-6 text-center">
-              Complete report with legal references, detailed fix guides, and executive summary for €9.
+              Complete report with legal references, detailed fix guides, and executive summary for $29.
             </p>
             <button
               onClick={handlePurchasePDF}
               disabled={loading}
               className="w-full rounded-lg bg-accent-blue py-3 font-semibold text-white hover:bg-accent-glow transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Redirecting..." : "Continue to Payment — €9"}
+              {loading ? "Redirecting..." : "Continue to Payment — $29"}
             </button>
             <button
               onClick={() => setShowUpgradeModal(false)}
