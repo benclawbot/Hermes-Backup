@@ -46,9 +46,9 @@ async function processScanJob(job: ScanJob, env: Env): Promise<void> {
 
   try {
     // Run the actual scan pipeline
-    const { crawlPage } = await import('./crawler');
-    const { runRuleBasedChecks } = await import('./gdpr-checks');
-    const { analyzeWithAI } = await import('./ai-analysis');
+        const { crawlPage } = await import('../lib/crawler');
+        const { runRuleBasedChecks } = await import('../lib/gdpr-checks');
+        const { analyzeWithAI } = await import('../lib/ai-analysis');
 
     const crawlResult = await crawlPage(url);
     const ruleChecks = runRuleBasedChecks(crawlResult);

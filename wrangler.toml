@@ -13,9 +13,8 @@ binding = "REPORTS_BUCKET"
 bucket_name = "compliance-checker-reports"
 
 # Queue for async scan processing (replaces sync scan-in-request)
-[[queues]]
-binding = "SCAN_QUEUE"
-queue_name = "compliance-checker-scan-queue"
+[[queues.consumers]]
+queue = "compliance-checker-scan-queue"
 
 # KV for rate limiting and temporary data
 [[kv_namespaces]]

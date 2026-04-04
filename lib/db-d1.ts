@@ -80,7 +80,7 @@ export class D1Client {
 
   // Convenience methods mirroring better-sqlite3 patterns
 
-  get<T = any>(sql: string, ...params: any[]): T | null {
+  async get<T = any>(sql: string, ...params: any[]): Promise<T | null> {
     const stmt = this.db.prepare(sql);
     // D1 bind positional params with $1, $2... or ?
     // We use ? for compatibility — D1 accepts both
@@ -89,14 +89,14 @@ export class D1Client {
     return result ?? null;
   }
 
-  all<T = any>(sql: string, ...params: any[]): T[] {
+  async all<T = any>(sql: string, ...params: any[]): Promise<T[]> {
     const stmt = this.db.prepare(sql);
     const bound = params.length > 0 ? stmt.bind(...params) : stmt;
     const result = await bound.all<T>();
     return result.results;
   }
 
-  run(sql: string, ...params: any[]): D1Result {
+  async run(sql: string, ...params: any[]): Promise<D1Result> {
     const stmt = this.db.prepare(sql);
     const bound = params.length > 0 ? stmt.bind(...params) : stmt;
     return await bound.run();
