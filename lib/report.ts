@@ -188,7 +188,7 @@ export function generateReportHtml(url: string, result: ScanResult): string {
 
       <div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:24px 40px;width:100%;max-width:600px;margin-bottom:40px;">
         <div style="font-size:11px;opacity:0.6;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Scanned Website</div>
-        <div style="font-size:16px;font-weight:600;">${esc(url)}</div>
+        <div style="font-size:16px;font-weight:600;">${url ? esc(url) : '<span style="opacity:0.4;">Not available</span>'}</div>
       </div>
 
       <div style="display:flex;gap:40px;font-size:13px;opacity:0.7;">
@@ -217,34 +217,34 @@ export function generateReportHtml(url: string, result: ScanResult): string {
       <span>50 — Partial Compliance</span>
       <span>100 — Full Compliance</span>
     </div>
-    ${score >= 75 ? p('✅ <strong>Good standing.</strong> Your website demonstrates reasonable GDPR compliance. Address the flagged items to reach full compliance.') : ''}
-    ${score >= 50 && score < 75 ? p('⚠️ <strong>Partial compliance.</strong> Several issues require attention. Prioritise the critical and high-severity findings below.') : ''}
-    ${score < 50 ? p('🚨 <strong>Significant compliance gaps.</strong> Immediate action is recommended. Critical issues are likely exposing your business to regulatory risk.') : ''}
+    ${score >= 75 ? p('<svg width="16" height="16" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg> <strong>Good standing.</strong> Your website demonstrates reasonable GDPR compliance. Address the flagged items to reach full compliance.') : ''}
+    ${score >= 50 && score < 75 ? p('<svg width="16" height="16" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="11" fill="#d97706"/><path d="M12 8v5M12 16v.01" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg> <strong>Partial compliance.</strong> Several issues require attention. Prioritise the critical and high-severity findings below.') : ''}
+    ${score < 50 ? p('<svg width="16" height="16" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="11" fill="#dc2626"/><path d="M12 8v5M12 16v.01" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg> <strong>Significant compliance gaps.</strong> Immediate action is recommended. Critical issues are likely exposing your business to regulatory risk.') : ''}
   `);
 
   // ── Automated Checks ───────────────────────────────────────────────────────
   const passedChecks = ruleChecks.filter(c => c.passed);
   const failedChecks = ruleChecks.filter(c => !c.passed);
 
-  const checksSection = sectionTitle(`Automated Checks (${passCount} ✅ / ${failCount} ❌)`) +
+  const checksSection = sectionTitle(`Automated Checks (<svg width="14" height="14" viewBox="0 0 24 24" style="vertical-align:middle"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg> ${passCount} / <svg width="14" height="14" viewBox="0 0 24 24" style="vertical-align:middle"><circle cx="12" cy="12" r="11" fill="#dc2626"/><path d="M8 8l8 8M16 8l-8 8" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg> ${failCount})`) +
     failedChecks.map(check => card(`
       <div style="display:flex;align-items:flex-start;gap:12px;">
-        <div style="width:32px;height:32px;border-radius:50%;background:${FAIL_BG};border:2px solid ${FAIL};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">❌</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:${FAIL_BG};border:2px solid ${FAIL};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#dc2626"/><path d="M8 8l8 8M16 8l-8 8" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg></div>
         <div style="flex:1;">
           <div style="font-size:14px;font-weight:600;color:${TEXT};margin-bottom:4px;">${esc(check.name)}</div>
           <div style="font-size:13px;color:${TEXT_MUTED};margin-bottom:${check.recommendation ? '8px' : '0'};">${esc(check.detail || '')}</div>
           ${check.recommendation ? `<div style="background:#fef9c3;border-left:3px solid ${WARN};padding:8px 12px;border-radius:0 6px 6px 0;font-size:12px;color:#854d0e;"><strong>Recommendation:</strong> ${esc(check.recommendation)}</div>` : ''}
-          ${check.gdprArticle ? `<div style="font-size:11px;color:${ACCENT};margin-top:8px;">📋 ${gdprArticleLabel(check.gdprArticle)}</div>` : ''}
+          ${check.gdprArticle ? `<div style="font-size:11px;color:${ACCENT};margin-top:8px;"><svg width="11" height="11" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:3px"><rect x="3" y="3" width="18" height="18" rx="2" fill="#2563eb"/><path d="M8 12h8M8 8h8M8 16h4" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>${gdprArticleLabel(check.gdprArticle)}</div>` : ''}
         </div>
       </div>
     `, FAIL_BG, FAIL)).join('') +
     passedChecks.map(check => card(`
       <div style="display:flex;align-items:flex-start;gap:12px;">
-        <div style="width:32px;height:32px;border-radius:50%;background:${SUCCESS_BG};border:2px solid ${SUCCESS};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">✅</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:${SUCCESS_BG};border:2px solid ${SUCCESS};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div>
         <div style="flex:1;">
           <div style="font-size:14px;font-weight:600;color:${TEXT};margin-bottom:4px;">${esc(check.name)}</div>
           <div style="font-size:13px;color:${TEXT_MUTED};">${esc(check.detail || 'Passed')}</div>
-          ${check.gdprArticle ? `<div style="font-size:11px;color:${ACCENT};margin-top:8px;">📋 ${gdprArticleLabel(check.gdprArticle)}</div>` : ''}
+          ${check.gdprArticle ? `<div style="font-size:11px;color:${ACCENT};margin-top:8px;"><svg width="11" height="11" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:3px"><rect x="3" y="3" width="18" height="18" rx="2" fill="#2563eb"/><path d="M8 12h8M8 8h8M8 16h4" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>${gdprArticleLabel(check.gdprArticle)}</div>` : ''}
         </div>
       </div>
     `, SUCCESS_BG, SUCCESS)).join('');
@@ -259,8 +259,8 @@ export function generateReportHtml(url: string, result: ScanResult): string {
             <div style="font-size:14px;font-weight:600;color:${TEXT};margin-bottom:6px;">${esc(issue.title)}</div>
             <div style="font-size:13px;color:${TEXT_MUTED};margin-bottom:${issue.fix || issue.gdprArticle ? '10px' : '0'};line-height:1.5;">${esc(issue.description)}</div>
             ${issue.evidence ? `<div style="background:#f8fafc;border-radius:6px;padding:8px 10px;font-size:12px;color:#475569;font-family:monospace;margin-bottom:10px;word-break:break-all;">Evidence: ${esc(issue.evidence)}</div>` : ''}
-            ${issue.fix ? `<div style="background:#f0fdf4;border-left:3px solid ${SUCCESS};padding:10px 12px;border-radius:0 6px 6px 0;font-size:13px;color:#166534;"><strong>✅ Recommended Fix:</strong><br>${esc(issue.fix)}</div>` : ''}
-            ${issue.gdprArticle ? `<div style="font-size:11px;color:${ACCENT};margin-top:8px;">📋 ${gdprArticleLabel(issue.gdprArticle)}</div>` : ''}
+            ${issue.fix ? `<div style="background:#f0fdf4;border-left:3px solid ${SUCCESS};padding:10px 12px;border-radius:0 6px 6px 0;font-size:13px;color:#166534;"><strong><svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:3px"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Recommended Fix:</strong><br>${esc(issue.fix)}</div>` : ''}
+            ${issue.gdprArticle ? `<div style="font-size:11px;color:${ACCENT};margin-top:8px;"><svg width="11" height="11" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:3px"><rect x="3" y="3" width="18" height="18" rx="2" fill="#2563eb"/><path d="M8 12h8M8 8h8M8 16h4" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>${gdprArticleLabel(issue.gdprArticle)}</div>` : ''}
           </div>
         </div>
       `, severityBg(issue.severity), severityColor(issue.severity))).join('')
@@ -274,8 +274,8 @@ export function generateReportHtml(url: string, result: ScanResult): string {
           ${h3('Website Information')}
           <div style="font-size:13px;color:${TEXT_MUTED};line-height:1.8;">
             ${crawl.title ? `<div><strong>Title:</strong> ${esc(crawl.title)}</div>` : ''}
-            <div><strong>URL:</strong> ${esc(url)}</div>
-            <div><strong>HTTPS:</strong> <span style="color:${crawl.hasSSL ? SUCCESS : FAIL};">${crawl.hasSSL ? '✅ Enabled' : '❌ Not enabled'}</span></div>
+            <div><strong>URL:</strong> ${url ? esc(url) : '<span style="opacity:0.4;">Not available</span>'}</div>
+            <div><strong>HTTPS:</strong> <span style="color:${crawl.hasSSL ? SUCCESS : FAIL};">${crawl.hasSSL ? '<svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg> Enabled' : '<svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle"><circle cx="12" cy="12" r="11" fill="#dc2626"/><path d="M8 8l8 8M16 8l-8 8" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg> Not enabled'}</span></div>
             <div><strong>Status:</strong> ${crawl.statusCode || 'Unknown'}</div>
             <div><strong>Forms found:</strong> ${crawl.formsCount}</div>
             <div><strong>Labeled form inputs:</strong> ${crawl.formInputsLabeled} / ${crawl.totalFormInputs}</div>
@@ -284,10 +284,10 @@ export function generateReportHtml(url: string, result: ScanResult): string {
         <div>
           ${h3('Policy Presence')}
           <div style="font-size:13px;color:${TEXT_MUTED};line-height:1.8;">
-            <div><strong>Privacy Policy:</strong> <span style="color:${crawl.hasPrivacyPolicy ? SUCCESS : FAIL};">${crawl.hasPrivacyPolicy ? '✅ Found' : '❌ Missing'}</span></div>
+            <div><strong>Privacy Policy:</strong> <span style="color:${crawl.hasPrivacyPolicy ? SUCCESS : FAIL};">${crawl.hasPrivacyPolicy ? '<svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg> Found' : '<svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle"><circle cx="12" cy="12" r="11" fill="#dc2626"/><path d="M8 8l8 8M16 8l-8 8" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg> Missing'}</span></div>
             ${crawl.privacyPolicyUrl ? `<div style="word-break:break-all;font-size:12px;"><strong>Policy URL:</strong> ${esc(crawl.privacyPolicyUrl)}</div>` : ''}
-            <div><strong>Cookie Policy:</strong> <span style="color:${crawl.hasCookiePolicyPage ? SUCCESS : WARN};">${crawl.hasCookiePolicyPage ? '✅ Found' : '⚠️ Not detected'}</span></div>
-            <div><strong>Cookie Banner:</strong> <span style="color:${crawl.hasCookieBanner ? SUCCESS : WARN};">${crawl.hasCookieBanner ? '✅ Detected' : '⚠️ Not detected'}</span></div>
+            <div><strong>Cookie Policy:</strong> <span style="color:${crawl.hasCookiePolicyPage ? SUCCESS : WARN};">${crawl.hasCookiePolicyPage ? '<svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg> Found' : '<svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle"><circle cx="12" cy="12" r="11" fill="#d97706"/><path d="M12 8v5M12 16v.01" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg> Not detected'}</span></div>
+            <div><strong>Cookie Banner:</strong> <span style="color:${crawl.hasCookieBanner ? SUCCESS : WARN};">${crawl.hasCookieBanner ? '<svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg> Detected' : '<svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle"><circle cx="12" cy="12" r="11" fill="#d97706"/><path d="M12 8v5M12 16v.01" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg> Not detected'}</span></div>
             ${crawl.cookieBannerText ? `<div style="font-size:12px;word-break:break-all;"><strong>Banner text:</strong> ${esc(crawl.cookieBannerText.slice(0, 100))}</div>` : ''}
           </div>
         </div>
@@ -297,7 +297,7 @@ export function generateReportHtml(url: string, result: ScanResult): string {
       ${h3('Tracking Scripts Detected')}
       ${crawl.trackingScripts?.length
         ? `<div style="display:flex;flex-wrap:wrap;gap:6px;">${crawl.trackingScripts.map((s: string) => `<span style="background:${INFO_BG};border:1px solid ${ACCENT};color:${ACCENT};padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;">${esc(s)}</span>`).join('')}</div>`
-        : `<div style="color:${SUCCESS};font-size:13px;">✅ No third-party tracking scripts detected.</div>`
+        : `<div style="color:${SUCCESS};font-size:13px;"><svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>No third-party tracking scripts detected.</div>`
       }
       ${crawl.thirdPartyEmbeds?.length ? `<div style="margin-top:12px;"><strong>Third-party embeds:</strong> ${crawl.thirdPartyEmbeds.map((e: string) => `<span style="background:${WARN_BG};color:${WARN};padding:2px 8px;border-radius:12px;font-size:11px;margin-right:4px;">${esc(e)}</span>`).join('')}</div>` : ''}
     `);
@@ -340,7 +340,7 @@ export function generateReportHtml(url: string, result: ScanResult): string {
       <p style="margin:0 0 16px;font-size:13px;color:${TEXT_MUTED};">Use this checklist to address the findings in priority order:</p>
       ${remediationItems.length
         ? remediationItems.map((item: { text: string; done: boolean }) => checklistItem(item.text, item.done ? 'done' : 'todo')).join('')
-        : '<div style="color:#16a34a;font-size:14px;">✅ No remediation items — your site appears fully compliant!</div>'
+        : '<div style="color:#16a34a;font-size:14px;"><svg width="14" height="14" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="11" fill="#16a34a"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>No remediation items — your site appears fully compliant!</div>'
       }
     `, WARN_BG, WARN);
 

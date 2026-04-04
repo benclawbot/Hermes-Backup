@@ -89,7 +89,9 @@ function FindingsSection({ result }: { result: any }) {
     .filter((c: any) => c.severity === "pass" || c.severity === "info")
     .map(normalizeIssue);
 
-  const score = result.aiAnalysis?.score ?? result.ruleChecks?.length
+  const score = result.aiAnalysis?.gdprScore != null
+    ? result.aiAnalysis.gdprScore
+    : result.ruleChecks?.length
     ? Math.max(0, 100 - critical.length * 25 - warnings.length * 10)
     : null;
 
