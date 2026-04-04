@@ -12,7 +12,7 @@ interface ClaimScanBody {
 // POST /api/auth/claim-scan
 // Creates a user account (or logs in existing) and links the scan to it.
 // Used on the free-scan results page to let users "save" their scan.
-export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }, env: any) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { email, password, scanId } = await request.json() as ClaimScanBody;
 
@@ -23,6 +23,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json({ error: 'Password must be at least 8 characters' }, { status: 400 });
     }
 
+    const env: any = (request as any).env ?? (globalThis as any).__env ?? undefined;
     const db = getDb(env);
 
     // Look up existing user by email
