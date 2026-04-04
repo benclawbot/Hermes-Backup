@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/env';
 
-function verifyAgencySubscriber(token: string): { subscriberId: string; email: string } | null {
-  const db = getDb();
+function verifyAgencySubscriber(token: string, db: ReturnType<typeof getDb>): { subscriberId: string; email: string } | null {
   const rec = db.prepare(`
     SELECT st.subscriber_id, st.expires_at, s.email, s.status, s.plan
     FROM subscriber_tokens st
     JOIN subscribers s ON s.id = st.subscriber_id
-    WHERE st.token = ?
+    WHERE st.token=?
   `).get(token) as any;
 
   if (!rec) return null;
@@ -20,7 +19,8 @@ function verifyAgencySubscriber(token: string): { subscriberId: string; email: s
 // GET: get client details + their scans
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
+  env: any
 ) {
   const token = request.headers.get('authorization')?.replace('Bearer ', '');
   const { id: clientId } = await params;
@@ -29,15 +29,15 @@ export async function GET(
     return NextResponse.json({ error: 'Token required' }, { status: 401 });
   }
 
-  const sub = verifyAgencySubscriber(token);
+  const db = getDb(env);
+
+  const sub = verifyAgencySubscriber(token, db);
   if (!sub) {
     return NextResponse.json({ error: 'Invalid token or not an agency subscriber' }, { status: 401 });
   }
 
-  const db = getDb();
-
   // Get client
-  const client = db.prepare(`
+  const client = await db.prepare(`
     SELECT id, name, url, created_at
     FROM agency_clients
     WHERE id = ? AND agency_subscriber_id = ?
@@ -48,7 +48,7 @@ export async function GET(
   }
 
   // Get all scans for this client's URL by this agency subscriber
-  const scans = db.prepare(`
+  const scans = await db.prepare(`
     SELECT id, url, status, created_at, completed_at, result_json
     FROM scans
     WHERE subscriber_id = ? AND url = ?
@@ -93,7 +93,8 @@ export async function GET(
 // DELETE: remove a client
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
+  env: any
 ) {
   const token = request.headers.get('authorization')?.replace('Bearer ', '');
   const { id: clientId } = await params;
@@ -102,15 +103,15 @@ export async function DELETE(
     return NextResponse.json({ error: 'Token required' }, { status: 401 });
   }
 
-  const sub = verifyAgencySubscriber(token);
+  const db = getDb(env);
+
+  const sub = verifyAgencySubscriber(token, db);
   if (!sub) {
     return NextResponse.json({ error: 'Invalid token or not an agency subscriber' }, { status: 401 });
   }
 
-  const db = getDb();
-
   // Verify client belongs to this agency
-  const client = db.prepare(`
+  const client = await db.prepare(`
     SELECT id FROM agency_clients
     WHERE id = ? AND agency_subscriber_id = ?
   `).get(clientId, sub.subscriberId);
@@ -120,7 +121,7 @@ export async function DELETE(
   }
 
   // Delete client
-  db.prepare('DELETE FROM agency_clients WHERE id = ?').run(clientId);
+  await db.prepare('DELETE FROM agency_clients WHERE id = ?').run(clientId);
 
   return NextResponse.json({ success: true });
 }

@@ -1,20 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/env';
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }, env: any) {
   const token = request.nextUrl.searchParams.get('token');
 
   if (!token) {
     return NextResponse.json({ error: 'Token required' }, { status: 401 });
   }
 
-  const db = getDb();
+  const db = getDb(env);
 
   const tokenRecord = db.prepare(`
     SELECT st.token, st.subscriber_id, s.email, s.plan, s.status
     FROM subscriber_tokens st
     JOIN subscribers s ON s.id = st.subscriber_id
-    WHERE st.token = ?
+    WHERE st.token=?
   `).get(token) as any;
 
   if (!tokenRecord) {
@@ -26,13 +26,13 @@ export async function GET(request: NextRequest) {
   }
 
   // Update last_used_at
-  db.prepare(`
+  await db.prepare(`
     UPDATE subscriber_tokens SET last_used_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
-    WHERE token = ?
+    WHERE token=?
   `).run(token);
 
   // Get recent scans for this subscriber (last 20)
-  const recentScans = db.prepare(`
+  const recentScans = await db.prepare(`
     SELECT id, url, status, result_json, created_at, completed_at
     FROM scans
     WHERE subscriber_id = ?

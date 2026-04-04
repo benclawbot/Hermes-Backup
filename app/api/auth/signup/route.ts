@@ -5,7 +5,7 @@ import crypto from 'crypto';
 
 interface AuthBody { email?: string; password?: string; }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }, env: any) {
   try {
     const { email, password } = await request.json() as AuthBody;
 
@@ -17,10 +17,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Password must be at least 8 characters' }, { status: 400 });
     }
 
-    const db = getDb();
+    const db = getDb(env);
 
     // Check if user exists
-    const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
+    const existing = await db.prepare('SELECT id FROM users WHERE email = ?').get(email);
     if (existing) {
       return NextResponse.json({ error: 'An account with this email already exists' }, { status: 409 });
     }
@@ -32,11 +32,11 @@ export async function POST(request: NextRequest) {
 
     // Create user
     const userId = uuidv4();
-    db.prepare('INSERT INTO users (id, email, password_hash) VALUES (?, ?, ?)').run(userId, email, passwordHash);
+    await db.prepare('INSERT INTO users (id, email, password_hash) VALUES (?, ?, ?)').run(userId, email, passwordHash);
 
     // Create session
     const token = uuidv4();
-    db.prepare('INSERT INTO sessions (token, user_id) VALUES (?, ?)').run(token, userId);
+    await db.prepare('INSERT INTO sessions (token, user_id) VALUES (?, ?)').run(token, userId);
 
     const response = NextResponse.json({ ok: true, token });
     response.cookies.set('session', token, {
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (err: any) {
-    console.error('Signup error:', err.message);
+    console.error('Signup error:', err);
     return NextResponse.json({ error: 'Signup failed' }, { status: 500 });
   }
 }

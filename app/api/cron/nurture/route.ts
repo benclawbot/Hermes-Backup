@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/env';
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }, env: any) {
   // Verify cron secret
   const authHeader = request.headers.get('authorization');
   const expectedToken = process.env.VERCEL_OIDC_TOKEN;
@@ -14,14 +14,14 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const db = getDb();
+  const db = getDb(env);
 
   // Find free-scan users (no subscriber record) who signed up in the last 7 days
   // and have not been sent the upgrade email yet
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-  const users = db.prepare(`
+  const users = await db.prepare(`
     SELECT DISTINCT u.email
     FROM users u
     JOIN scans s ON s.email = u.email

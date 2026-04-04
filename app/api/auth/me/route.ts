@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/env';
 
-export async function GET(request: NextRequest) {
-  const token =
-    request.headers.get('authorization')?.replace('Bearer ', '') ||
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }, env: any) {
+  const token = request.headers.get('authorization')?.replace('Bearer ', '') ||
     request.cookies.get('session_token')?.value ||
     request.cookies.get('session')?.value;
 
@@ -11,7 +10,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ authenticated: false }, { status: 401 });
   }
 
-  const db = getDb();
+  const db = getDb(env);
 
   // Try subscriber token first (Bearer token from URL for subscribers)
   const subToken = db.prepare(`
@@ -19,7 +18,7 @@ export async function GET(request: NextRequest) {
            s.current_period_end, s.cancel_at_period_end
     FROM subscriber_tokens st
     JOIN subscribers s ON s.id = st.subscriber_id
-    WHERE st.token = ?
+    WHERE st.token=?
   `).get(token) as any;
 
   if (subToken) {
@@ -33,7 +32,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Update last used
-    db.prepare(`UPDATE subscriber_tokens SET last_used_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now') WHERE token = ?`).run(token);
+    await db.prepare(`UPDATE subscriber_tokens SET last_used_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now') WHERE token=?`).run(token);
 
     return NextResponse.json({
       authenticated: true,
@@ -51,7 +50,7 @@ export async function GET(request: NextRequest) {
   const session = db.prepare(`
     SELECT s.*, u.email FROM sessions s
     JOIN users u ON s.user_id = u.id
-    WHERE s.token = ?
+    WHERE s.token=?
   `).get(token) as any;
 
   if (!session) {
@@ -59,7 +58,7 @@ export async function GET(request: NextRequest) {
   }
 
   // Update last used
-  db.prepare(`UPDATE sessions SET last_used_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now') WHERE token = ?`).run(token);
+  await db.prepare(`UPDATE sessions SET last_used_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now') WHERE token=?`).run(token);
 
   return NextResponse.json({
     authenticated: true,

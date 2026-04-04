@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 import { v4 as uuidv4 } from 'uuid';
 import { getDb, compressGzip } from '@/lib/env';
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }, env: any) {
   try {
     if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
       return NextResponse.json({ error: 'Stripe not configured' }, { status: 500 });
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid signature', detail: err.message }, { status: 400 });
     }
 
-    const db = getDb();
+    const db = getDb(env);
 
     switch (event.type) {
       case 'checkout.session.completed': {
@@ -42,15 +42,15 @@ export async function POST(request: NextRequest) {
         if (session.mode === 'payment') {
           // One-time scan — upsert scan record
           if (scanId) {
-            const existing = db.prepare('SELECT id FROM scans WHERE id = ?').get(scanId);
+            const existing = await db.prepare('SELECT id FROM scans WHERE id = ?').get(scanId);
             if (existing) {
-              db.prepare(`
+              await db.prepare(`
                 UPDATE scans
                 SET stripe_session_id = ?, email = COALESCE(?, email)
                 WHERE id = ?
               `).run(session.id, customerEmail || null, scanId);
             } else {
-              db.prepare(`
+              await db.prepare(`
                 INSERT INTO scans (id, url, status, email, stripe_session_id)
                 VALUES (?, ?, 'pending', ?, ?)
               `).run(scanId, url || '', customerEmail || null, session.id);
@@ -60,10 +60,10 @@ export async function POST(request: NextRequest) {
             // Stripe allows up to 30 seconds for webhook response.
             // The scan will be complete (or mostly complete) before the user
             // reaches the /success page, so the report loads instantly.
-            const scanRecord = db.prepare('SELECT * FROM scans WHERE id = ?').get(scanId) as any;
+            const scanRecord = await db.prepare('SELECT * FROM scans WHERE id = ?').get(scanId) as any;
             if (scanRecord && scanRecord.status === 'pending') {
               try {
-                db.prepare(`UPDATE scans SET status = 'processing' WHERE id = ?`).run(scanId);
+                await db.prepare(`UPDATE scans SET status = 'processing' WHERE id = ?`).run(scanId);
 
                 const { crawlPage } = await import('@/lib/crawler');
                 const { runRuleBasedChecks } = await import('@/lib/gdpr-checks');
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
                 const rawJson = JSON.stringify(result);
                 const resultJson = await compressGzip(rawJson);
 
-                db.prepare(`
+                await db.prepare(`
                   UPDATE scans
                   SET status = 'completed', result_json = ?,
                       completed_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
                 console.log(`Webhook scan complete for ${scanId}: score=${aiResult.gdprScore}`);
               } catch (scanErr: any) {
                 console.error(`Webhook scan failed for ${scanId}:`, scanErr.message);
-                db.prepare(`UPDATE scans SET status = 'failed' WHERE id = ?`).run(scanId);
+                await db.prepare(`UPDATE scans SET status = 'failed' WHERE id = ?`).run(scanId);
               }
             }
           }
@@ -122,17 +122,17 @@ export async function POST(request: NextRequest) {
             cancelAtPeriodEnd = subscription.cancel_at_period_end;
           } catch (_) {}
 
-          const existingSub = db.prepare('SELECT id FROM subscribers WHERE stripe_customer_id = ?').get(customerId) as any;
+          const existingSub = await db.prepare('SELECT id FROM subscribers WHERE stripe_customer_id = ?').get(customerId) as any;
           let subscriberId = existingSub?.id;
 
           if (!subscriberId) {
             subscriberId = uuidv4();
-            db.prepare(`
+            await db.prepare(`
               INSERT INTO subscribers (id, stripe_customer_id, email, plan, status, current_period_end, cancel_at_period_end)
               VALUES (?, ?, ?, 'monthly', 'active', ?, ?)
             `).run(subscriberId, customerId, customerEmail, periodEnd, cancelAtPeriodEnd ? 1 : 0);
           } else {
-            db.prepare(`
+            await db.prepare(`
               UPDATE subscribers
               SET status = 'active',
                   current_period_end = COALESCE(?, current_period_end),
@@ -143,11 +143,11 @@ export async function POST(request: NextRequest) {
           }
 
           // Clear any expired token and create a fresh one
-          const token=uuidv4();
-          db.prepare(`
+          const token = uuidv4();
+          await db.prepare(`
             DELETE FROM subscriber_tokens WHERE subscriber_id = ?
           `).run(subscriberId);
-          db.prepare(`
+          await db.prepare(`
             INSERT INTO subscriber_tokens (token, subscriber_id, created_at, last_used_at)
             VALUES (?, ?, strftime('%Y-%m-%dT%H:%M:%SZ', 'now'), strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
           `).run(token, subscriberId);
@@ -164,11 +164,11 @@ export async function POST(request: NextRequest) {
           : null;
         const cancelAtPeriodEnd = subAny.cancel_at_period_end ? 1 : 0;
 
-        const sub = db.prepare('SELECT id FROM subscribers WHERE stripe_customer_id = ?').get(customerId) as any;
+        const sub = await db.prepare('SELECT id FROM subscribers WHERE stripe_customer_id = ?').get(customerId) as any;
         if (sub) {
           if (subscription.status === 'active') {
             // Renewal or cancellation flipped back — extend period, clear cancel flag
-            db.prepare(`
+            await db.prepare(`
               UPDATE subscribers
               SET status = 'active',
                   current_period_end = ?,
@@ -177,17 +177,17 @@ export async function POST(request: NextRequest) {
               WHERE stripe_customer_id = ?
             `).run(periodEnd, cancelAtPeriodEnd, customerId);
             // Clear any previously-set expires_at on tokens
-            db.prepare(`UPDATE subscriber_tokens SET expires_at = NULL WHERE subscriber_id = ?`).run(sub.id);
+            await db.prepare(`UPDATE subscriber_tokens SET expires_at = NULL WHERE subscriber_id = ?`).run(sub.id);
           } else if (subscription.status === 'canceled' || subscription.cancel_at_period_end) {
             // Cancelled at period end — keep active until period_end, set expires_at on tokens
-            db.prepare(`
+            await db.prepare(`
               UPDATE subscribers
               SET cancel_at_period_end = ?
               WHERE stripe_customer_id = ?
             `).run(cancelAtPeriodEnd, customerId);
             // Set expires_at on all tokens for this subscriber
             if (periodEnd) {
-              db.prepare(`UPDATE subscriber_tokens SET expires_at = ? WHERE subscriber_id = ?`).run(periodEnd, sub.id);
+              await db.prepare(`UPDATE subscriber_tokens SET expires_at = ? WHERE subscriber_id = ?`).run(periodEnd, sub.id);
             }
           }
         }
@@ -205,7 +205,7 @@ export async function POST(request: NextRequest) {
             const periodEnd = subscription.current_period_end
               ? new Date(subscription.current_period_end * 1000).toISOString()
               : null;
-            db.prepare(`
+            await db.prepare(`
               UPDATE subscribers
               SET status = 'active',
                   current_period_end = COALESCE(?, current_period_end),
@@ -214,9 +214,9 @@ export async function POST(request: NextRequest) {
               WHERE stripe_customer_id = ?
             `).run(periodEnd, customerId);
             // Clear expires_at on tokens on successful renewal
-            const sub = db.prepare('SELECT id FROM subscribers WHERE stripe_customer_id = ?').get(customerId) as any;
+            const sub = await db.prepare('SELECT id FROM subscribers WHERE stripe_customer_id = ?').get(customerId) as any;
             if (sub) {
-              db.prepare(`UPDATE subscriber_tokens SET expires_at = NULL WHERE subscriber_id = ?`).run(sub.id);
+              await db.prepare(`UPDATE subscriber_tokens SET expires_at = NULL WHERE subscriber_id = ?`).run(sub.id);
             }
           } catch (_) {}
         }
@@ -226,14 +226,14 @@ export async function POST(request: NextRequest) {
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
-        const sub = db.prepare('SELECT id FROM subscribers WHERE stripe_customer_id = ?').get(customerId) as any;
+        const sub = await db.prepare('SELECT id FROM subscribers WHERE stripe_customer_id = ?').get(customerId) as any;
         if (sub) {
           // Immediately revoke — set expires_at to now
-          db.prepare(`
+          await db.prepare(`
             UPDATE subscribers SET status = 'cancelled', updated_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
             WHERE stripe_customer_id = ?
           `).run(customerId);
-          db.prepare(`
+          await db.prepare(`
             UPDATE subscriber_tokens SET expires_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now') WHERE subscriber_id = ?
           `).run(sub.id);
         }
@@ -250,4 +250,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Internal error', detail: err.message }, { status: 500 });
   }
 }
-

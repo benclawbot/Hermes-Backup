@@ -1,12 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
-import { getDb, compressGzip } from '@/lib/env';
-import { crawlPage } from '@/lib/crawler';
-import { runRuleBasedChecks } from '@/lib/gdpr-checks';
-import { analyzeWithAI } from '@/lib/ai-analysis';
+import { getDb, sendScanJob } from '@/lib/env';
 
-function verifySubscriberToken(token: string): { subscriberId: string; email: string } | null {
-  const db = getDb();
+function verifySubscriberToken(db: any, token: string): { subscriberId: string; email: string } | null {
   const rec = db.prepare(`
     SELECT st.subscriber_id, s.email, s.status
     FROM subscriber_tokens st
@@ -19,28 +15,34 @@ function verifySubscriberToken(token: string): { subscriberId: string; email: st
   return { subscriberId: rec.subscriber_id, email: rec.email };
 }
 
+/**
+ * GET /api/scan/subscriber — list recent scans
+ * POST /api/scan/subscriber — create new scan (queue-based on Cloudflare)
+ */
 export async function GET(request: NextRequest) {
-  const token = request.headers.get('authorization')?.replace('Bearer ', '');
+  const token = request.headers.get('Authorization')?.replace('Bearer ', '');
 
   if (!token) {
     return NextResponse.json({ error: 'Token required' }, { status: 401 });
   }
 
-  const sub = verifySubscriberToken(token);
+  const env: any = (request as any).env ?? (globalThis as any).__env ?? undefined;
+  const db = getDb(env);
+
+  const sub = verifySubscriberToken(db, token);
   if (!sub) {
     return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
   }
 
-  const db = getDb();
   db.prepare(`UPDATE subscriber_tokens SET last_used_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now') WHERE token = ?`).run(token);
 
   const scans = db.prepare(`
     SELECT id, url, status, created_at, completed_at
     FROM scans
-    WHERE subscriber_id = ?
+    WHERE email = ?
     ORDER BY created_at DESC
     LIMIT 50
-  `).all(sub.subscriberId);
+  `).all(sub.email);
 
   return NextResponse.json({ scans });
 }
@@ -64,48 +66,43 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 });
     }
 
-    const db = getDb();
+    const env: any = (request as any).env ?? (globalThis as any).__env ?? undefined;
+    const db = getDb(env);
 
-    // Validate subscriber token using shared helper
-    const sub = verifySubscriberToken(token);
+    const sub = verifySubscriberToken(db, token);
     if (!sub) {
       return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
     }
 
-    // Update last_used_at
     db.prepare(`UPDATE subscriber_tokens SET last_used_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now') WHERE token = ?`).run(token);
 
     const subscriberId = sub.subscriberId;
     const email = sub.email;
     const scanId = uuidv4();
 
-    // Create scan record
+    // Create scan record with pending status
     db.prepare(`
-      INSERT INTO scans (id, url, email, status, subscriber_id)
-      VALUES (?, ?, ?, 'processing', ?)
+      INSERT INTO scans (id, url, email, status, subscriber_id, created_at)
+      VALUES (?, ?, ?, 'pending', ?, strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
     `).run(scanId, url, email, subscriberId);
 
-    // Run scan async and email result
-    runSubscriberScan(scanId, url, email).catch(err => {
-      console.error('Subscriber scan failed:', err);
-      db.prepare(`UPDATE scans SET status = 'failed' WHERE id = ?`).run(scanId);
-    });
+    // ── Cloudflare: send to Queue ─────────────────────────────────────────
+    if (env?.SCAN_QUEUE) {
+      await sendScanJob({ scanId, url, email, trigger: 'subscriber' }, env);
+      return NextResponse.json({
+        scanId,
+        status: 'queued',
+        message: 'Scan queued. You will receive the report by email.'
+      });
+    }
 
-    return NextResponse.json({
-      scanId,
-      status: 'processing',
-      message: 'Scan started. You will receive the report by email.'
-    });
-  } catch (error: any) {
-    console.error('Subscriber scan error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
+    // ── Vercel fallback: run synchronously ─────────────────────────────────
+    db.prepare(`UPDATE scans SET status = 'processing' WHERE id = ?`).run(scanId);
 
-async function runSubscriberScan(scanId: string, url: string, email: string | null) {
-  const db = getDb();
+    const { crawlPage } = await import('@/lib/crawler');
+    const { runRuleBasedChecks } = await import('@/lib/gdpr-checks');
+    const { analyzeWithAI } = await import('@/lib/ai-analysis');
 
-  try {
     const crawlResult = await crawlPage(url);
     const ruleChecks = runRuleBasedChecks(crawlResult);
     const aiResult = await analyzeWithAI(crawlResult, ruleChecks);
@@ -125,6 +122,7 @@ async function runSubscriberScan(scanId: string, url: string, email: string | nu
       scannedAt: new Date().toISOString(),
     };
 
+    const { compressGzip } = await import('@/lib/env');
     const rawJson = JSON.stringify(result);
     const resultJson = await compressGzip(rawJson);
     db.prepare(`
@@ -146,60 +144,15 @@ async function runSubscriberScan(scanId: string, url: string, email: string | nu
         html: reportHtml,
       });
     }
+
+    return NextResponse.json({
+      scanId,
+      status: 'completed',
+      result,
+      message: 'Scan complete. Report sent by email.'
+    });
   } catch (error: any) {
-    console.error('Subscriber scan processing error:', error);
-    throw error;
+    console.error('Subscriber scan error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
-
-function generateReportHtml(url: string, result: any): string {
-  const { ruleChecks, aiAnalysis } = result;
-  const score = aiAnalysis?.gdprScore ?? 0;
-  const scoreColor = score >= 70 ? '#22c55e' : score >= 40 ? '#f59e0b' : '#ef4444';
-
-  const checksHtml = ruleChecks.map((check: any) => `
-    <div style="padding:12px;margin:8px 0;border-radius:8px;background:#f5f5f5;border-left:4px solid ${check.passed ? '#22c55e' : '#ef4444'};">
-      <strong>${check.name}</strong> — ${check.passed ? 'PASS' : 'FAIL'}
-      <p>${check.detail}</p>
-      ${check.recommendation ? `<p><em>Fix: ${check.recommendation}</em></p>` : ''}
-    </div>
-  `).join('');
-
-  const issuesHtml = aiAnalysis?.issues?.length
-    ? aiAnalysis.issues.map((issue: any) => `
-        <div style="padding:12px;margin:8px 0;border-radius:8px;background:#fef2f2;border-left:4px solid #ef4444;">
-          <strong>${issue.title}</strong> (${issue.severity})
-          <p>${issue.description}</p>
-          <p><strong>Fix:</strong> ${issue.fix}</p>
-        </div>
-      `).join('')
-    : '';
-
-  return `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>GDPR Report</title>
-</head>
-<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:800px;margin:0 auto;padding:40px 20px;color:#1a1a2e;">
-  <div style="text-align:center;margin-bottom:40px;">
-    <h1 style="font-size:28px;color:#4f8ef7;">ComplyScan</h1>
-    <h2>GDPR Compliance Report</h2>
-    <p style="color:#666;">${url}</p>
-  </div>
-  <div style="text-align:center;font-size:72px;font-weight:bold;color:${scoreColor};">${score}/100</div>
-  <div style="text-align:center;color:#666;margin-bottom:30px;">GDPR Compliance Score</div>
-  <div style="margin-bottom:30px;">
-    <h3 style="border-bottom:2px solid #4f8ef7;padding-bottom:8px;">Automated Checks</h3>
-    ${checksHtml}
-  </div>
-  ${issuesHtml ? `<div style="margin-bottom:30px;">
-    <h3 style="border-bottom:2px solid #4f8ef7;padding-bottom:8px;">AI-Detected Issues</h3>
-    ${issuesHtml}
-  </div>` : ''}
-  <div style="text-align:center;color:#999;font-size:12px;margin-top:50px;">
-    <p>Generated by ComplyScan — GDPR compliance made effortless</p>
-  </div>
-</body>
-</html>`;
 }

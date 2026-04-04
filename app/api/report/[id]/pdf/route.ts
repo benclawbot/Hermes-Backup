@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDb, parseResultJson, decompressGzip } from '@/lib/env';
 import Stripe from 'stripe';
 
-async function getScanWithResult(scanId: string) {
-  const db = getDb();
-  const scan = db.prepare('SELECT * FROM scans WHERE id = ?').get(scanId) as any;
+async function getScanWithResult(scanId: string, db: ReturnType<typeof getDb>) {
+  const scan = await db.prepare('SELECT * FROM scans WHERE id = ?').get(scanId) as any;
   if (!scan || scan.status !== 'completed' || !scan.result_json) return null;
 
   let result: any;
@@ -34,7 +33,7 @@ async function getResultFromStripe(stripeSessionId: string, scanId: string, db: 
     if (!scanResultJson) return null;
     const result = JSON.parse(scanResultJson);
     try {
-      db.prepare(`INSERT OR REPLACE INTO scans (id, url, status, email, stripe_session_id, result_json) VALUES (?, ?, 'completed', ?, ?, ?)`)
+      await db.prepare(`INSERT OR REPLACE INTO scans (id, url, status, email, stripe_session_id, result_json) VALUES (?, ?, 'completed', ?, ?, ?)`)
         .run(scanId, stripeSession.metadata?.url || '', stripeSession.customer_email || null, stripeSessionId, scanResultJson);
     } catch {}
     return result;
@@ -43,19 +42,18 @@ async function getResultFromStripe(stripeSessionId: string, scanId: string, db: 
   }
 }
 
-async function getWhiteLabelOptions(scanId: string): Promise<{ whiteLabel?: { companyName?: string } } | null> {
-  const db = getDb();
-  const scan = db.prepare('SELECT subscriber_id FROM scans WHERE id = ?').get(scanId) as any;
+async function getWhiteLabelOptions(scanId: string, db: ReturnType<typeof getDb>): Promise<{ whiteLabel?: { companyName?: string } } | null> {
+  const scan = await db.prepare('SELECT subscriber_id FROM scans WHERE id = ?').get(scanId) as any;
   if (!scan?.subscriber_id) return null;
 
-  const subscriber = db.prepare('SELECT plan FROM subscribers WHERE id = ?').get(scan.subscriber_id) as any;
+  const subscriber = await db.prepare('SELECT plan FROM subscribers WHERE id = ?').get(scan.subscriber_id) as any;
   if (subscriber?.plan === 'agency') {
     return { whiteLabel: { companyName: 'Compliance Report' } };
   }
   return null;
 }
 
-async function generateFromResult(result: any, scanId: string, format: string) {
+async function generateFromResult(result: any, scanId: string, format: string, env: any) {
   const url = result?.crawl?.url || result?.url || '';
 
   if (format === 'html') {
@@ -71,7 +69,7 @@ async function generateFromResult(result: any, scanId: string, format: string) {
 
   try {
     const { generateReportPdfBuffer } = await import('@/lib/pdf-report');
-    const whiteLabelOpts = await getWhiteLabelOptions(scanId);
+    const whiteLabelOpts = await getWhiteLabelOptions(scanId, getDb(env));
     const pdfBuffer = await generateReportPdfBuffer(url, result, whiteLabelOpts ?? undefined);
     const safeName = (url || 'report').replace(/[^a-zA-Z0-9.-]/g, '_').slice(0, 60);
     return new NextResponse(new Uint8Array(pdfBuffer), {
@@ -93,7 +91,8 @@ async function generateFromResult(result: any, scanId: string, format: string) {
 // ── POST: result passed in body (from report page — survives cold-start) ──
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
+  env: any
 ) {
   const { id: scanId } = await params;
   const { searchParams } = new URL(request.url);
@@ -106,22 +105,23 @@ export async function POST(
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
-  return generateFromResult(result, scanId, format);
+  return generateFromResult(result, scanId, format, env);
 }
 
 // ── GET: DB lookup with Stripe fallback + payment verification ──
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
+  env: any
 ) {
   const { id: scanId } = await params;
   const { searchParams } = new URL(request.url);
   const format = searchParams.get('format') || 'pdf';
   const sessionId = searchParams.get('session_id');
-  const db = getDb();
+  const db = getDb(env);
 
   // 1. Try DB lookup
-  const data = await getScanWithResult(scanId);
+  const data = await getScanWithResult(scanId, db);
 
   // 2. Try Stripe fallback (DB may be empty due to Lambda cold-start)
   let result = data?.result;
@@ -170,5 +170,5 @@ export async function GET(
     );
   }
 
-  return generateFromResult(result, scanId, format);
+  return generateFromResult(result, scanId, format, env);
 }

@@ -5,7 +5,7 @@ import crypto from 'crypto';
 
 interface AuthBody { email?: string; password?: string; }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }, env: any) {
   try {
     const { email, password } = await request.json() as AuthBody;
 
@@ -13,9 +13,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email and password required' }, { status: 400 });
     }
 
-    const db = getDb();
+    const db = getDb(env);
 
-    const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email) as any;
+    const user = await db.prepare('SELECT * FROM users WHERE email = ?').get(email) as any;
     if (!user) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
     }
@@ -29,10 +29,10 @@ export async function POST(request: NextRequest) {
 
     // Create session
     const token = uuidv4();
-    db.prepare('INSERT INTO sessions (token, user_id) VALUES (?, ?)').run(token, user.id);
+    await db.prepare('INSERT INTO sessions (token, user_id) VALUES (?, ?)').run(token, user.id);
 
     // Link any unlinked scans with this email to the user account
-    db.prepare('UPDATE scans SET user_id = ? WHERE email = ? AND (user_id IS NULL OR user_id = ?)').run(user.id, email, user.id);
+    await db.prepare('UPDATE scans SET user_id = ? WHERE email = ? AND (user_id IS NULL OR user_id = ?)').run(user.id, email, user.id);
 
     const response = NextResponse.json({ ok: true, token });
     response.cookies.set('session', token, {

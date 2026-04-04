@@ -5,13 +5,12 @@ import { crawlPage } from '@/lib/crawler';
 import { runRuleBasedChecks } from '@/lib/gdpr-checks';
 import { analyzeWithAI } from '@/lib/ai-analysis';
 
-function verifyAgencySubscriber(token: string): { subscriberId: string; email: string } | null {
-  const db = getDb();
+function verifyAgencySubscriber(token: string, db: ReturnType<typeof getDb>): { subscriberId: string; email: string } | null {
   const rec = db.prepare(`
     SELECT st.subscriber_id, st.expires_at, s.email, s.status, s.plan
     FROM subscriber_tokens st
     JOIN subscribers s ON s.id = st.subscriber_id
-    WHERE st.token = ?
+    WHERE st.token=?
   `).get(token) as any;
 
   if (!rec) return null;
@@ -22,7 +21,7 @@ function verifyAgencySubscriber(token: string): { subscriberId: string; email: s
 }
 
 // POST: run a scan for a client's URL
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }, env: any) {
   try {
     const body = await request.json() as { clientId?: string; token?: string };
     const { clientId, token } = body;
@@ -31,16 +30,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Client ID and token are required' }, { status: 400 });
     }
 
-    const db = getDb();
+    const db = getDb(env);
 
     // Verify agency subscriber
-    const sub = verifyAgencySubscriber(token);
+    const sub = verifyAgencySubscriber(token, db);
     if (!sub) {
       return NextResponse.json({ error: 'Invalid token or not an agency subscriber' }, { status: 401 });
     }
 
     // Get client
-    const client = db.prepare(`
+    const client = await db.prepare(`
       SELECT id, name, url, agency_subscriber_id
       FROM agency_clients
       WHERE id = ? AND agency_subscriber_id = ?
@@ -64,16 +63,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Update last_used_at
-    db.prepare(`UPDATE subscriber_tokens SET last_used_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now') WHERE token = ?`).run(token);
+    await db.prepare(`UPDATE subscriber_tokens SET last_used_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now') WHERE token=?`).run(token);
 
     // Create scan record
-    db.prepare(`
+    await db.prepare(`
       INSERT INTO scans (id, url, email, status, subscriber_id)
       VALUES (?, ?, ?, 'processing', ?)
     `).run(scanId, url, sub.email, sub.subscriberId);
 
     // Run scan async
-    runClientScan(scanId, url, sub.email).catch(err => {
+    runClientScan(scanId, url, sub.email, env).catch(err => {
       console.error('Client scan failed:', err);
       db.prepare(`UPDATE scans SET status = 'failed' WHERE id = ?`).run(scanId);
     });
@@ -90,8 +89,8 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function runClientScan(scanId: string, url: string, email: string | null) {
-  const db = getDb();
+async function runClientScan(scanId: string, url: string, email: string | null, env: any) {
+  const db = getDb(env);
 
   try {
     const crawlResult = await crawlPage(url);
@@ -113,7 +112,7 @@ async function runClientScan(scanId: string, url: string, email: string | null) 
       scannedAt: new Date().toISOString(),
     };
 
-    db.prepare(`
+    await db.prepare(`
       UPDATE scans
       SET status = 'completed', result_json = ?, completed_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
       WHERE id = ?

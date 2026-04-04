@@ -2,13 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import { getDb } from '@/lib/env';
 
-function verifyAgencySubscriber(token: string): { subscriberId: string; email: string } | null {
-  const db = getDb();
+function verifyAgencySubscriber(token: string, db: ReturnType<typeof getDb>): { subscriberId: string; email: string } | null {
   const rec = db.prepare(`
     SELECT st.subscriber_id, st.expires_at, s.email, s.status, s.plan
     FROM subscriber_tokens st
     JOIN subscribers s ON s.id = st.subscriber_id
-    WHERE st.token = ?
+    WHERE st.token=?
   `).get(token) as any;
 
   if (!rec) return null;
@@ -19,22 +18,22 @@ function verifyAgencySubscriber(token: string): { subscriberId: string; email: s
 }
 
 // GET: list all clients for the agency subscriber
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }, env: any) {
   const token = request.headers.get('authorization')?.replace('Bearer ', '');
 
   if (!token) {
     return NextResponse.json({ error: 'Token required' }, { status: 401 });
   }
 
-  const sub = verifyAgencySubscriber(token);
+  const db = getDb(env);
+
+  const sub = verifyAgencySubscriber(token, db);
   if (!sub) {
     return NextResponse.json({ error: 'Invalid token or not an agency subscriber' }, { status: 401 });
   }
 
-  const db = getDb();
-
   // Get all clients for this agency
-  const clients = db.prepare(`
+  const clients = await db.prepare(`
     SELECT id, name, url, created_at
     FROM agency_clients
     WHERE agency_subscriber_id = ?
@@ -76,14 +75,16 @@ export async function GET(request: NextRequest) {
 }
 
 // POST: add a new client
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }, env: any) {
   const token = request.headers.get('authorization')?.replace('Bearer ', '');
 
   if (!token) {
     return NextResponse.json({ error: 'Token required' }, { status: 401 });
   }
 
-  const sub = verifyAgencySubscriber(token);
+  const db = getDb(env);
+
+  const sub = verifyAgencySubscriber(token, db);
   if (!sub) {
     return NextResponse.json({ error: 'Invalid token or not an agency subscriber' }, { status: 401 });
   }
@@ -107,10 +108,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 });
     }
 
-    const db = getDb();
-
     // Check for duplicate URL for this agency
-    const existing = db.prepare(`
+    const existing = await db.prepare(`
       SELECT id FROM agency_clients
       WHERE agency_subscriber_id = ? AND url = ?
     `).get(sub.subscriberId, url);
@@ -120,12 +119,12 @@ export async function POST(request: NextRequest) {
     }
 
     const clientId = uuidv4();
-    db.prepare(`
+    await db.prepare(`
       INSERT INTO agency_clients (id, agency_subscriber_id, name, url)
       VALUES (?, ?, ?, ?)
     `).run(clientId, sub.subscriberId, name, url);
 
-    const client = db.prepare(`SELECT * FROM agency_clients WHERE id = ?`).get(clientId);
+    const client = await db.prepare(`SELECT * FROM agency_clients WHERE id = ?`).get(clientId);
 
     return NextResponse.json({ client }, { status: 201 });
   } catch (error: any) {

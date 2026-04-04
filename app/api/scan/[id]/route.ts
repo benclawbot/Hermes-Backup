@@ -1,12 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb, parseResultJson } from '@/lib/env';
 
+/**
+ * GET /api/scan/[id]
+ *
+ * Returns scan record from D1 (polled by the report page).
+ * Works in both Vercel (better-sqlite3) and Cloudflare Pages (D1).
+ */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const db = getDb();
+  const env: any = (request as any).env ?? (globalThis as any).__env ?? undefined;
+  const db = getDb(env);
 
   const scan = db.prepare('SELECT * FROM scans WHERE id = ?').get(id) as any;
 

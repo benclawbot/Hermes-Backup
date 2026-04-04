@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }, env: any) {
   const sessionId = request.nextUrl.searchParams.get("session_id");
 
   if (!sessionId) {
@@ -30,12 +30,12 @@ export async function GET(request: NextRequest) {
     if (session.mode === 'subscription' && session.customer) {
       try {
         const { getDb } = await import('@/lib/env');
-        const db = getDb();
-        const sub = db.prepare(
+        const db = getDb(env);
+        const sub = await db.prepare(
           'SELECT id, token FROM subscribers WHERE stripe_customer_id = ?'
         ).get(session.customer as string) as any;
         if (sub) {
-          const tokenRec = db.prepare(
+          const tokenRec = await db.prepare(
             'SELECT token FROM subscriber_tokens WHERE subscriber_id = ? ORDER BY created_at DESC LIMIT 1'
           ).get(sub.id) as any;
           if (tokenRec) {

@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
-import { getDb, compressGzip } from '@/lib/env';
-
-export const maxDuration = 60;
+import { getDb, compressGzip, sendScanJob } from '@/lib/env';
 
 const FREE_SCAN_LIMIT = 3; // per email per month
 
@@ -18,8 +16,14 @@ function getMonthlyScanCount(db: any, email: string): number {
   return row?.count ?? 0;
 }
 
+/**
+ * POST /api/scan/free
+ *
+ * Cloudflare: writes to D1, sends job to SCAN_QUEUE, returns { status: 'queued' }
+ * Vercel fallback: runs synchronously (original behavior)
+ */
 export async function POST(request: NextRequest) {
-    const { url, email } = await request.json() as { url?: string; email?: string };
+  const { url, email } = await request.json() as { url?: string; email?: string };
 
   if (!url) {
     return NextResponse.json({ error: 'URL is required' }, { status: 400 });
@@ -28,9 +32,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Email is required for free scans' }, { status: 400 });
   }
 
-  const db = getDb();
-  const count = getMonthlyScanCount(db, email);
+  // Get env for Cloudflare Pages (falls back to undefined for Vercel)
+  const env: any = (request as any).env ?? (globalThis as any).__env ?? undefined;
+  const db = getDb(env);
 
+  const count = getMonthlyScanCount(db, email);
   if (count >= FREE_SCAN_LIMIT) {
     return NextResponse.json(
       {
@@ -42,9 +48,26 @@ export async function POST(request: NextRequest) {
   }
 
   const scanId = uuidv4();
+
+  // Insert with pending status — queue will update to processing
   db.prepare(
-    `INSERT INTO scans (id, url, status, email, stripe_session_id) VALUES (?, ?, 'processing', ?, NULL)`
+    `INSERT INTO scans (id, url, status, email, stripe_session_id, created_at) VALUES (?, ?, 'pending', ?, NULL, strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))`
   ).run(scanId, url, email);
+
+  // ── Cloudflare: send to Queue ───────────────────────────────────────────
+  if (env?.SCAN_QUEUE) {
+    await sendScanJob({ scanId, url, email, trigger: 'free' }, env);
+
+    // Non-blocking welcome email
+    import('@/lib/mailjet').then(({ subscribeToNurture }) => {
+      subscribeToNurture({ email, scanUrl: url }).catch(() => {});
+    });
+
+    return NextResponse.json({ scanId, status: 'queued' });
+  }
+
+  // ── Vercel fallback: run synchronously ──────────────────────────────────
+  db.prepare(`UPDATE scans SET status = 'processing' WHERE id = ?`).run(scanId);
 
   try {
     const { crawlPage } = await import('@/lib/crawler');

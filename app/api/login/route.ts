@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/env';
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }, env: any) {
   try {
     const body = await request.json() as { email?: string };
     const { email } = body;
@@ -10,10 +10,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
-    const db = getDb();
+    const db = getDb(env);
 
     // Find active subscriber by email
-    const subscriber = db.prepare(`
+    const subscriber = await db.prepare(`
       SELECT id, status FROM subscribers WHERE email = ? AND status = 'active'
     `).get(email) as any;
 
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get the latest token for this subscriber
-    const tokenRecord = db.prepare(`
+    const tokenRecord = await db.prepare(`
       SELECT token FROM subscriber_tokens
       WHERE subscriber_id = ?
       ORDER BY last_used_at DESC LIMIT 1
