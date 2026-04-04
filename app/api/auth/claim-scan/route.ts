@@ -12,7 +12,7 @@ interface ClaimScanBody {
 // POST /api/auth/claim-scan
 // Creates a user account (or logs in existing) and links the scan to it.
 // Used on the free-scan results page to let users "save" their scan.
-export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(request: NextRequest) {
   try {
     const { email, password, scanId } = await request.json() as ClaimScanBody;
 

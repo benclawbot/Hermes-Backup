@@ -5,7 +5,7 @@ import crypto from 'crypto';
 
 interface AuthBody { email?: string; password?: string; }
 
-export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }, env: any) {
+export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json() as AuthBody;
 
@@ -17,6 +17,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json({ error: 'Password must be at least 8 characters' }, { status: 400 });
     }
 
+    const env: any = (request as any).env ?? (globalThis as any).__env ?? undefined;
     const db = getDb(env);
 
     // Check if user exists

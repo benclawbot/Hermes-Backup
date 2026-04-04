@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/env';
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }, env: any) {
-  const token = request.headers.get('authorization')?.replace('Bearer ', '') ||
+export async function GET(request: NextRequest) {
+  const token=request.headers.get('authorization')?.replace('Bearer ', '') ||
     request.cookies.get('session_token')?.value ||
     request.cookies.get('session')?.value;
 
@@ -10,6 +10,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json({ authenticated: false }, { status: 401 });
   }
 
+  const env: any = (request as any).env ?? (globalThis as any).__env ?? undefined;
   const db = getDb(env);
 
   // Try subscriber token first (Bearer token from URL for subscribers)

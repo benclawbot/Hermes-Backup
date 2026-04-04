@@ -1,3 +1,4 @@
+import 'server-only';
 import puppeteer, { Browser } from 'puppeteer-core';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const chromium = require('@sparticuz/chromium-min') as any;

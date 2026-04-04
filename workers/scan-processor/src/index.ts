@@ -25,6 +25,8 @@ interface Env {
   DB: D1Database;
   SCAN_QUEUE: Queue<ScanJob>;
   AI: Ai;
+  MAILJET_API_KEY: string;
+  MAILJET_SECRET_KEY: string;
 }
 
 // ── Entry point ──────────────────────────────────────────────────────────────
@@ -131,7 +133,7 @@ async function processScanJob(job: ScanJob, env: Env): Promise<void> {
     console.log(`[Worker] Scan ${scanId} completed — score: ${aiResult.gdprScore}`);
 
     // 6. Send email for subscriber scans (non-blocking)
-    if (job.trigger === 'subscriber' && email && typeof process !== 'undefined' && process.env?.RESEND_API_KEY) {
+    if (job.trigger === 'subscriber' && email && env.MAILJET_API_KEY && env.MAILJET_SECRET_KEY) {
       env.waitUntil(sendReportEmail(email, url, result));
     }
   } catch (err: any) {
@@ -273,19 +275,37 @@ async function compressGzipBase64(text: string): Promise<string> {
   return btoa(binary);
 }
 
-// ── Email (Resend) ────────────────────────────────────────────────────────────
+// ── Email (Mailjet) ───────────────────────────────────────────────────────────
 
 async function sendReportEmail(email: string, url: string, result: any): Promise<void> {
   try {
-    const { Resend } = await import('resend');
-    const resend = new Resend(process.env.RESEND_API_KEY);
+    const apiKey = env.MAILJET_API_KEY;
+    const secretKey = env.MAILJET_SECRET_KEY;
+    if (!apiKey || !secretKey) {
+      console.error('[Worker] Mailjet credentials not configured');
+      return;
+    }
     const html = generateReportHtml(url, result);
-    await resend.emails.send({
-      from: 'ComplyScan <reports@complyscan.com>',
-      to: email,
-      subject: `GDPR Compliance Report for ${url}`,
-      html,
+    const credentials = btoa(`${apiKey}:${secretKey}`);
+    const response = await fetch('https://api.mailjet.com/v3.1/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${credentials}`,
+      },
+      body: JSON.stringify({
+        Messages: [{
+          From: { Email: 'reports@complyscan.com', Name: 'ComplyScan' },
+          To: [{ Email: email }],
+          Subject: `GDPR Compliance Report for ${url}`,
+          HTMLPart: html,
+        }],
+      }),
     });
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error('[Worker] Mailjet API error:', response.status, errText);
+    }
   } catch (err) {
     console.error('[Worker] Failed to send report email:', err);
   }

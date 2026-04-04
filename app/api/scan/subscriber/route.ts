@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import { getDb, sendScanJob } from '@/lib/env';
+import { generateReportHtml } from '@/lib/report';
 
 function verifySubscriberToken(db: any, token: string): { subscriberId: string; email: string } | null {
   const rec = db.prepare(`
@@ -108,15 +109,7 @@ export async function POST(request: NextRequest) {
     const aiResult = await analyzeWithAI(crawlResult, ruleChecks);
 
     const result = {
-      crawl: {
-        title: crawlResult.title,
-        description: crawlResult.description,
-        h1s: crawlResult.h1s,
-        trackingScripts: crawlResult.trackingScripts,
-        formsCount: crawlResult.formsCount,
-        hasSSL: crawlResult.hasSSL,
-        statusCode: crawlResult.statusCode,
-      },
+      crawl: crawlResult,
       ruleChecks,
       aiAnalysis: aiResult,
       scannedAt: new Date().toISOString(),
