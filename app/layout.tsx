@@ -136,7 +136,7 @@ export default function RootLayout({
               offers: {
                 "@type": "Offer",
                 price: "0",
-                priceCurrency: "EUR",
+                priceCurrency: "USD",
                 description: "Free tier with 3 scans per month",
               },
               description:
