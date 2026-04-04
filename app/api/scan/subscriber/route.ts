@@ -8,7 +8,7 @@ import { analyzeWithAI } from '@/lib/ai-analysis';
 function verifySubscriberToken(token: string): { subscriberId: string; email: string } | null {
   const db = getDb();
   const rec = db.prepare(`
-    SELECT st.subscriber_id, st.expires_at, s.email, s.status
+    SELECT st.subscriber_id, s.email, s.status
     FROM subscriber_tokens st
     JOIN subscribers s ON s.id = st.subscriber_id
     WHERE st.token = ?
@@ -16,7 +16,6 @@ function verifySubscriberToken(token: string): { subscriberId: string; email: st
 
   if (!rec) return null;
   if (rec.status !== 'active') return null;
-  if (rec.expires_at && new Date(rec.expires_at) < new Date()) return null;
   return { subscriberId: rec.subscriber_id, email: rec.email };
 }
 

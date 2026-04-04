@@ -8,89 +8,251 @@ exports[`generateReportHtml — high-risk / low score > matches saved snapshot f
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GDPR Compliance Report — https://example.com</title>
   <style>
-    * { box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 800px; margin: 0 auto; padding: 40px 20px; color: #1a1a2e; background: #fff; }
-    .header { text-align: center; margin-bottom: 40px; }
-    .logo { font-size: 28px; font-weight: bold; color: #4f8ef7; }
-    .url { color: #666; margin-top: 4px; }
-    .score-section { text-align: center; margin-bottom: 40px; }
-    .score { font-size: 96px; font-weight: bold; color: #ef4444; line-height: 1; }
-    .score-label { color: #666; font-size: 14px; margin-top: 4px; }
-    .risk-badge { display: inline-block; background: #ef4444; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-top: 8px; text-transform: uppercase; }
-    .summary { background: #f9f9f9; padding: 20px; border-radius: 12px; margin-bottom: 30px; line-height: 1.6; }
-    .section { margin-bottom: 30px; }
-    .section h2 { color: #0f0f1a; border-bottom: 2px solid #4f8ef7; padding-bottom: 8px; margin-bottom: 16px; }
-    .footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 12px; text-align: center; }
-    a { color: #4f8ef7; }
-    .back { display: inline-block; margin-bottom: 20px; color: #666; text-decoration: none; font-size: 14px; }
-    .back:hover { color: #4f8ef7; }
+  @page { size: A4; margin: 18mm 15mm; }
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .no-print { display: none !important; }
+  }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 800px; margin: 0 auto; padding: 40px 24px; color: #1e293b; background: #ffffff; font-size: 13px; line-height: 1.5; }
+  a { color: #2563eb; text-decoration: none; }
   </style>
 </head>
 <body>
-  <a href="/dashboard" class="back">← Back to Dashboard</a>
-  <div class="header">
-    <div class="logo">ComplyScan</div>
-    <h1 style="font-size:22px;margin:12px 0 4px;">GDPR Compliance Report</h1>
-    <p class="url"><a href="https://example.com" target="_blank">https://example.com</a></p>
+  
+  <div style="page-break-after:always;">
+  <div style="display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 100%);color:#ffffff;text-align:center;padding:60px;">
+      <div style="font-size:42px;font-weight:800;letter-spacing:-1px;margin-bottom:8px;">ComplyScan</div>
+      <div style="font-size:14px;opacity:0.7;letter-spacing:2px;text-transform:uppercase;margin-bottom:60px;">GDPR Compliance Report</div>
+
+      <div style="font-size:80px;font-weight:800;line-height:1;color:#dc2626;">20</div>
+      <div style="font-size:14px;opacity:0.8;margin-bottom:8px;">out of 100 — Compliance Score</div>
+      <div style="display:inline-block;background:#dc2626;color:#ffffff;padding:6px 20px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:1px;margin-top:12px;margin-bottom:60px;">
+        HIGH RISK
+      </div>
+
+      <div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:24px 40px;width:100%;max-width:600px;margin-bottom:40px;">
+        <div style="font-size:11px;opacity:0.6;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Scanned Website</div>
+        <div style="font-size:16px;font-weight:600;">https://example.com</div>
+      </div>
+
+      <div style="display:flex;gap:40px;font-size:13px;opacity:0.7;">
+        <div><div style="font-size:11px;opacity:0.6;margin-bottom:4px;">DATE</div>31 March 2026</div>
+        <div><div style="font-size:11px;opacity:0.6;margin-bottom:4px;">AUTOMATED CHECKS</div>2 passed / 1 failed</div>
+        <div><div style="font-size:11px;opacity:0.6;margin-bottom:4px;">AI DETECTED ISSUES</div>3 findings</div>
+      </div>
   </div>
-
-  <div class="score-section">
-    <div class="score">20</div>
-    <div class="score-label">out of 100 — GDPR Compliance Score</div>
-    <div><span class="risk-badge">HIGH RISK</span></div>
   </div>
-
-  <div class="summary">This website has basic GDPR compliance issues that should be addressed.</div>
-
-  <div class="section">
-    <h2>Automated Checks</h2>
+  <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:20px;">
+    <h3 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:600;color:#1e293b;margin:16px 0 8px;">Executive Summary</h3>
+    <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#64748b;line-height:1.6;margin:0 0 12px;">This automated GDPR compliance scan was conducted on <strong>https://example.com</strong> on 31 March 2026. The scan uses a combination of rule-based automated checks and AI-powered analysis to identify potential GDPR compliance gaps.</p>
+    <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#64748b;line-height:1.6;margin:0 0 12px;">The overall compliance score is <strong style="color:#dc2626">20/100</strong>, classified as <strong>HIGH RISK</strong>.</p>
+    <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#64748b;line-height:1.6;margin:0 0 12px;">The automated rule engine performed 3 checks, of which <strong style="color:#16a34a">2 passed</strong> and <strong style="color:#dc2626">1 failed</strong>. The AI analysis identified <strong>3 additional findings</strong>, including <strong>2 critical</strong>.</p>
+    <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#64748b;line-height:1.6;margin:0 0 12px;"><strong>AI Assessment:</strong> This website has basic GDPR compliance issues that should be addressed.</p>
+  </div>
+  <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:20px;">
+    <h3 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:600;color:#1e293b;margin:16px 0 8px;">Compliance Score Breakdown</h3>
+    <div style="margin:16px 0;"><div style="display:inline-block;width:9%;height:24px;background:#dc2626;border-radius:3px;margin-right:1%;"></div><div style="display:inline-block;width:9%;height:24px;background:#dc2626;border-radius:3px;margin-right:1%;"></div><div style="display:inline-block;width:9%;height:24px;background:#e2e8f0;border-radius:3px;margin-right:1%;"></div><div style="display:inline-block;width:9%;height:24px;background:#e2e8f0;border-radius:3px;margin-right:1%;"></div><div style="display:inline-block;width:9%;height:24px;background:#e2e8f0;border-radius:3px;margin-right:1%;"></div><div style="display:inline-block;width:9%;height:24px;background:#e2e8f0;border-radius:3px;margin-right:1%;"></div><div style="display:inline-block;width:9%;height:24px;background:#e2e8f0;border-radius:3px;margin-right:1%;"></div><div style="display:inline-block;width:9%;height:24px;background:#e2e8f0;border-radius:3px;margin-right:1%;"></div><div style="display:inline-block;width:9%;height:24px;background:#e2e8f0;border-radius:3px;margin-right:1%;"></div><div style="display:inline-block;width:9%;height:24px;background:#e2e8f0;border-radius:3px;margin-right:1%;"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:16px;">
+      <span>0 — Critical Non-Compliance</span>
+      <span>50 — Partial Compliance</span>
+      <span>100 — Full Compliance</span>
+    </div>
     
-    <div style="padding:12px;margin:8px 0;border-radius:8px;background:#f5f5f5;border-left:4px solid #22c55e;">
-      <strong>HTTPS</strong> — PASS
-      <p style="margin:4px 0 0 0;color:#666;">Site uses HTTPS</p>
-      
-    </div>
-  
-    <div style="padding:12px;margin:8px 0;border-radius:8px;background:#f5f5f5;border-left:4px solid #ef4444;">
-      <strong>Privacy Policy</strong> — FAIL
-      <p style="margin:4px 0 0 0;color:#666;">No privacy policy found</p>
-      <p style="margin:4px 0 0 0;color:#888;font-style:italic;">Fix: Add a privacy policy page</p>
-    </div>
-  
-    <div style="padding:12px;margin:8px 0;border-radius:8px;background:#f5f5f5;border-left:4px solid #22c55e;">
-      <strong>Cookie Consent</strong> — PASS
-      <p style="margin:4px 0 0 0;color:#666;">Cookie consent banner detected</p>
-      
-    </div>
-  
-  </div>
-
-  <div class="section">
-    <h2>AI-Detected Issues (3)</h2>
     
-        <div style="padding:12px;margin:8px 0;border-radius:8px;background:#fef2f2;border-left:4px solid #ef4444;">
-          <strong>[CRITICAL] No SSL</strong>
-          <p style="margin:4px 0 0 0;color:#666;">Site is not served over HTTPS.</p>
-          <p style="margin:4px 0 0 0;"><strong>Fix:</strong> Install an SSL certificate.</p>
-        </div>
-      
-        <div style="padding:12px;margin:8px 0;border-radius:8px;background:#fef2f2;border-left:4px solid #ef4444;">
-          <strong>[CRITICAL] Missing Privacy Policy</strong>
-          <p style="margin:4px 0 0 0;color:#666;">No privacy policy page was found.</p>
-          <p style="margin:4px 0 0 0;"><strong>Fix:</strong> Add a privacy policy page.</p>
-        </div>
-      
-        <div style="padding:12px;margin:8px 0;border-radius:8px;background:#fef2f2;border-left:4px solid #f59e0b;">
-          <strong>[WARNING] Tracking scripts found</strong>
-          <p style="margin:4px 0 0 0;color:#666;">3rd-party tracking detected.</p>
-          <p style="margin:4px 0 0 0;"><strong>Fix:</strong> Review and minimize tracking scripts.</p>
-        </div>
-      
+    <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#64748b;line-height:1.6;margin:0 0 12px;">🚨 <strong>Significant compliance gaps.</strong> Immediate action is recommended. Critical issues are likely exposing your business to regulatory risk.</p>
   </div>
-
-  <div class="footer">
-    <p>Generated by ComplyScan — GDPR compliance made effortless</p>
-    <p>Report generated: 31/03/2026</p>
+  <div style="margin:36px 0 16px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <div style="width:4px;height:20px;background:#2563eb;border-radius:2px;"></div>
+      <h2 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:700;color:#1e293b;margin:0;">Automated Checks (2 ✅ / 1 ❌)</h2>
+    </div>
+  </div><div style="background:#fef2f2;border:1px solid #dc2626;border-radius:12px;padding:20px;margin-bottom:20px;">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:#fef2f2;border:2px solid #dc2626;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">❌</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:4px;">Privacy Policy</div>
+          <div style="font-size:13px;color:#64748b;margin-bottom:8px;">No privacy policy found</div>
+          <div style="background:#fef9c3;border-left:3px solid #d97706;padding:8px 12px;border-radius:0 6px 6px 0;font-size:12px;color:#854d0e;"><strong>Recommendation:</strong> Add a privacy policy page</div>
+          
+        </div>
+      </div>
+    </div><div style="background:#f0fdf4;border:1px solid #16a34a;border-radius:12px;padding:20px;margin-bottom:20px;">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:#f0fdf4;border:2px solid #16a34a;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">✅</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:4px;">HTTPS</div>
+          <div style="font-size:13px;color:#64748b;">Site uses HTTPS</div>
+          
+        </div>
+      </div>
+    </div><div style="background:#f0fdf4;border:1px solid #16a34a;border-radius:12px;padding:20px;margin-bottom:20px;">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:#f0fdf4;border:2px solid #16a34a;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">✅</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:4px;">Cookie Consent</div>
+          <div style="font-size:13px;color:#64748b;">Cookie consent banner detected</div>
+          
+        </div>
+      </div>
+    </div>
+  <div style="margin:36px 0 16px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <div style="width:4px;height:20px;background:#2563eb;border-radius:2px;"></div>
+      <h2 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:700;color:#1e293b;margin:0;">AI-Detected Issues (3 Findings)</h2>
+    </div>
+  </div><div style="background:#fef2f2;border:1px solid #dc2626;border-radius:12px;padding:20px;margin-bottom:20px;">
+        <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:8px;">
+          <div style="width:32px;height:32px;border-radius:50%;background:#fef2f2;border:2px solid #dc2626;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#dc2626;flex-shrink:0;">CRIT</div>
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:6px;">No SSL</div>
+            <div style="font-size:13px;color:#64748b;margin-bottom:10px;line-height:1.5;">Site is not served over HTTPS.</div>
+            
+            <div style="background:#f0fdf4;border-left:3px solid #16a34a;padding:10px 12px;border-radius:0 6px 6px 0;font-size:13px;color:#166534;"><strong>✅ Recommended Fix:</strong><br>Install an SSL certificate.</div>
+            
+          </div>
+        </div>
+      </div><div style="background:#fef2f2;border:1px solid #dc2626;border-radius:12px;padding:20px;margin-bottom:20px;">
+        <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:8px;">
+          <div style="width:32px;height:32px;border-radius:50%;background:#fef2f2;border:2px solid #dc2626;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#dc2626;flex-shrink:0;">CRIT</div>
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:6px;">Missing Privacy Policy</div>
+            <div style="font-size:13px;color:#64748b;margin-bottom:10px;line-height:1.5;">No privacy policy page was found.</div>
+            
+            <div style="background:#f0fdf4;border-left:3px solid #16a34a;padding:10px 12px;border-radius:0 6px 6px 0;font-size:13px;color:#166534;"><strong>✅ Recommended Fix:</strong><br>Add a privacy policy page.</div>
+            
+          </div>
+        </div>
+      </div><div style="background:#fffbeb;border:1px solid #d97706;border-radius:12px;padding:20px;margin-bottom:20px;">
+        <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:8px;">
+          <div style="width:32px;height:32px;border-radius:50%;background:#fffbeb;border:2px solid #d97706;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#d97706;flex-shrink:0;">WARN</div>
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:6px;">Tracking scripts found</div>
+            <div style="font-size:13px;color:#64748b;margin-bottom:10px;line-height:1.5;">3rd-party tracking detected.</div>
+            
+            <div style="background:#f0fdf4;border-left:3px solid #16a34a;padding:10px 12px;border-radius:0 6px 6px 0;font-size:13px;color:#166534;"><strong>✅ Recommended Fix:</strong><br>Review and minimize tracking scripts.</div>
+            
+          </div>
+        </div>
+      </div>
+  <div style="margin:36px 0 16px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <div style="width:4px;height:20px;background:#2563eb;border-radius:2px;"></div>
+      <h2 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:700;color:#1e293b;margin:0;">Privacy Policy Analysis</h2>
+    </div>
+  </div><div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:20px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <h3 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:600;color:#1e293b;margin:16px 0 8px;">Website Information</h3>
+          <div style="font-size:13px;color:#64748b;line-height:1.8;">
+            <div><strong>Title:</strong> Example Domain</div>
+            <div><strong>URL:</strong> https://example.com</div>
+            <div><strong>HTTPS:</strong> <span style="color:#16a34a;">✅ Enabled</span></div>
+            <div><strong>Status:</strong> 200</div>
+            <div><strong>Forms found:</strong> 0</div>
+            <div><strong>Labeled form inputs:</strong> undefined / undefined</div>
+          </div>
+        </div>
+        <div>
+          <h3 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:600;color:#1e293b;margin:16px 0 8px;">Policy Presence</h3>
+          <div style="font-size:13px;color:#64748b;line-height:1.8;">
+            <div><strong>Privacy Policy:</strong> <span style="color:#dc2626;">❌ Missing</span></div>
+            
+            <div><strong>Cookie Policy:</strong> <span style="color:#d97706;">⚠️ Not detected</span></div>
+            <div><strong>Cookie Banner:</strong> <span style="color:#d97706;">⚠️ Not detected</span></div>
+            
+          </div>
+        </div>
+      </div>
+    </div><div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:20px;">
+      <h3 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:600;color:#1e293b;margin:16px 0 8px;">Tracking Scripts Detected</h3>
+      <div style="color:#16a34a;font-size:13px;">✅ No third-party tracking scripts detected.</div>
+      
+    </div>
+  <div style="margin:36px 0 16px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <div style="width:4px;height:20px;background:#2563eb;border-radius:2px;"></div>
+      <h2 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:700;color:#1e293b;margin:0;">GDPR Articles Quick Reference</h2>
+    </div>
+  </div><div style="background:#eff6ff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:20px;">
+      <p style="margin:0 0 16px;font-size:13px;color:#64748b;">Key GDPR articles relevant to the findings above:</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;">
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 5</span>
+            <span style="color:#64748b;">Principles of processing</span>
+          </div>
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 6</span>
+            <span style="color:#64748b;">Lawfulness of processing</span>
+          </div>
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 7</span>
+            <span style="color:#64748b;">Conditions for consent</span>
+          </div>
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 12</span>
+            <span style="color:#64748b;">Transparent information</span>
+          </div>
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 13/14</span>
+            <span style="color:#64748b;">Information provision</span>
+          </div>
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 15</span>
+            <span style="color:#64748b;">Right of access</span>
+          </div>
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 17</span>
+            <span style="color:#64748b;">Right to erasure</span>
+          </div>
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 20</span>
+            <span style="color:#64748b;">Right to data portability</span>
+          </div>
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 25</span>
+            <span style="color:#64748b;">Data protection by design</span>
+          </div>
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 32</span>
+            <span style="color:#64748b;">Security of processing</span>
+          </div>
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 35</span>
+            <span style="color:#64748b;">Data Protection Impact Assessment</span>
+          </div>
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 46</span>
+            <span style="color:#64748b;">Transfer mechanisms</span>
+          </div>
+        
+      </div>
+    </div>
+  <div style="margin:36px 0 16px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <div style="width:4px;height:20px;background:#2563eb;border-radius:2px;"></div>
+      <h2 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:700;color:#1e293b;margin:0;">Remediation Action Plan</h2>
+    </div>
+  </div><div style="background:#fffbeb;border:1px solid #d97706;border-radius:12px;padding:20px;margin-bottom:20px;">
+      <p style="margin:0 0 16px;font-size:13px;color:#64748b;">Use this checklist to address the findings in priority order:</p>
+      <div style="margin:4px 0;color:#64748b;">☐ Fix: Privacy Policy — Add a privacy policy page</div><div style="margin:4px 0;color:#64748b;">☐ AI Fix: No SSL — Install an SSL certificate.</div><div style="margin:4px 0;color:#64748b;">☐ AI Fix: Missing Privacy Policy — Add a privacy policy page.</div><div style="margin:4px 0;color:#64748b;">☐ AI Fix: Tracking scripts found — Review and minimize tracking scripts.</div>
+    </div>
+  
+  <div style="margin-top:60px;padding-top:20px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#64748b;">
+    <div>Generated by <strong>ComplyScan</strong> — GDPR compliance made effortless</div>
+    <div>Report generated: 31 March 2026 · CONFIDENTIAL</div>
   </div>
 </body>
 </html>"
@@ -104,77 +266,229 @@ exports[`generateReportHtml — standard medium-risk report > matches saved snap
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GDPR Compliance Report — https://example.com</title>
   <style>
-    * { box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 800px; margin: 0 auto; padding: 40px 20px; color: #1a1a2e; background: #fff; }
-    .header { text-align: center; margin-bottom: 40px; }
-    .logo { font-size: 28px; font-weight: bold; color: #4f8ef7; }
-    .url { color: #666; margin-top: 4px; }
-    .score-section { text-align: center; margin-bottom: 40px; }
-    .score { font-size: 96px; font-weight: bold; color: #f59e0b; line-height: 1; }
-    .score-label { color: #666; font-size: 14px; margin-top: 4px; }
-    .risk-badge { display: inline-block; background: #f59e0b; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-top: 8px; text-transform: uppercase; }
-    .summary { background: #f9f9f9; padding: 20px; border-radius: 12px; margin-bottom: 30px; line-height: 1.6; }
-    .section { margin-bottom: 30px; }
-    .section h2 { color: #0f0f1a; border-bottom: 2px solid #4f8ef7; padding-bottom: 8px; margin-bottom: 16px; }
-    .footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 12px; text-align: center; }
-    a { color: #4f8ef7; }
-    .back { display: inline-block; margin-bottom: 20px; color: #666; text-decoration: none; font-size: 14px; }
-    .back:hover { color: #4f8ef7; }
+  @page { size: A4; margin: 18mm 15mm; }
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .no-print { display: none !important; }
+  }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 800px; margin: 0 auto; padding: 40px 24px; color: #1e293b; background: #ffffff; font-size: 13px; line-height: 1.5; }
+  a { color: #2563eb; text-decoration: none; }
   </style>
 </head>
 <body>
-  <a href="/dashboard" class="back">← Back to Dashboard</a>
-  <div class="header">
-    <div class="logo">ComplyScan</div>
-    <h1 style="font-size:22px;margin:12px 0 4px;">GDPR Compliance Report</h1>
-    <p class="url"><a href="https://example.com" target="_blank">https://example.com</a></p>
+  
+  <div style="page-break-after:always;">
+  <div style="display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 100%);color:#ffffff;text-align:center;padding:60px;">
+      <div style="font-size:42px;font-weight:800;letter-spacing:-1px;margin-bottom:8px;">ComplyScan</div>
+      <div style="font-size:14px;opacity:0.7;letter-spacing:2px;text-transform:uppercase;margin-bottom:60px;">GDPR Compliance Report</div>
+
+      <div style="font-size:80px;font-weight:800;line-height:1;color:#d97706;">65</div>
+      <div style="font-size:14px;opacity:0.8;margin-bottom:8px;">out of 100 — Compliance Score</div>
+      <div style="display:inline-block;background:#d97706;color:#ffffff;padding:6px 20px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:1px;margin-top:12px;margin-bottom:60px;">
+        MEDIUM RISK
+      </div>
+
+      <div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:24px 40px;width:100%;max-width:600px;margin-bottom:40px;">
+        <div style="font-size:11px;opacity:0.6;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Scanned Website</div>
+        <div style="font-size:16px;font-weight:600;">https://example.com</div>
+      </div>
+
+      <div style="display:flex;gap:40px;font-size:13px;opacity:0.7;">
+        <div><div style="font-size:11px;opacity:0.6;margin-bottom:4px;">DATE</div>31 March 2026</div>
+        <div><div style="font-size:11px;opacity:0.6;margin-bottom:4px;">AUTOMATED CHECKS</div>2 passed / 1 failed</div>
+        <div><div style="font-size:11px;opacity:0.6;margin-bottom:4px;">AI DETECTED ISSUES</div>1 findings</div>
+      </div>
   </div>
-
-  <div class="score-section">
-    <div class="score">65</div>
-    <div class="score-label">out of 100 — GDPR Compliance Score</div>
-    <div><span class="risk-badge">MEDIUM RISK</span></div>
   </div>
-
-  <div class="summary">This website has basic GDPR compliance issues that should be addressed.</div>
-
-  <div class="section">
-    <h2>Automated Checks</h2>
+  <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:20px;">
+    <h3 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:600;color:#1e293b;margin:16px 0 8px;">Executive Summary</h3>
+    <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#64748b;line-height:1.6;margin:0 0 12px;">This automated GDPR compliance scan was conducted on <strong>https://example.com</strong> on 31 March 2026. The scan uses a combination of rule-based automated checks and AI-powered analysis to identify potential GDPR compliance gaps.</p>
+    <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#64748b;line-height:1.6;margin:0 0 12px;">The overall compliance score is <strong style="color:#d97706">65/100</strong>, classified as <strong>MEDIUM RISK</strong>.</p>
+    <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#64748b;line-height:1.6;margin:0 0 12px;">The automated rule engine performed 3 checks, of which <strong style="color:#16a34a">2 passed</strong> and <strong style="color:#dc2626">1 failed</strong>. The AI analysis identified <strong>1 additional findings</strong>.</p>
+    <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#64748b;line-height:1.6;margin:0 0 12px;"><strong>AI Assessment:</strong> This website has basic GDPR compliance issues that should be addressed.</p>
+  </div>
+  <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:20px;">
+    <h3 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:600;color:#1e293b;margin:16px 0 8px;">Compliance Score Breakdown</h3>
+    <div style="margin:16px 0;"><div style="display:inline-block;width:9%;height:24px;background:#d97706;border-radius:3px;margin-right:1%;"></div><div style="display:inline-block;width:9%;height:24px;background:#d97706;border-radius:3px;margin-right:1%;"></div><div style="display:inline-block;width:9%;height:24px;background:#d97706;border-radius:3px;margin-right:1%;"></div><div style="display:inline-block;width:9%;height:24px;background:#d97706;border-radius:3px;margin-right:1%;"></div><div style="display:inline-block;width:9%;height:24px;background:#d97706;border-radius:3px;margin-right:1%;"></div><div style="display:inline-block;width:9%;height:24px;background:#d97706;border-radius:3px;margin-right:1%;"></div><div style="display:inline-block;width:9%;height:24px;background:#d97706;border-radius:3px;margin-right:1%;"></div><div style="display:inline-block;width:9%;height:24px;background:#e2e8f0;border-radius:3px;margin-right:1%;"></div><div style="display:inline-block;width:9%;height:24px;background:#e2e8f0;border-radius:3px;margin-right:1%;"></div><div style="display:inline-block;width:9%;height:24px;background:#e2e8f0;border-radius:3px;margin-right:1%;"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:16px;">
+      <span>0 — Critical Non-Compliance</span>
+      <span>50 — Partial Compliance</span>
+      <span>100 — Full Compliance</span>
+    </div>
     
-    <div style="padding:12px;margin:8px 0;border-radius:8px;background:#f5f5f5;border-left:4px solid #22c55e;">
-      <strong>HTTPS</strong> — PASS
-      <p style="margin:4px 0 0 0;color:#666;">Site uses HTTPS</p>
-      
-    </div>
-  
-    <div style="padding:12px;margin:8px 0;border-radius:8px;background:#f5f5f5;border-left:4px solid #ef4444;">
-      <strong>Privacy Policy</strong> — FAIL
-      <p style="margin:4px 0 0 0;color:#666;">No privacy policy found</p>
-      <p style="margin:4px 0 0 0;color:#888;font-style:italic;">Fix: Add a privacy policy page</p>
-    </div>
-  
-    <div style="padding:12px;margin:8px 0;border-radius:8px;background:#f5f5f5;border-left:4px solid #22c55e;">
-      <strong>Cookie Consent</strong> — PASS
-      <p style="margin:4px 0 0 0;color:#666;">Cookie consent banner detected</p>
-      
-    </div>
-  
-  </div>
-
-  <div class="section">
-    <h2>AI-Detected Issues (1)</h2>
+    <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#64748b;line-height:1.6;margin:0 0 12px;">⚠️ <strong>Partial compliance.</strong> Several issues require attention. Prioritise the critical and high-severity findings below.</p>
     
-        <div style="padding:12px;margin:8px 0;border-radius:8px;background:#fef2f2;border-left:4px solid #f59e0b;">
-          <strong>[WARNING] Missing Privacy Policy</strong>
-          <p style="margin:4px 0 0 0;color:#666;">No privacy policy page was found.</p>
-          <p style="margin:4px 0 0 0;"><strong>Fix:</strong> Add a privacy policy page at /privacy or /privacy-policy</p>
+  </div>
+  <div style="margin:36px 0 16px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <div style="width:4px;height:20px;background:#2563eb;border-radius:2px;"></div>
+      <h2 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:700;color:#1e293b;margin:0;">Automated Checks (2 ✅ / 1 ❌)</h2>
+    </div>
+  </div><div style="background:#fef2f2;border:1px solid #dc2626;border-radius:12px;padding:20px;margin-bottom:20px;">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:#fef2f2;border:2px solid #dc2626;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">❌</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:4px;">Privacy Policy</div>
+          <div style="font-size:13px;color:#64748b;margin-bottom:8px;">No privacy policy found</div>
+          <div style="background:#fef9c3;border-left:3px solid #d97706;padding:8px 12px;border-radius:0 6px 6px 0;font-size:12px;color:#854d0e;"><strong>Recommendation:</strong> Add a privacy policy page</div>
+          
         </div>
+      </div>
+    </div><div style="background:#f0fdf4;border:1px solid #16a34a;border-radius:12px;padding:20px;margin-bottom:20px;">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:#f0fdf4;border:2px solid #16a34a;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">✅</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:4px;">HTTPS</div>
+          <div style="font-size:13px;color:#64748b;">Site uses HTTPS</div>
+          
+        </div>
+      </div>
+    </div><div style="background:#f0fdf4;border:1px solid #16a34a;border-radius:12px;padding:20px;margin-bottom:20px;">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:#f0fdf4;border:2px solid #16a34a;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">✅</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:4px;">Cookie Consent</div>
+          <div style="font-size:13px;color:#64748b;">Cookie consent banner detected</div>
+          
+        </div>
+      </div>
+    </div>
+  <div style="margin:36px 0 16px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <div style="width:4px;height:20px;background:#2563eb;border-radius:2px;"></div>
+      <h2 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:700;color:#1e293b;margin:0;">AI-Detected Issues (1 Findings)</h2>
+    </div>
+  </div><div style="background:#fffbeb;border:1px solid #d97706;border-radius:12px;padding:20px;margin-bottom:20px;">
+        <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:8px;">
+          <div style="width:32px;height:32px;border-radius:50%;background:#fffbeb;border:2px solid #d97706;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#d97706;flex-shrink:0;">WARN</div>
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:6px;">Missing Privacy Policy</div>
+            <div style="font-size:13px;color:#64748b;margin-bottom:10px;line-height:1.5;">No privacy policy page was found.</div>
+            
+            <div style="background:#f0fdf4;border-left:3px solid #16a34a;padding:10px 12px;border-radius:0 6px 6px 0;font-size:13px;color:#166534;"><strong>✅ Recommended Fix:</strong><br>Add a privacy policy page at /privacy or /privacy-policy</div>
+            
+          </div>
+        </div>
+      </div>
+  <div style="margin:36px 0 16px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <div style="width:4px;height:20px;background:#2563eb;border-radius:2px;"></div>
+      <h2 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:700;color:#1e293b;margin:0;">Privacy Policy Analysis</h2>
+    </div>
+  </div><div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:20px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <h3 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:600;color:#1e293b;margin:16px 0 8px;">Website Information</h3>
+          <div style="font-size:13px;color:#64748b;line-height:1.8;">
+            <div><strong>Title:</strong> Example Domain</div>
+            <div><strong>URL:</strong> https://example.com</div>
+            <div><strong>HTTPS:</strong> <span style="color:#16a34a;">✅ Enabled</span></div>
+            <div><strong>Status:</strong> 200</div>
+            <div><strong>Forms found:</strong> 0</div>
+            <div><strong>Labeled form inputs:</strong> undefined / undefined</div>
+          </div>
+        </div>
+        <div>
+          <h3 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:600;color:#1e293b;margin:16px 0 8px;">Policy Presence</h3>
+          <div style="font-size:13px;color:#64748b;line-height:1.8;">
+            <div><strong>Privacy Policy:</strong> <span style="color:#dc2626;">❌ Missing</span></div>
+            
+            <div><strong>Cookie Policy:</strong> <span style="color:#d97706;">⚠️ Not detected</span></div>
+            <div><strong>Cookie Banner:</strong> <span style="color:#d97706;">⚠️ Not detected</span></div>
+            
+          </div>
+        </div>
+      </div>
+    </div><div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:20px;">
+      <h3 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:600;color:#1e293b;margin:16px 0 8px;">Tracking Scripts Detected</h3>
+      <div style="color:#16a34a;font-size:13px;">✅ No third-party tracking scripts detected.</div>
       
-  </div>
-
-  <div class="footer">
-    <p>Generated by ComplyScan — GDPR compliance made effortless</p>
-    <p>Report generated: 31/03/2026</p>
+    </div>
+  <div style="margin:36px 0 16px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <div style="width:4px;height:20px;background:#2563eb;border-radius:2px;"></div>
+      <h2 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:700;color:#1e293b;margin:0;">GDPR Articles Quick Reference</h2>
+    </div>
+  </div><div style="background:#eff6ff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:20px;">
+      <p style="margin:0 0 16px;font-size:13px;color:#64748b;">Key GDPR articles relevant to the findings above:</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;">
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 5</span>
+            <span style="color:#64748b;">Principles of processing</span>
+          </div>
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 6</span>
+            <span style="color:#64748b;">Lawfulness of processing</span>
+          </div>
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 7</span>
+            <span style="color:#64748b;">Conditions for consent</span>
+          </div>
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 12</span>
+            <span style="color:#64748b;">Transparent information</span>
+          </div>
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 13/14</span>
+            <span style="color:#64748b;">Information provision</span>
+          </div>
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 15</span>
+            <span style="color:#64748b;">Right of access</span>
+          </div>
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 17</span>
+            <span style="color:#64748b;">Right to erasure</span>
+          </div>
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 20</span>
+            <span style="color:#64748b;">Right to data portability</span>
+          </div>
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 25</span>
+            <span style="color:#64748b;">Data protection by design</span>
+          </div>
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 32</span>
+            <span style="color:#64748b;">Security of processing</span>
+          </div>
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 35</span>
+            <span style="color:#64748b;">Data Protection Impact Assessment</span>
+          </div>
+        
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:700;color:#2563eb;min-width:52px;">Art. 46</span>
+            <span style="color:#64748b;">Transfer mechanisms</span>
+          </div>
+        
+      </div>
+    </div>
+  <div style="margin:36px 0 16px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <div style="width:4px;height:20px;background:#2563eb;border-radius:2px;"></div>
+      <h2 style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:700;color:#1e293b;margin:0;">Remediation Action Plan</h2>
+    </div>
+  </div><div style="background:#fffbeb;border:1px solid #d97706;border-radius:12px;padding:20px;margin-bottom:20px;">
+      <p style="margin:0 0 16px;font-size:13px;color:#64748b;">Use this checklist to address the findings in priority order:</p>
+      <div style="margin:4px 0;color:#64748b;">☐ Fix: Privacy Policy — Add a privacy policy page</div><div style="margin:4px 0;color:#64748b;">☐ AI Fix: Missing Privacy Policy — Add a privacy policy page at /privacy or /privacy-policy</div>
+    </div>
+  
+  <div style="margin-top:60px;padding-top:20px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#64748b;">
+    <div>Generated by <strong>ComplyScan</strong> — GDPR compliance made effortless</div>
+    <div>Report generated: 31 March 2026 · CONFIDENTIAL</div>
   </div>
 </body>
 </html>"

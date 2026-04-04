@@ -50,7 +50,7 @@ const MOCK_SCAN_RESULT = {
 // -----------------------------------------------------------------------
 describe('generateReportHtml — standard medium-risk report', () => {
   it('renders score 65 / MEDIUM RISK with correct structure', async () => {
-    const { generateReportHtml } = await import('@/app/api/report/[id]/route');
+    const { generateReportHtml } = await import('@/lib/report');
     const html = generateReportHtml('https://example.com', MOCK_SCAN_RESULT);
 
     // Structural assertions
@@ -71,7 +71,7 @@ describe('generateReportHtml — standard medium-risk report', () => {
   });
 
   it('matches saved snapshot', async () => {
-    const { generateReportHtml } = await import('@/app/api/report/[id]/route');
+    const { generateReportHtml } = await import('@/lib/report');
     const html = generateReportHtml('https://example.com', MOCK_SCAN_RESULT);
     expect(html).toMatchSnapshot();
   });
@@ -82,7 +82,7 @@ describe('generateReportHtml — standard medium-risk report', () => {
 // -----------------------------------------------------------------------
 describe('generateReportHtml — high-risk / low score', () => {
   it('renders score 20 / HIGH RISK correctly', async () => {
-    const { generateReportHtml } = await import('@/app/api/report/[id]/route');
+    const { generateReportHtml } = await import('@/lib/report');
     const result = {
       ...MOCK_SCAN_RESULT,
       aiAnalysis: { ...MOCK_SCAN_RESULT.aiAnalysis, gdprScore: 20, riskLevel: 'high', issues: [
@@ -99,7 +99,7 @@ describe('generateReportHtml — high-risk / low score', () => {
   });
 
   it('matches saved snapshot for high-risk', async () => {
-    const { generateReportHtml } = await import('@/app/api/report/[id]/route');
+    const { generateReportHtml } = await import('@/lib/report');
     const result = {
       ...MOCK_SCAN_RESULT,
       aiAnalysis: { ...MOCK_SCAN_RESULT.aiAnalysis, gdprScore: 20, riskLevel: 'high', issues: [
@@ -118,7 +118,7 @@ describe('generateReportHtml — high-risk / low score', () => {
 // -----------------------------------------------------------------------
 describe('generateReportHtml — clean / high-score report', () => {
   it('renders score 90 / LOW RISK with PASS on all checks', async () => {
-    const { generateReportHtml } = await import('@/app/api/report/[id]/route');
+    const { generateReportHtml } = await import('@/lib/report');
     const result = {
       ...MOCK_SCAN_RESULT,
       aiAnalysis: { ...MOCK_SCAN_RESULT.aiAnalysis, gdprScore: 90, riskLevel: 'low', summary: 'This website has strong GDPR compliance.', issues: [] },
@@ -141,11 +141,11 @@ describe('generateReportHtml — clean / high-score report', () => {
 // -----------------------------------------------------------------------
 describe('generateReportHtml — XSS sanitisation', () => {
   it('escapes rule check fields (name, detail, recommendation)', async () => {
-    const { generateReportHtml } = await import('@/app/api/report/[id]/route');
+    const { generateReportHtml } = await import('@/lib/report');
     const result = {
       ...MOCK_SCAN_RESULT,
       ruleChecks: [
-        { name: '<b>XSS in name</b>', passed: true, detail: '<img src=x onerror=alert(1)>', recommendation: '<script>alert(1)</script>' },
+        { name: '<b>XSS in name</b>', passed: false, detail: '<img src=x onerror=alert(1)>', recommendation: '<script>alert(1)</script>' },
       ],
     };
     const html = generateReportHtml('https://example.com', result);
@@ -157,7 +157,7 @@ describe('generateReportHtml — XSS sanitisation', () => {
   });
 
   it('escapes AI issue fields (title, description, fix)', async () => {
-    const { generateReportHtml } = await import('@/app/api/report/[id]/route');
+    const { generateReportHtml } = await import('@/lib/report');
     const result = {
       ...MOCK_SCAN_RESULT,
       aiAnalysis: {
@@ -173,7 +173,7 @@ describe('generateReportHtml — XSS sanitisation', () => {
   });
 
   it('escapes URL field', async () => {
-    const { generateReportHtml } = await import('@/app/api/report/[id]/route');
+    const { generateReportHtml } = await import('@/lib/report');
     const html = generateReportHtml('https://evil.com/<script>alert(1)</script>', MOCK_SCAN_RESULT);
     expect(html).not.toContain('<script>alert(1)</script>');
     expect(html).toContain('&lt;script&gt;');

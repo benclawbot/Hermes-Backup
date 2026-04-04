@@ -10,7 +10,7 @@ const LIST_ID = process.env.MAILJET_LIST_ID!; // set after running setup script
 
 const auth = Buffer.from(`${MJ_API_KEY}:${MJ_SECRET_KEY}`).toString('base64');
 
-async functionmj(endpoint: string, options: RequestInit = {}): Promise<any> {
+async function mj(endpoint: string, options: RequestInit = {}): Promise<any> {
   const r = await fetch(`${MJ_BASE}${endpoint}`, {
     ...options,
     headers: {
@@ -39,7 +39,7 @@ export async function subscribeToNurture({
 }): Promise<{ success: boolean; error?: string }> {
   try {
     // 1. Upsert contact
-    awaitmj('/contact', {
+    await mj('/contact', {
       method: 'POST',
       body: JSON.stringify({
         Email: email,
@@ -53,7 +53,7 @@ export async function subscribeToNurture({
 
     // 2. Add to contact list (GDPR: user explicitly opted in via scan purchase/signup)
     if (LIST_ID) {
-      awaitmj(`/contactslist/${LIST_ID}/managecontact`, {
+      await mj(`/contactslist/${LIST_ID}/managecontact`, {
         method: 'POST',
         body: JSON.stringify({
           Email: email,
@@ -64,7 +64,7 @@ export async function subscribeToNurture({
     }
 
     // 3. Send welcome email immediately via template
-    awaitmj('/send', {
+    await mj('/send', {
       method: 'POST',
       body: JSON.stringify({
         Messages: [
@@ -97,7 +97,7 @@ export async function subscribeToNurture({
  * Can be called from a cron job or triggered manually.
  */
 export async function sendScanTipsEmail(email: string): Promise<void> {
-  awaitmj('/send', {
+  await mj('/send', {
     method: 'POST',
     body: JSON.stringify({
       Messages: [
@@ -117,7 +117,7 @@ export async function sendScanTipsEmail(email: string): Promise<void> {
  * Send the Day-7 upgrade email to a specific contact.
  */
 export async function sendUpgradeEmail(email: string): Promise<void> {
-  awaitmj('/send', {
+  await mj('/send', {
     method: 'POST',
     body: JSON.stringify({
       Messages: [

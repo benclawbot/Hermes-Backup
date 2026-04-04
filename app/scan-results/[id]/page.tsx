@@ -1,22 +1,73 @@
-import { getDb } from '@/lib/db';
-import { redirect } from 'next/navigation';
-import Link from 'next/link';
-import ScanResultsClient from './ScanResultsClient';
+"use client";
 
-interface Props {
-  params: Promise<{ id: string }>;
-}
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import ScanResultsClient from "./ScanResultsClient";
+import { useParams, useSearchParams } from "next/navigation";
 
-export default async function ScanResultsPage({ params }: Props) {
-  const { id } = await params;
-  const scanId = decodeURIComponent(id);
+export default function ScanResultsPage() {
+  const params = useParams();
+  const searchParams = useSearchParams();
+  const scanId = decodeURIComponent(String(params?.id ?? ""));
 
-  const db = getDb();
-  const scan = db
-    .prepare('SELECT * FROM scans WHERE id = ?')
-    .get(scanId) as any;
+  const [scanData, setScanData] = useState<{
+    url: string;
+    email: string | null;
+    status: string;
+    result: any;
+  } | null>(null);
 
-  if (!scan) {
+  const [dbResult, setDbResult] = useState<any>(null); // fallback if ?r= absent
+
+  // Decompress ?r= param (gzip+base64 encoded result — survives Lambda cold-start)
+  useEffect(() => {
+    const encoded = searchParams.get("r");
+    if (encoded) {
+      try {
+        const raw = Buffer.from(encoded, "base64");
+        if (raw[0] === 0x1f && raw[1] === 0x8b) {
+          const decompressed = require("zlib")
+            .gunzipSync(raw)
+            .toString("utf8");
+          const parsed = JSON.parse(decompressed);
+          setScanData({
+            url: parsed.crawl?.url ?? "",
+            email: null,
+            status: "completed",
+            result: parsed,
+          });
+          return;
+        }
+        // Plain base64 (no gzip)
+        const plain = JSON.parse(Buffer.from(encoded, "base64").toString("utf8"));
+        setScanData({
+          url: plain.crawl?.url ?? "",
+          email: null,
+          status: "completed",
+          result: plain,
+        });
+      } catch (e) {
+        console.error("Failed to decode ?r= result:", e);
+      }
+    }
+  }, [searchParams]);
+
+  // If no ?r=, fall back to DB lookup (works when DB is persistent)
+  useEffect(() => {
+    if (scanData) return;
+    if (!scanId) return;
+
+    fetch(`/api/report/${encodeURIComponent(scanId)}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.url) {
+          setDbResult(d);
+        }
+      })
+      .catch(() => {});
+  }, [scanId, scanData]);
+
+  if (!scanData && !dbResult) {
     return (
       <div className="min-h-screen bg-midnight flex items-center justify-center px-4">
         <div className="text-center">
@@ -30,26 +81,16 @@ export default async function ScanResultsPage({ params }: Props) {
     );
   }
 
-  // Decompress result if available
-  let result = null;
-  if (scan.result_json) {
-    try {
-      const decompressed = require('zlib')
-        .gunzipSync(Buffer.from(scan.result_json, 'base64'))
-        .toString('utf8');
-      result = JSON.parse(decompressed);
-    } catch {
-      result = null;
-    }
-  }
+  // Use ?r= data if available, otherwise DB data
+  const data = scanData ?? dbResult;
 
   return (
     <ScanResultsClient
       scanId={scanId}
-      url={scan.url}
-      email={scan.email}
-      status={scan.status}
-      result={result}
+      url={data.url}
+      email={data.email ?? null}
+      status={data.status ?? "completed"}
+      result={data.result ?? null}
     />
   );
 }

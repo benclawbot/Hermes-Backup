@@ -63,6 +63,13 @@ export async function POST(request: NextRequest) {
       path: '/',
     });
 
+    // Trigger nurture sequence for new users (non-blocking)
+    if (isNewUser) {
+      import('@/lib/mailjet').then(({ subscribeToNurture }) => {
+        subscribeToNurture({ email }).catch(() => {});
+      });
+    }
+
     return response;
   } catch (err: any) {
     console.error('Claim scan error:', err.message);

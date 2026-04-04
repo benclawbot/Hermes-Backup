@@ -42,6 +42,18 @@ async function getResultFromStripe(stripeSessionId: string, scanId: string, db: 
   }
 }
 
+async function getWhiteLabelOptions(scanId: string): Promise<{ whiteLabel?: { companyName?: string } } | null> {
+  const db = getDb();
+  const scan = db.prepare('SELECT subscriber_id FROM scans WHERE id = ?').get(scanId) as any;
+  if (!scan?.subscriber_id) return null;
+
+  const subscriber = db.prepare('SELECT plan FROM subscribers WHERE id = ?').get(scan.subscriber_id) as any;
+  if (subscriber?.plan === 'agency') {
+    return { whiteLabel: { companyName: 'Compliance Report' } };
+  }
+  return null;
+}
+
 async function generateFromResult(result: any, scanId: string, format: string) {
   const url = result?.crawl?.url || result?.url || '';
 
@@ -58,7 +70,8 @@ async function generateFromResult(result: any, scanId: string, format: string) {
 
   try {
     const { generateReportPdfBuffer } = await import('@/lib/pdf-report');
-    const pdfBuffer = await generateReportPdfBuffer(url, result);
+    const whiteLabelOpts = await getWhiteLabelOptions(scanId);
+    const pdfBuffer = await generateReportPdfBuffer(url, result, whiteLabelOpts ?? undefined);
     const safeName = (url || 'report').replace(/[^a-zA-Z0-9.-]/g, '_').slice(0, 60);
     return new NextResponse(new Uint8Array(pdfBuffer), {
       headers: {

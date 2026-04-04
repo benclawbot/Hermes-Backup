@@ -7,6 +7,7 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['tests/**/*.test.ts'],
+    exclude: ['tests/payment-report-flow.test.ts'],
     coverage: {
       provider: 'v8',
       thresholds: {

@@ -16,7 +16,7 @@ const MJ_BASE = 'https://api.mailjet.com/v4';
 
 const auth = Buffer.from(`${MAILJET_API_KEY}:${MAILJET_SECRET_KEY}`).toString('base64');
 
-async functionmj(endpoint: string, options: RequestInit = {}) {
+async function mj(endpoint: string, options: RequestInit = {}) {
   const r = await fetch(`${MJ_BASE}${endpoint}`, {
     ...options,
     headers: {
@@ -37,7 +37,7 @@ async function main() {
 
   // ── 1. Create contact list ─────────────────────────────────────────────────
   console.log('📋 Creating contact list...');
-  const listRes = awaitmj('/contactslist', {
+  const listRes = await mj('/contactslist', {
     method: 'POST',
     body: JSON.stringify({
       Name: 'ComplyScan Users',
@@ -200,7 +200,7 @@ async function main() {
 
   const templateIds: Record<string, number> = {};
   for (const t of templates) {
-    const res = awaitmj('/template', {
+    const res = await mj('/template', {
       method: 'POST',
       body: JSON.stringify({
         Name: t.name,

@@ -331,8 +331,8 @@ export function generateReportHtml(url: string, result: ScanResult): string {
 
   // ── Remediation Plan ────────────────────────────────────────────────────────
   const remediationItems = [
-    ...failedChecks.map(c => ({ text: `Fix: ${c.name} — ${c.recommendation || 'See recommendation above'}`, done: false })),
-    ...(aiAnalysis?.issues?.filter((i: AIIssue) => i.fix).map((i: AIIssue) => ({ text: `AI Fix: ${i.title} — ${i.fix}`, done: false })) || []),
+    ...failedChecks.map(c => ({ text: `Fix: ${esc(c.name)} — ${esc(c.recommendation || 'See recommendation above')}`, done: false })),
+    ...(aiAnalysis?.issues?.filter((i: AIIssue) => i.fix).map((i: AIIssue) => ({ text: `AI Fix: ${esc(i.title)} — ${esc(i.fix)}`, done: false })) || []),
   ];
 
   const remediationSection = sectionTitle('Remediation Action Plan') +

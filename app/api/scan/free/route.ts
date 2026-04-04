@@ -90,6 +90,11 @@ export async function POST(request: NextRequest) {
       `UPDATE scans SET status = 'completed', result_json = ?, completed_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now') WHERE id = ?`
     ).run(resultJson, scanId);
 
+    // Trigger welcome email (non-blocking)
+    import('@/lib/mailjet').then(({ subscribeToNurture }) => {
+      subscribeToNurture({ email, scanUrl: url }).catch(() => {});
+    });
+
     return NextResponse.json({ scanId, status: 'completed', result });
   } catch (err: any) {
     console.error(`Free scan ${scanId} failed:`, err.message);

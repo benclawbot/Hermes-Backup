@@ -2,13 +2,16 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, ChevronDown } from "lucide-react";
+import { LiveScanMeter } from "./ui/LiveScanMeter";
+import { AnimatedCounter } from "./ui/AnimatedCounter";
 
 export function Hero() {
   const [url, setUrl] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showScanDemo, setShowScanDemo] = useState(true);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,28 +21,31 @@ export function Hero() {
     setError("");
 
     try {
-      const res = await fetch('/api/scan/free', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/scan/free", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url, email: email || undefined }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        if (data.code === 'LIMIT_REACHED') {
+        if (data.code === "LIMIT_REACHED") {
           setError(`You've used your 3 free scans this month. Upgrade to Pro for unlimited scans.`);
         } else {
-          setError(data.error || 'Something went wrong. Please try again.');
+          setError(data.error || "Something went wrong. Please try again.");
         }
         return;
       }
 
-      // Redirect to free results page
-      window.location.href = `/scan-results/${encodeURIComponent(data.scanId)}`;
-    } catch (err) {
-      console.error('Free scan error:', err);
-      setError('Failed to start scan. Is the server running?');
+      // Embed result in URL to survive Vercel serverless cold-starts (ephemeral FS)
+      const rawJson = JSON.stringify(data.result);
+      const compressed = Buffer.from(
+        require("zlib").gzipSync(Buffer.from(rawJson, "utf8"))
+      ).toString("base64");
+      window.location.href = `/scan-results/${encodeURIComponent(data.scanId)}?r=${compressed}`;
+    } catch {
+      setError("Failed to start scan. Is the server running?");
     } finally {
       setLoading(false);
     }
@@ -48,110 +54,154 @@ export function Hero() {
   return (
     <section
       id="hero"
-      className="relative min-h-[80vh] flex flex-col items-center justify-center px-4 py-24 text-center"
+      className="relative min-h-[90vh] flex flex-col items-center justify-center px-4 py-28 text-center overflow-hidden"
     >
-      {/* Background gradient */}
+      {/* Layered background */}
       <div className="absolute inset-0 bg-gradient-to-b from-midnight via-midnight to-midnight-light pointer-events-none" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-accent-blue/10 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(79,142,247,0.12)_0%,transparent_60%)] pointer-events-none" />
+      {/* Subtle grid overlay */}
+      <div
+        className="absolute inset-0 opacity-[0.03] pointer-events-none"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
+          backgroundSize: "48px 48px",
+        }}
+      />
 
-      <div className="relative z-10 max-w-3xl mx-auto">
+      <div className="relative z-10 max-w-5xl mx-auto w-full">
+        {/* Eyebrow label */}
+        <div className="inline-flex items-center gap-2 rounded-full border border-accent-blue/20 bg-accent-blue/10 px-4 py-1.5 mb-8 animate-badge-in">
+          <span className="w-1.5 h-1.5 rounded-full bg-accent-blue animate-pulse" />
+          <span className="text-accent-blue text-xs font-semibold tracking-wider uppercase">
+            AI-Powered GDPR Scanner
+          </span>
+        </div>
+
         {/* Headline */}
-        <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
+        <h1
+          className="font-heading text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-[1.05] mb-6 tracking-tight"
+          style={{ animation: "slide-up 0.6s ease-out both" }}
+        >
           Is Your Website{" "}
-          <span className="text-accent-blue">GDPR Compliant</span>?
+          <span className="relative inline-block">
+            <span className="text-risk-medium">GDPR</span>
+            <span className="absolute -bottom-1 left-0 right-0 h-[3px] rounded-full bg-risk-medium/40" />
+          </span>{" "}
+          Compliant?
         </h1>
 
         {/* Subheadline */}
-        <p className="text-lg sm:text-xl text-white/70 mb-10 max-w-2xl mx-auto">
-          Free GDPR compliance scan. No credit card. Get your full PDF report from €9.
+        <p
+          className="text-lg sm:text-xl text-white/60 mb-12 max-w-2xl mx-auto leading-relaxed"
+          style={{ animation: "slide-up 0.6s ease-out 0.1s both" }}
+        >
+          Free GDPR compliance scan in seconds. See every issue before your
+          users do — no credit card, no signup required.
         </p>
 
-        {/* URL Input Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col gap-3 max-w-xl mx-auto mb-4"
+        {/* Main content: form + demo side by side on large screens */}
+        <div
+          className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start max-w-4xl mx-auto mb-10"
+          style={{ animation: "slide-up 0.6s ease-out 0.2s both" }}
         >
-          <input
-            type="url"
-            name="url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="https://yourwebsite.com"
-            required
-            className="rounded-lg bg-midnight-light border border-white/20 px-5 py-4 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-transparent transition-all"
-          />
-          <input
-            type="email"
-            name="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="your@email.com (required for your report)"
-            required
-            className="rounded-lg bg-midnight-light border border-white/20 px-5 py-4 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-transparent transition-all"
-          />
-          {error && (
-            <p className="text-red-400 text-sm text-left">{error}</p>
-          )}
-          <button
-            type="submit"
-            disabled={loading}
-            className="rounded-lg bg-accent-blue px-8 py-4 font-semibold text-white hover:bg-accent-glow transition-all shadow-lg shadow-accent-blue/30 hover:shadow-accent-blue/50 whitespace-nowrap glow-accent disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? 'Running scan...' : 'Scan Free →'}
-          </button>
-        </form>
+          {/* Left: scan form */}
+          <div>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+              <input
+                type="url"
+                name="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="https://yourwebsite.com"
+                required
+                className="rounded-xl bg-midnight-light border border-white/15 px-5 py-4 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-accent-blue/60 focus:border-accent-blue/40 transition-all text-base"
+              />
+              <input
+                type="email"
+                name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your@email.com (for your report)"
+                className="rounded-xl bg-midnight-light border border-white/15 px-5 py-4 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-accent-blue/60 focus:border-accent-blue/40 transition-all text-base"
+              />
+              {error && (
+                <p className="text-risk-high text-sm text-left px-1 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-risk-high inline-block" />
+                  {error}
+                </p>
+              )}
+              <button
+                type="submit"
+                disabled={loading}
+                className="rounded-xl bg-accent-blue px-8 py-4 font-bold text-white hover:bg-accent-glow transition-all shadow-glow-blue hover:shadow-blue-500/50 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed text-base mt-1 hover-scale"
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    Running scan...
+                  </span>
+                ) : (
+                  "Scan Free →"
+                )}
+              </button>
+            </form>
+            <p className="text-white/25 text-xs mt-3">3 free scans per month · No credit card needed</p>
+          </div>
 
-        <p className="text-white/30 text-xs mb-6">3 free scans per month · No credit card required</p>
+          {/* Right: live scan demo */}
+          <div className="glass rounded-2xl p-6 border border-white/10">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-white/40 text-xs font-semibold uppercase tracking-wider">Live Demo</span>
+              <button
+                onClick={() => setShowScanDemo(!showScanDemo)}
+                className="text-white/30 hover:text-white/60 text-xs transition-colors"
+              >
+                {showScanDemo ? "Hide" : "Show"}
+              </button>
+            </div>
+            {showScanDemo && <LiveScanMeter url="example.com" autoStart={true} />}
+          </div>
+        </div>
 
-        {/* Subscriber login link */}
-        <div className="mb-6">
+        {/* Stats row */}
+        <div
+          className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 mb-12"
+          style={{ animation: "slide-up 0.6s ease-out 0.3s both" }}
+        >
+          {[
+            { value: 2847, suffix: "+", label: "Sites scanned" },
+            { value: 4, suffix: ".2", label: "Avg issues found" },
+            { value: 98, suffix: "%", label: "Uptime" },
+          ].map(({ value, suffix, label }) => (
+            <div key={label} className="text-center">
+              <p className="font-heading text-2xl sm:text-3xl font-bold text-white">
+                <AnimatedCounter end={value} suffix={suffix} duration={1800} />
+              </p>
+              <p className="text-white/40 text-xs mt-0.5 uppercase tracking-wider">{label}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Subscriber link */}
+        <div className="mb-8" style={{ animation: "slide-up 0.6s ease-out 0.35s both" }}>
           <Link
             href="/login"
-            className="text-sm text-white/40 hover:text-white/70 transition-colors"
+            className="text-sm text-white/35 hover:text-white/60 transition-colors inline-flex items-center gap-1.5"
           >
-            Subscriber Dashboard →
+            Subscriber dashboard
+            <ChevronDown className="w-3.5 h-3.5 rotate-[-90deg]" />
           </Link>
         </div>
+      </div>
 
-        {/* Trust badges */}
-        <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/50">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-success" />
-            <span>Trusted by 2,847 website owners</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-              />
-            </svg>
-            <span>No credit card</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <span>Results in 2 minutes</span>
-          </div>
-        </div>
+      {/* Scroll indicator */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-30">
+        <span className="text-[10px] uppercase tracking-widest text-white/50">Scroll</span>
+        <ChevronDown className="w-4 h-4 text-white/50 animate-bounce" />
       </div>
     </section>
   );
