@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
   let db: ReturnType<typeof getDb> | undefined;
 
   try {
-    const body = await request.json();
+    const body = await request.json() as { url?: string; email?: string };
     const { url, email } = body;
 
     if (!url) {

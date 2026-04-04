@@ -24,7 +24,7 @@ function verifyAgencySubscriber(token: string): { subscriberId: string; email: s
 // POST: run a scan for a client's URL
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await request.json() as { clientId?: string; token?: string };
     const { clientId, token } = body;
 
     if (!clientId || !token) {

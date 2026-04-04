@@ -5,7 +5,7 @@ import { getDb, parseResultJson, compressGzip } from '@/lib/env';
 export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
-  const { scanId, url, email } = await request.json();
+  const { scanId, url, email } = await request.json() as { scanId?: string; url?: string; email?: string };
 
   const db = getDb();
 

@@ -4,7 +4,7 @@ import Stripe from 'stripe';
 
 export async function POST(request: NextRequest) {
   try {
-    const { url: websiteUrl, email, plan, scanId: existingScanId } = await request.json();
+    const { url: websiteUrl, email, plan, scanId: existingScanId } = await request.json() as { url?: string; email?: string; plan?: string; scanId?: string };
 
     if (!websiteUrl && plan !== 'monthly' && plan !== 'pdf') {
       return NextResponse.json({ error: 'URL is required' }, { status: 400 });

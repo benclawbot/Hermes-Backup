@@ -19,7 +19,7 @@ function getMonthlyScanCount(db: any, email: string): number {
 }
 
 export async function POST(request: NextRequest) {
-  const { url, email } = await request.json();
+    const { url, email } = await request.json() as { url?: string; email?: string };
 
   if (!url) {
     return NextResponse.json({ error: 'URL is required' }, { status: 400 });

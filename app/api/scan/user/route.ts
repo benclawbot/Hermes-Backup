@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { url } = await request.json();
+  const { url } = await request.json() as { url?: string };
   if (!url) {
     return NextResponse.json({ error: 'URL required' }, { status: 400 });
   }
