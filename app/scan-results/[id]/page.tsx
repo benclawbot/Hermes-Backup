@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ScanResultsClient from "./ScanResultsClient";
 import { getDb, parseResultJson } from "@/lib/env";
 
 interface Props {
