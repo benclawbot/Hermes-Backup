@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
-import { getDb } from '@/lib/db';
+import { getDb, compressGzip } from '@/lib/env';
 
 export const maxDuration = 60;
 
 const FREE_SCAN_LIMIT = 3; // per email per month
 
-// Rate-limit check: count scans for this email in the current calendar month
 function getMonthlyScanCount(db: any, email: string): number {
   const startOfMonth = new Date();
   startOfMonth.setDate(1);
@@ -42,7 +41,6 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Create scan record
   const scanId = uuidv4();
   db.prepare(
     `INSERT INTO scans (id, url, status, email, stripe_session_id) VALUES (?, ?, 'processing', ?, NULL)`
@@ -81,10 +79,8 @@ export async function POST(request: NextRequest) {
       scannedAt: new Date().toISOString(),
     };
 
-    // Compress result for storage
     const rawJson = JSON.stringify(result);
-    const compressed = require('zlib').gzipSync(Buffer.from(rawJson, 'utf8'));
-    const resultJson = compressed.toString('base64');
+    const resultJson = await compressGzip(rawJson);
 
     db.prepare(
       `UPDATE scans SET status = 'completed', result_json = ?, completed_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now') WHERE id = ?`

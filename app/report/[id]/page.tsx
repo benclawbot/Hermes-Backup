@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 
 export default function ReportPage() {
   const params = useParams();
-  const searchParams = useSearchParams();
   const scanId = Array.isArray(params.id) ? params.id[0] : params.id;
 
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
@@ -17,24 +16,7 @@ export default function ReportPage() {
   useEffect(() => {
     if (!scanId) return;
 
-    // ── 1. ?r= param (gzip+base64 result from success page — survives Lambda cold-start) ──
-    const encodedResult = searchParams.get("r");
-    if (encodedResult) {
-      try {
-        const raw = Buffer.from(encodedResult, "base64");
-        // Detect gzip magic bytes
-        if (raw[0] === 0x1f && raw[1] === 0x8b) {
-          const decompressed = require("zlib").gunzipSync(raw).toString("utf8");
-          const result = JSON.parse(decompressed);
-          loadResult(result);
-          return;
-        }
-      } catch (e) {
-        console.error("Failed to decode ?r= result:", e);
-      }
-    }
-
-    // ── 2. sessionStorage (set by success page before redirect) ──
+    // ── 1. sessionStorage (set by success page before redirect) ──
     try {
       const stored = sessionStorage.getItem(`scan:${scanId}`);
       if (stored) {
@@ -46,7 +28,7 @@ export default function ReportPage() {
       console.error("sessionStorage read failed:", e);
     }
 
-    // ── 3. API polling (Lambda DB — may fail on cold-start) ──
+    // ── 2. API polling ──
     let attempts = 0;
     const maxAttempts = 90;
 
@@ -98,7 +80,7 @@ export default function ReportPage() {
         setStatus("error");
       }
     }
-  }, [scanId, searchParams]);
+  }, [scanId]);
 
   const handleDownloadPdf = async () => {
     if (pdfResult) {

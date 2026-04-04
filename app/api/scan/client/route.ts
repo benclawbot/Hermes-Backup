@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
-import { getDb } from '@/lib/db';
+import { getDb, compressGzip } from '@/lib/env';
 import { crawlPage } from '@/lib/crawler';
 import { runRuleBasedChecks } from '@/lib/gdpr-checks';
 import { analyzeWithAI } from '@/lib/ai-analysis';

@@ -3,30 +3,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
-// Browser-native gzip+base64 (same as Hero.tsx — avoids require('zlib') in browser)
-async function gzipBase64(str: string): Promise<string> {
-  const buf = new TextEncoder().encode(str);
-  const cs = new CompressionStream("gzip");
-  const writer = cs.writable.getWriter();
-  writer.write(buf);
-  writer.close();
-  const reader = cs.readable.getReader();
-  const chunks: Uint8Array[] = [];
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done || !value) break;
-    chunks.push(value);
-  }
-  const total = chunks.reduce((a, b) => a + b.length, 0);
-  const combined = new Uint8Array(total);
-  let offset = 0;
-  for (const chunk of chunks) { combined.set(chunk, offset); offset += chunk.length; }
-  let binary = "";
-  for (let i = 0; i < combined.length; i++) binary += String.fromCharCode(combined[i]);
-  return btoa(binary);
-}
-
 export default function SuccessClient() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
@@ -70,10 +46,7 @@ export default function SuccessClient() {
           if (data.status === "completed" || data.result) {
             // Store in sessionStorage for cold-start resilience
             try { sessionStorage.setItem(`scan:${scanId}`, JSON.stringify(data.result)); } catch {}
-            // Embed result in URL (gzip+base64) to survive cold-starts
-            const rawJson = JSON.stringify(data.result);
-            const compressed = await gzipBase64(rawJson);
-            window.location.href = `/report/${encodeURIComponent(scanId)}?r=${compressed}&session_id=${encodeURIComponent(sessionId || '')}`;
+            window.location.href = `/report/${encodeURIComponent(scanId)}?session_id=${encodeURIComponent(sessionId || '')}`;
           } else {
             setReportError("Scan not found. Please contact support.");
             setReportStatus("error");
@@ -119,17 +92,7 @@ export default function SuccessClient() {
               sessionStorage.setItem(`scan:${scanId}`, JSON.stringify(data.result));
             } catch {}
           }
-          if (data.result) {
-            try {
-              const raw = JSON.stringify(data.result);
-              const compressed = await gzipBase64(raw);
-              window.location.href = `/report/${encodeURIComponent(scanId)}?r=${compressed}`;
-            } catch {
-              window.location.href = `/report/${encodeURIComponent(scanId)}`;
-            }
-          } else {
-            window.location.href = `/report/${encodeURIComponent(scanId)}`;
-          }
+          window.location.href = `/report/${encodeURIComponent(scanId)}`;
         } else {
           setReportError("Scan did not return a result.");
           setReportStatus("error");

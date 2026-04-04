@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
+import { getDb, parseResultJson, decompressGzip } from '@/lib/env';
 import Stripe from 'stripe';
 
 async function getScanWithResult(scanId: string) {
@@ -12,9 +12,10 @@ async function getScanWithResult(scanId: string) {
     let rawJson = scan.result_json;
     const hashIdx = rawJson.indexOf('|||HASH:');
     if (hashIdx !== -1) rawJson = rawJson.slice(0, hashIdx);
-    const decoded = Buffer.from(rawJson, 'base64');
-    if (decoded[0] === 0x1f && decoded[1] === 0x8b) {
-      result = JSON.parse(require('zlib').gunzipSync(decoded).toString('utf8'));
+    const firstBytes = atob(rawJson.slice(0, Math.ceil(2 * 4 / 3)));
+    const isGzip = firstBytes.charCodeAt(0) === 0x1f && firstBytes.charCodeAt(1) === 0x8b;
+    if (isGzip) {
+      result = JSON.parse(await decompressGzip(rawJson));
     } else {
       result = JSON.parse(rawJson);
     }

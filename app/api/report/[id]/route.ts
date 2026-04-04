@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
+import { getDb, parseResultJson } from '@/lib/env';
 import Stripe from 'stripe';
 import { generateReportHtml } from '@/lib/report';
+import crypto from 'crypto';
+import { decompressGzip } from '@/lib/env';
 
 export async function GET(
   request: NextRequest,
@@ -26,21 +28,19 @@ export async function GET(
         rawJson = rawJson.slice(0, hashIdx);
         // Verify integrity
         if (storedHash) {
-          const computedHash = require('crypto').createHash('sha256').update(rawJson).digest('hex').slice(0, 16);
+          const computedHash = crypto.createHash('sha256').update(rawJson).digest('hex').slice(0, 16);
           if (storedHash !== computedHash) {
             throw new Error(`DB JSON integrity check failed (stored=${storedHash}, computed=${computedHash})`);
           }
         }
       }
-      // result_json is stored as gzip+base64 by scan/route.ts — detect via magic bytes
+      // result_json is stored as gzip+base64 — detect via magic bytes
       let result;
-      const decoded = Buffer.from(rawJson, 'base64');
-      if (decoded[0] === 0x1f && decoded[1] === 0x8b) {
-        // gzip magic — decompress
-        const gunzipped = require('zlib').gunzipSync(decoded).toString('utf8');
-        result = JSON.parse(gunzipped);
+      const firstBytes = atob(rawJson.slice(0, Math.ceil(2 * 4 / 3)));
+      const isGzip = firstBytes.charCodeAt(0) === 0x1f && firstBytes.charCodeAt(1) === 0x8b;
+      if (isGzip) {
+        result = JSON.parse(await decompressGzip(rawJson));
       } else {
-        // legacy plain JSON
         result = JSON.parse(rawJson);
       }
       const html = generateReportHtml(scan.url || '', result);

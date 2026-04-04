@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
+import { getDb, compressGzip } from '@/lib/env';
 import { v4 as uuidv4 } from 'uuid';
 
 async function verifySession(request: NextRequest) {

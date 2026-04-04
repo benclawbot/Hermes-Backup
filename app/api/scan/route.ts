@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
-import { getDb } from '@/lib/db';
+import { getDb, parseResultJson, compressGzip } from '@/lib/env';
 import { crawlPage } from '@/lib/crawler';
 import { runRuleBasedChecks } from '@/lib/gdpr-checks';
 import { analyzeWithAI } from '@/lib/ai-analysis';
@@ -58,9 +58,10 @@ export async function POST(request: NextRequest) {
     let parsedResult = undefined;
     if (completed?.result_json) {
       try {
-        const decoded = Buffer.from(completed.result_json, 'base64');
-        if (decoded[0] === 0x1f && decoded[1] === 0x8b) {
-          parsedResult = JSON.parse(require('zlib').gunzipSync(decoded).toString('utf8'));
+        const firstBytes = atob(completed.result_json.slice(0, Math.ceil(2 * 4 / 3)));
+        const isGzip = firstBytes.charCodeAt(0) === 0x1f && firstBytes.charCodeAt(1) === 0x8b;
+        if (isGzip) {
+          parsedResult = JSON.parse(await decompressGzip(completed.result_json));
         } else {
           parsedResult = JSON.parse(completed.result_json);
         }
@@ -119,8 +120,7 @@ async function processScanAsync(scanId: string, url: string) {
     const rawJson = JSON.stringify(result);
     // Verify round-trip
     JSON.parse(rawJson);
-    const compressed = require('zlib').gzipSync(Buffer.from(rawJson, 'utf8'));
-    resultJson = compressed.toString('base64');
+    resultJson = await compressGzip(rawJson);
   } catch (err: any) {
     console.error('JSON serialization failed:', err.message);
     db.prepare(`UPDATE scans SET status = 'failed' WHERE id = ?`).run(scanId);

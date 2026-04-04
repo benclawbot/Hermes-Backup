@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { v4 as uuidv4 } from 'uuid';
-import { getDb } from '@/lib/db';
+import { getDb, compressGzip } from '@/lib/env';
 
 export async function POST(request: NextRequest) {
   try {
@@ -90,8 +90,7 @@ export async function POST(request: NextRequest) {
 
                 // gzip+base64 storage (consistent with report reader)
                 const rawJson = JSON.stringify(result);
-                const compressed = require('zlib').gzipSync(Buffer.from(rawJson, 'utf8'));
-                const resultJson = compressed.toString('base64');
+                const resultJson = await compressGzip(rawJson);
 
                 db.prepare(`
                   UPDATE scans

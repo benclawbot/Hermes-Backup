@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
+import { getDb, parseResultJson, compressGzip } from '@/lib/env';
 
 // Extend timeout to 60s (scan takes ~50s) — works on Vercel Hobby
 export const maxDuration = 60;
@@ -9,9 +9,6 @@ export async function POST(request: NextRequest) {
 
   const db = getDb();
 
-  // If URL+email are provided but scan doesn't exist, create it first.
-  // This handles the case where the success page calls trigger but the scan
-  // was never created (e.g., Stripe sandbox mode didn't fire webhook).
   if (!scanId || !url) {
     return NextResponse.json({ error: 'scanId and url are required' }, { status: 400 });
   }
@@ -29,15 +26,11 @@ export async function POST(request: NextRequest) {
     scan = { id, url, status: 'processing' };
   }
 
-  // Already done with a result — return immediately (decompress gzip if needed)
+  // Already done with a result — return immediately
   if (scan.status === 'completed' && scan.result_json) {
     try {
-      const decoded = Buffer.from(scan.result_json, 'base64');
-      const isGzip = decoded[0] === 0x1f && decoded[1] === 0x8b;
-      const result = isGzip
-        ? JSON.parse(require('zlib').gunzipSync(decoded).toString('utf8'))
-        : JSON.parse(scan.result_json);
-      return NextResponse.json({ status: 'completed', result });
+      const result = await parseResultJson(scan.result_json);
+      return NextResponse.json({ status: 'completed', result: result || {} });
     } catch {
       return NextResponse.json({ status: 'completed', result: {} });
     }
@@ -70,10 +63,9 @@ export async function POST(request: NextRequest) {
       scannedAt: new Date().toISOString(),
     };
 
-    // Compress with gzip+base64 (consistent format expected by report reader)
+    // Compress with gzip+base64 for consistent storage format
     const rawJson = JSON.stringify(result);
-    const compressed = require('zlib').gzipSync(Buffer.from(rawJson, 'utf8'));
-    const resultJson = compressed.toString('base64');
+    const resultJson = await compressGzip(rawJson);
 
     db.prepare(`
       UPDATE scans
