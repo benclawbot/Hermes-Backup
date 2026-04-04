@@ -45,7 +45,33 @@ export default {
       })
     );
   },
-};
+
+  // HTTP endpoint for Vercel to enqueue jobs (queue producer)
+  async fetch(request: Request, env: Env): Promise<Response> {
+    const url = new URL(request.url);
+
+    // POST /enqueue { scanId, url, email, trigger }
+    if (request.method === 'POST' && url.pathname === '/enqueue') {
+      try {
+        const body = await request.json() as ScanJob;
+        if (!body.scanId || !body.url) {
+          return Response.json({ error: 'scanId and url are required' }, { status: 400 });
+        }
+        await env.SCAN_QUEUE.send(body);
+        return Response.json({ ok: true, scanId: body.scanId });
+      } catch (err: any) {
+        return Response.json({ error: err.message }, { status: 500 });
+      }
+    }
+
+    // GET /health
+    if (request.method === 'GET' && url.pathname === '/health') {
+      return Response.json({ status: 'ok', queue: 'compliance-checker-scan-queue' });
+    }
+
+    return Response.json({ error: 'Not Found' }, { status: 404 });
+  },
+} satisfies ExportedHandler<Env>;
 
 // ── Scan pipeline ─────────────────────────────────────────────────────────────
 
@@ -192,7 +218,7 @@ Be specific. Generic advice is not helpful. Focus on actionable fixes.`;
 
   // Defensive: strip any markdown fences or thinking tags
   content = content.replace(/<thinking>[\s\S]*?<\/thinking>/gi, '').trim();
-  content = content.replace(/<think>[\s\S]*?<\/thinking>/gi, '').trim();
+  content = content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
   content = content.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').trim();
 
   // Extract JSON object if wrapped in extra text
