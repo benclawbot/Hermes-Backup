@@ -1,96 +1,92 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import ScanResultsClient from "./ScanResultsClient";
-import { useParams, useSearchParams } from "next/navigation";
+import { getDb } from "@/lib/db";
 
-export default function ScanResultsPage() {
-  const params = useParams();
-  const searchParams = useSearchParams();
-  const scanId = decodeURIComponent(String(params?.id ?? ""));
+interface Props {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ r?: string }>;
+}
 
-  const [scanData, setScanData] = useState<{
-    url: string;
-    email: string | null;
-    status: string;
-    result: any;
-  } | null>(null);
-
-  const [dbResult, setDbResult] = useState<any>(null); // fallback if ?r= absent
-
-  // Decompress ?r= param (gzip+base64 encoded result — survives Lambda cold-start)
-  useEffect(() => {
-    const encoded = searchParams.get("r");
-    if (encoded) {
-      try {
-        const raw = Buffer.from(encoded, "base64");
-        if (raw[0] === 0x1f && raw[1] === 0x8b) {
-          const decompressed = require("zlib")
-            .gunzipSync(raw)
-            .toString("utf8");
-          const parsed = JSON.parse(decompressed);
-          setScanData({
-            url: parsed.crawl?.url ?? "",
-            email: null,
-            status: "completed",
-            result: parsed,
-          });
-          return;
-        }
-        // Plain base64 (no gzip)
-        const plain = JSON.parse(Buffer.from(encoded, "base64").toString("utf8"));
-        setScanData({
-          url: plain.crawl?.url ?? "",
-          email: null,
-          status: "completed",
-          result: plain,
-        });
-      } catch (e) {
-        console.error("Failed to decode ?r= result:", e);
-      }
+// Server-side: decode ?r= param to avoid DB dependency on cold-starts
+function decodeResultFromParam(encoded: string): any | null {
+  try {
+    const raw = Buffer.from(encoded, "base64");
+    if (raw[0] === 0x1f && raw[1] === 0x8b) {
+      const decompressed = require("zlib")
+        .gunzipSync(raw)
+        .toString("utf8");
+      return JSON.parse(decompressed);
     }
-  }, [searchParams]);
+    // Plain base64 (no gzip)
+    return JSON.parse(Buffer.from(encoded, "base64").toString("utf8"));
+  } catch {
+    return null;
+  }
+}
 
-  // If no ?r=, fall back to DB lookup (works when DB is persistent)
-  useEffect(() => {
-    if (scanData) return;
-    if (!scanId) return;
+export default async function ScanResultsPage({ params, searchParams }: Props) {
+  const { id } = await params;
+  const { r } = await searchParams;
+  const scanId = decodeURIComponent(id);
 
-    fetch(`/api/report/${encodeURIComponent(scanId)}`)
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.url) {
-          setDbResult(d);
-        }
-      })
-      .catch(() => {});
-  }, [scanId, scanData]);
-
-  if (!scanData && !dbResult) {
-    return (
-      <div className="min-h-screen bg-midnight flex items-center justify-center px-4">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Scan not found</h1>
-          <p className="text-white/60 mb-6">This scan may have expired or doesn't exist.</p>
-          <Link href="/" className="px-6 py-3 bg-accent-blue text-white rounded-lg font-medium hover:bg-accent-glow transition-all">
-            Scan another website
-          </Link>
-        </div>
-      </div>
-    );
+  // Primary: decode result from ?r= URL param (works on cold-start Lambda)
+  if (r) {
+    const result = decodeResultFromParam(r);
+    if (result) {
+      return (
+        <ScanResultsClient
+          scanId={scanId}
+          url={result.crawl?.url ?? ""}
+          email={null}
+          status="completed"
+          result={result}
+        />
+      );
+    }
   }
 
-  // Use ?r= data if available, otherwise DB data
-  const data = scanData ?? dbResult;
+  // Fallback: try DB lookup (works when Vercel has persistent storage)
+  try {
+    const db = getDb();
+    const scan = db
+      .prepare("SELECT * FROM scans WHERE id = ?")
+      .get(scanId) as any;
+
+    if (scan) {
+      let result = null;
+      if (scan.result_json) {
+        try {
+          const decompressed = require("zlib")
+            .gunzipSync(Buffer.from(scan.result_json, "base64"))
+            .toString("utf8");
+          result = JSON.parse(decompressed);
+        } catch {
+          result = null;
+        }
+      }
+      return (
+        <ScanResultsClient
+          scanId={scanId}
+          url={scan.url}
+          email={scan.email}
+          status={scan.status}
+          result={result}
+        />
+      );
+    }
+  } catch {
+    // DB not available — proceed to not-found
+  }
 
   return (
-    <ScanResultsClient
-      scanId={scanId}
-      url={data.url}
-      email={data.email ?? null}
-      status={data.status ?? "completed"}
-      result={data.result ?? null}
-    />
+    <div className="min-h-screen bg-midnight flex items-center justify-center px-4">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-white mb-4">Scan not found</h1>
+        <p className="text-white/60 mb-6">This scan may have expired or doesn't exist.</p>
+        <Link href="/" className="px-6 py-3 bg-accent-blue text-white rounded-lg font-medium hover:bg-accent-glow transition-all">
+          Scan another website
+        </Link>
+      </div>
+    </div>
   );
 }
