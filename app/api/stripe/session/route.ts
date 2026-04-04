@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     // For subscriptions, look up the subscriber token from the DB
     if (session.mode === 'subscription' && session.customer) {
       try {
-        const { getDb } = await import('@/lib/db');
+        const { getDb } = await import('@/lib/env');
         const db = getDb();
         const sub = db.prepare(
           'SELECT id, token FROM subscribers WHERE stripe_customer_id = ?'

@@ -63,7 +63,7 @@ async function triggerScan(scanId: string, url: string) {
   const { crawlPage } = await import('@/lib/crawler');
   const { runRuleBasedChecks } = await import('@/lib/gdpr-checks');
   const { analyzeWithAI } = await import('@/lib/ai-analysis');
-  const { getDb } = await import('@/lib/db');
+      const { getDb } = await import('@/lib/env');
 
   const db = getDb();
 

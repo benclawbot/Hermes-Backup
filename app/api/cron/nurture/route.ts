@@ -4,7 +4,7 @@
  * Secured via VERCEL_OIDC_TOKEN (set in .env.local)
  */
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
+import { getDb } from '@/lib/env';
 
 export async function GET(request: NextRequest) {
   // Verify cron secret

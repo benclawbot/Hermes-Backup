@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
+import { getDb } from '@/lib/env';
 
 function verifyAgencySubscriber(token: string): { subscriberId: string; email: string } | null {
   const db = getDb();

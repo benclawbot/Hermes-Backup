@@ -125,11 +125,13 @@ async function runSubscriberScan(scanId: string, url: string, email: string | nu
       scannedAt: new Date().toISOString(),
     };
 
+    const rawJson = JSON.stringify(result);
+    const resultJson = await compressGzip(rawJson);
     db.prepare(`
       UPDATE scans
       SET status = 'completed', result_json = ?, completed_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
       WHERE id = ?
-    `).run(JSON.stringify(result), scanId);
+    `).run(resultJson, scanId);
 
     // Email report
     if (email && process.env.RESEND_API_KEY) {
