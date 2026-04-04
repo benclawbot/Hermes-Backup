@@ -29,9 +29,18 @@ export async function POST(request: NextRequest) {
     scan = { id, url, status: 'processing' };
   }
 
-  // Already done with a result — return immediately
+  // Already done with a result — return immediately (decompress gzip if needed)
   if (scan.status === 'completed' && scan.result_json) {
-    return NextResponse.json({ status: 'completed', result: JSON.parse(scan.result_json || '{}') });
+    try {
+      const decoded = Buffer.from(scan.result_json, 'base64');
+      const isGzip = decoded[0] === 0x1f && decoded[1] === 0x8b;
+      const result = isGzip
+        ? JSON.parse(require('zlib').gunzipSync(decoded).toString('utf8'))
+        : JSON.parse(scan.result_json);
+      return NextResponse.json({ status: 'completed', result });
+    } catch {
+      return NextResponse.json({ status: 'completed', result: {} });
+    }
   }
 
   // Mark as processing (in case it was pending from a previous run)
