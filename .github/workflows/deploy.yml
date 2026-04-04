@@ -46,3 +46,4 @@ jobs:
           projectName: compliance-checker
           directory: .open-next
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          wranglerVersion: 3
