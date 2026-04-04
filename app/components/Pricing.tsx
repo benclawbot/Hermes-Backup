@@ -8,7 +8,7 @@ import { SampleReportPreview } from "./ui/SampleReportPreview";
 const plans = [
   {
     name: "Free",
-    price: "€0",
+    price: "$0",
     period: "forever",
     description:
       "See what&apos;s on your site before attackers or regulators do. Full issue breakdown, no credit card.",
