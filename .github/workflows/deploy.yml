@@ -9,6 +9,8 @@ jobs:
   deploy:
     name: Deploy to Cloudflare Pages
     runs-on: ubuntu-latest
+    permissions:
+      deployments: write
     # Skip if only docs/markdown changed
     if: |
       github.event_name == 'workflow_dispatch' ||
