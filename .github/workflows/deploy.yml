@@ -36,7 +36,11 @@ jobs:
         run: npm ci
 
       - name: Build for Cloudflare Pages
-        run: npx open-next build
+        run: |
+          npx @opennextjs/cloudflare build --skipWranglerConfigCheck
+          mv .open-next/worker.js .open-next/_worker.js
+          cp -r .open-next/assets/. .open-next/
+          node -e "require('fs').writeFileSync('.open-next/_routes.json', JSON.stringify({version:1,include:['/*'],exclude:['/_next/static/*','/favicon.ico','/robots.txt','/sitemap.xml','/feed.xml','/404.html','/BUILD_ID','/search.json','/tags/*']},null,2))"
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
