@@ -73,18 +73,30 @@ git push -u origin main
 
 2. **Framework Preset:** Next.js (auto-detected)
 
-3. **Environment Variables** — add these:
+3. **Environment Variables** — add these (Settings → Environment Variables):
    ```
-   OPENAI_API_KEY         = your_minimax_key (sk-cp-...)
-   OPENAI_BASE_URL       = https://api.minimax.io/v1
-   STRIPE_SECRET_KEY      = sk_test_...
-   STRIPE_WEBHOOK_SECRET = whsec_...
-   STRIPE_PRICE_SINGLE_SCAN = price_...
-   STRIPE_PRICE_MONTHLY  = price_...
-   RESEND_API_KEY        = re_...
-   NEXT_PUBLIC_APP_URL    = https://your-project.vercel.app
-   DATABASE_PATH          = /tmp/complyscan.db
-   CHROME_PATH           = (leave blank on Vercel — use @sparticuz/chromium)
+   # AI: MiniMax (OpenAI-compatible endpoint — ai-analysis.ts also supports OPENAI_API_KEY or ANTHROPIC_AUTH_TOKEN)
+   OPENAI_API_KEY=sk-cp-...           # your MiniMax API key
+   OPENAI_BASE_URL=https://api.minimax.io/v1
+
+   # Stripe
+   STRIPE_SECRET_KEY=sk_test_...
+   STRIPE_WEBHOOK_SECRET=whsec_...    # from: stripe listen --forward-to localhost:3000/api/stripe/webhook
+   STRIPE_PRICE_SINGLE_SCAN=price_...  # $29 one-time product
+   STRIPE_PRICE_MONTHLY=price_...      # $99/month recurring product
+
+   # Email
+   RESEND_API_KEY=re_...
+
+   # App
+   NEXT_PUBLIC_APP_URL=https://your-project.vercel.app
+   DATABASE_PATH=/tmp/complyscan.db
+
+   # Crawling (REQUIRED on Vercel — fetch() fails for external URLs in serverless)
+   BROWSERLESS_API_KEY=your_browserless_key  # get free 10K credits at browserless.io
+
+   # Browser (local dev only — NOT needed on Vercel)
+   CHROME_PATH=
    ```
 
 4. **Build Command:** `npm run build`
