@@ -28,7 +28,7 @@ const plans = [
   },
   {
     name: "Pro",
-    price: "€9",
+    price: "$29",
     period: "per report",
     description:
       "The full picture — legal article references, executive summary, and step-by-step remediation.",
@@ -50,7 +50,7 @@ const plans = [
   },
   {
     name: "Agency",
-    price: "€99",
+    price: "$99",
     period: "per month",
     description:
       "Unlimited scans for all your client websites. White-label reports and a client management dashboard.",

@@ -68,12 +68,26 @@ function IssueList({ issues, severity }: { issues: any[]; severity: "critical" |
   );
 }
 
+// Normalize gdpr-checks output fields to what IssueList expects ({ rule, message, fix })
+function normalizeIssue(c: any) {
+  return {
+    rule: c.name || c.id || "Unknown",
+    message: c.detail || c.description || "",
+    fix: c.recommendation || "",
+  };
+}
+
 function FindingsSection({ result }: { result: any }) {
-  const critical = (result.ruleChecks || []).filter(
-    (c: any) => c.severity === "critical" || c.severity === "error"
-  );
-  const warnings = (result.ruleChecks || []).filter((c: any) => c.severity === "warning");
-  const passed = (result.ruleChecks || []).filter((c: any) => c.severity === "pass" || c.severity === "info");
+  const all = result.ruleChecks || [];
+  const critical = all
+    .filter((c: any) => c.severity === "critical" || c.severity === "error")
+    .map(normalizeIssue);
+  const warnings = all
+    .filter((c: any) => c.severity === "warning")
+    .map(normalizeIssue);
+  const passed = all
+    .filter((c: any) => c.severity === "pass" || c.severity === "info")
+    .map(normalizeIssue);
 
   const score = result.aiAnalysis?.score ?? result.ruleChecks?.length
     ? Math.max(0, 100 - critical.length * 25 - warnings.length * 10)
