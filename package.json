@@ -34,6 +34,7 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260404.1",
     "@playwright/test": "^1.58.2",
     "@tailwindcss/typography": "^0.5.19",
     "@types/better-sqlite3": "^7.6.13",

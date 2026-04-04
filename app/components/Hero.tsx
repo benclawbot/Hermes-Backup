@@ -6,32 +6,6 @@ import { ShieldCheck, ChevronDown } from "lucide-react";
 import { LiveScanMeter } from "./ui/LiveScanMeter";
 import { AnimatedCounter } from "./ui/AnimatedCounter";
 
-// Compress string → gzip → base64 using browser's CompressionStream API (RFC 1952)
-// Detected by page.tsx via gzip magic bytes 0x1f 0x8b
-async function gzipBase64(str: string): Promise<string> {
-  const buf = new TextEncoder().encode(str);
-  const cs = new CompressionStream("gzip");
-  const writer = cs.writable.getWriter();
-  writer.write(buf);
-  writer.close();
-  const reader = cs.readable.getReader();
-  const chunks: Uint8Array[] = [];
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done || !value) break;
-    chunks.push(value);
-  }
-  const total = chunks.reduce((a, b) => a + b.length, 0);
-  const combined = new Uint8Array(total);
-  let offset = 0;
-  for (const chunk of chunks) { combined.set(chunk, offset); offset += chunk.length; }
-  // Convert Uint8Array to base64 string
-  let binary = "";
-  for (let i = 0; i < combined.length; i++) binary += String.fromCharCode(combined[i]);
-  return btoa(binary);
-}
-
 export function Hero() {
   const [url, setUrl] = useState("");
   const [email, setEmail] = useState("");
@@ -64,11 +38,8 @@ export function Hero() {
         return;
       }
 
-      // Embed result in URL to survive Vercel serverless cold-starts (ephemeral FS)
-      // Browser CompressionStream API → gzip+base64 (~70% smaller than plain base64)
-      const rawJson = JSON.stringify(data.result);
-      const encoded = await gzipBase64(rawJson);
-      window.location.href = `/scan-results/${encodeURIComponent(data.scanId)}?r=${encoded}`;
+      // Redirect to scan-results — page fetches result from /api/scan/[id]
+      window.location.href = `/scan-results/${encodeURIComponent(data.scanId)}`;
     } catch {
       setError("Failed to start scan. Is the server running?");
     } finally {
