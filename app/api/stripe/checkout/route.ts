@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     const successUrl = new URL(appUrl + '/success');
     successUrl.searchParams.set('session_id', '{CHECKOUT_SESSION_ID}');
     successUrl.searchParams.set('scan_id', scanId || '');
-    successUrl.searchParams.set('plan', plan);
+    successUrl.searchParams.set('plan', plan || '');
     if (websiteUrl) successUrl.searchParams.set('url', websiteUrl);
     if (email) successUrl.searchParams.set('email', email);
     params.append('success_url', successUrl.toString());
