@@ -83,7 +83,7 @@ export function Pricing() {
         body: JSON.stringify({ url: "", email: undefined, plan }),
       });
 
-      const data = await res.json();
+      const data = await res.json() as { url?: string; error?: string };
 
       if (data.url) {
         window.location.href = data.url;

@@ -70,12 +70,20 @@ export default function DashboardClient({ sessionToken }: DashboardClientProps) 
           setError("Session expired or subscription inactive. Please renew.");
           return null;
         }
-        return res.json();
+        return res.json() as Promise<{
+          authenticated: boolean;
+          email: string;
+          type: string;
+          plan: string;
+          status: string;
+          currentPeriodEnd: string;
+          cancelAtPeriodEnd: boolean;
+        }>;
       })
       .then((data) => {
         if (data?.authenticated) {
           setEmail(data.email);
-          setUserType(data.type);
+          setUserType(data.type as "user" | "subscriber");
           setAuthenticated(true);
           if (data.type === "subscriber") {
             setSubscriptionStatus({
@@ -88,10 +96,10 @@ export default function DashboardClient({ sessionToken }: DashboardClientProps) 
             if (data.plan === "agency") {
               loadClients();
             } else {
-              loadScans(data.type);
+              loadScans(data.type as "user" | "subscriber");
             }
           } else {
-            loadScans(data.type);
+            loadScans(data.type as "user" | "subscriber");
           }
         }
       })
@@ -102,7 +110,7 @@ export default function DashboardClient({ sessionToken }: DashboardClientProps) 
     fetch("/api/clients", {
       headers: { Authorization: `Bearer ${sessionToken}` },
     })
-      .then((res) => res.json())
+      .then((res) => res.json() as Promise<{ clients: Client[] }>)
       .then((data) => {
         if (data.clients) setClients(data.clients);
       })
@@ -114,7 +122,7 @@ export default function DashboardClient({ sessionToken }: DashboardClientProps) 
       fetch("/api/scan/subscriber", {
         headers: { Authorization: `Bearer ${sessionToken}` },
       })
-        .then((res) => res.json())
+        .then((res) => res.json() as Promise<{ scans: any[] }>)
         .then((data) => {
           if (data.scans) setRecentScans(data.scans);
         })
@@ -123,7 +131,7 @@ export default function DashboardClient({ sessionToken }: DashboardClientProps) 
       fetch("/api/scan/user", {
         headers: { Authorization: `Bearer ${sessionToken}` },
       })
-        .then((res) => res.json())
+        .then((res) => res.json() as Promise<{ scans: any[] }>)
         .then((data) => {
           if (data.scans) setRecentScans(data.scans);
         })
@@ -135,7 +143,7 @@ export default function DashboardClient({ sessionToken }: DashboardClientProps) 
     fetch(`/api/clients/${clientId}`, {
       headers: { Authorization: `Bearer ${sessionToken}` },
     })
-      .then((res) => res.json())
+      .then((res) => res.json() as Promise<{ client: Client; scans: ClientScan[] }>)
       .then((data) => {
         if (data.client) setSelectedClient(data.client);
         if (data.scans) setClientScans(data.scans);
@@ -157,7 +165,7 @@ export default function DashboardClient({ sessionToken }: DashboardClientProps) 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url, token: sessionToken }),
       });
-      const data = await res.json();
+      const data = await res.json() as { scanId?: string; error?: string };
       if (!res.ok) {
         setError(data.error || "Scan failed. Please try again.");
         return;
@@ -179,7 +187,7 @@ export default function DashboardClient({ sessionToken }: DashboardClientProps) 
         },
         body: JSON.stringify({ url }),
       });
-      const data = await res.json();
+      const data = await res.json() as { scanId?: string; error?: string };
       if (!res.ok) {
         setError(data.error || "Scan failed. Please try again.");
         return;
@@ -213,7 +221,7 @@ export default function DashboardClient({ sessionToken }: DashboardClientProps) 
       body: JSON.stringify({ name: newClientName, url: newClientUrl }),
     });
 
-    const data = await res.json();
+    const data = await res.json() as { error?: string };
     if (!res.ok) {
       setClientError(data.error || "Failed to add client.");
       return;
@@ -239,7 +247,7 @@ export default function DashboardClient({ sessionToken }: DashboardClientProps) 
       body: JSON.stringify({ clientId, token: sessionToken }),
     });
 
-    const data = await res.json();
+    const data = await res.json() as { error?: string };
     if (!res.ok) {
       setClientError(data.error || "Scan failed.");
       return;

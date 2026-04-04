@@ -41,7 +41,7 @@ export default function SuccessClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ scanId, url: url || "", email: email || "" }),
       })
-        .then(r => r.json())
+        .then(r => r.json() as Promise<{ status?: string; result?: any; error?: string }>)
         .then(async (data) => {
           if (data.status === "completed" || data.result) {
             // Store in sessionStorage for cold-start resilience
@@ -80,12 +80,12 @@ export default function SuccessClient() {
       .then(async (r) => {
         if (cancelled) return;
         if (!r.ok) {
-          const err = await r.json().catch(() => ({}));
+          const err = await r.json().catch(() => ({})) as { error?: string };
           setReportError(err.error || "Scan failed. Please try again.");
           setReportStatus("error");
           return;
         }
-        const data = await r.json();
+        const data = await r.json() as { status?: string; result?: any };
         if (data.status === "completed" || data.result) {
           if (data.result) {
             try {

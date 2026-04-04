@@ -36,7 +36,7 @@ export default function ReportPage() {
       try {
         const r = await fetch(`/api/report/${encodeURIComponent(scanId!)}`);
         if (r.ok) {
-          const data = await r.json();
+          const data = await r.json() as { reportHtml?: string; url?: string };
           if (data.reportHtml) {
             setReportHtml(data.reportHtml);
             if (data.url) setUrl(data.url);

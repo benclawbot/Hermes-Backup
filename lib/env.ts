@@ -131,7 +131,7 @@ export async function decompressGzip(b64: string): Promise<string> {
     const bytes = base64ToUint8(b64);
     const ds = new DecompressionStream('gzip');
     const writer = ds.writable.getWriter();
-    writer.write(bytes);
+    writer.write(bytes as BufferSource);
     writer.close();
     const reader = ds.readable.getReader();
     const chunks: Uint8Array[] = [];

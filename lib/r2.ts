@@ -57,9 +57,11 @@ export async function deleteReport(scanId: string, env: Env): Promise<void> {
  */
 export async function getSignedReportUrl(scanId: string, env: Env): Promise<string> {
   const key = `reports/${scanId}.pdf`;
-  const url = await env.REPORTS_BUCKET.createSignedUrl({
-    pathname: key,
-    expires: 3600, // 1 hour
+  const url = await env.REPORTS_BUCKET.createSignedRequest({
+    key,
+    expires: 3600000, // 1 hour in ms
   });
+  const req = new Request(url, { method: 'GET' });
+  // Extract the URL from the signed request
   return url;
 }

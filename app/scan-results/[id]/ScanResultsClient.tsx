@@ -159,7 +159,7 @@ export default function ScanResultsClient({ scanId, url, email, status, result, 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url, email, plan: 'pdf', scanId }),
       });
-      const data = await res.json();
+      const data = await res.json() as { url?: string; error?: string };
       if (data.url) {
         window.location.href = data.url;
       } else {
@@ -182,14 +182,14 @@ export default function ScanResultsClient({ scanId, url, email, status, result, 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: accountEmail, password: accountPassword, scanId }),
       });
-      const data = await res.json();
+      const data = await res.json() as { error?: string; token?: string };
       if (!res.ok) {
         setAccountError(data.error || 'Failed to create account.');
         return;
       }
       setAccountSuccess(true);
       setTimeout(() => {
-        window.location.href = `/dashboard?token=${encodeURIComponent(data.token)}`;
+        window.location.href = `/dashboard?token=${encodeURIComponent(data.token || '')}`;
       }, 1200);
     } catch {
       setAccountError('Network error. Please try again.');

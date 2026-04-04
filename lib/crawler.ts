@@ -321,7 +321,7 @@ async function crawlWithBrowserless(url: string): Promise<CrawlResult> {
     }
     const contentType = resp.headers.get('content-type') || '';
     if (contentType.includes('application/json')) {
-      const data = await resp.json();
+      const data = await resp.json() as { data?: string; html?: string; content?: string; statusCode?: number };
       html = (data.data || data.html || data.content || '').slice(0, 50000);
       if (data.statusCode) statusCode = data.statusCode;
     } else {
@@ -416,7 +416,7 @@ async function crawlWithBrowserless(url: string): Promise<CrawlResult> {
       if (ppResp.ok) {
         const ct = ppResp.headers.get('content-type') || '';
         if (ct.includes('application/json')) {
-          const ppData = await ppResp.json();
+          const ppData = await ppResp.json() as { data?: string; html?: string };
           privacyPolicyHtml = (ppData.data || ppData.html || '').slice(0, 200000);
         } else {
           privacyPolicyHtml = (await ppResp.text()).slice(0, 200000);

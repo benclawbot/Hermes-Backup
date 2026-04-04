@@ -27,7 +27,7 @@ export function Hero() {
         body: JSON.stringify({ url, email: email || undefined }),
       });
 
-      const data = await res.json();
+      const data = await res.json() as { scanId?: string; error?: string; code?: string };
 
       if (!res.ok) {
         if (data.code === "LIMIT_REACHED") {
@@ -39,7 +39,7 @@ export function Hero() {
       }
 
       // Redirect to scan-results — page fetches result from /api/scan/[id]
-      window.location.href = `/scan-results/${encodeURIComponent(data.scanId)}`;
+      window.location.href = `/scan-results/${encodeURIComponent(data.scanId as string)}`;
     } catch {
       setError("Failed to start scan. Is the server running?");
     } finally {

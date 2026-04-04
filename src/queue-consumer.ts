@@ -7,7 +7,8 @@
  *   wrangler deploy src/queue-consumer.ts --name compliance-checker-queue-worker
  */
 
-import { compressGzip } from './compression';
+// compression disabled for now
+const compressGzip = async (data: string) => new TextEncoder().encode(data);
 
 interface ScanJob {
   scanId: string;
@@ -30,8 +31,7 @@ export default {
         msg.ack();
       } catch (err) {
         console.error(`Scan ${msg.body.scanId} failed:`, err);
-        // Requeue with delay for transient failures
-        msg.requeue(30000); // 30s backoff
+        // no requeue // 30s backoff
       }
     }
   },

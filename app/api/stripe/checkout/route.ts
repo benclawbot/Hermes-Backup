@@ -68,11 +68,11 @@ export async function POST(request: NextRequest) {
         },
         body: new URLSearchParams({ email: email || '', 'metadata[scanId]': scanId || '' }).toString(),
       });
-      const customer = await customerResp.json();
+      const customer = await customerResp.json() as { id?: string; error?: { message?: string } };
       if (!customerResp.ok) {
         return NextResponse.json({ error: customer.error?.message || 'Customer creation failed' }, { status: 500 });
       }
-      params.append('customer', customer.id);
+      params.append('customer', customer.id as string);
       params.append('subscription_data[metadata][scanId]', scanId || '');
       params.append('subscription_data[metadata][url]', websiteUrl || '');
     }
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
       body: params.toString(),
     });
 
-    const sessionData = await resp.json();
+    const sessionData = await resp.json() as { url?: string; id?: string; error?: { message?: string } };
     if (!resp.ok) {
       return NextResponse.json({ error: sessionData.error?.message || `Stripe error: ${resp.status}` }, { status: 500 });
     }

@@ -85,21 +85,21 @@ export class D1Client {
     // D1 bind positional params with $1, $2... or ?
     // We use ? for compatibility — D1 accepts both
     const bound = params.length > 0 ? stmt.bind(...params) : stmt;
-    const result = bound.first<T>();
+    const result = await bound.first<T>();
     return result ?? null;
   }
 
   all<T = any>(sql: string, ...params: any[]): T[] {
     const stmt = this.db.prepare(sql);
     const bound = params.length > 0 ? stmt.bind(...params) : stmt;
-    const result = bound.all<T>();
+    const result = await bound.all<T>();
     return result.results;
   }
 
   run(sql: string, ...params: any[]): D1Result {
     const stmt = this.db.prepare(sql);
     const bound = params.length > 0 ? stmt.bind(...params) : stmt;
-    return bound.run();
+    return await bound.run();
   }
 
   exec(sql: string): void {
