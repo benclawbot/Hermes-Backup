@@ -23,6 +23,29 @@ function decodeResultFromParam(encoded: string): any | null {
   }
 }
 
+// Strip free-scan result to a limited preview:
+// - Cap each severity group at 5 issues
+// - Remove fix field (paywall)
+// - Remove AI analysis (paywall)
+// Detection: scan result from free scan trigger endpoint has preview=true flag
+function toLimitedPreview(result: any): any {
+  if (!result) return result;
+
+  const ISSUE_CAP = 5;
+  const stripFix = (issue: any) => ({ rule: issue.rule, message: issue.message });
+
+  const stripChecks = (checks: any[] | undefined) =>
+    (checks || []).slice(0, ISSUE_CAP).map(stripFix);
+
+  const stripped = {
+    ...result,
+    ruleChecks: stripChecks(result.ruleChecks),
+    aiAnalysis: null, // always paywall AI analysis
+    // preserve crawl metadata for display
+  };
+  return stripped;
+}
+
 export default async function ScanResultsPage({ params, searchParams }: Props) {
   const { id } = await params;
   const { r } = await searchParams;
@@ -32,13 +55,15 @@ export default async function ScanResultsPage({ params, searchParams }: Props) {
   if (r) {
     const result = decodeResultFromParam(r);
     if (result) {
+      const preview = toLimitedPreview(result);
       return (
         <ScanResultsClient
           scanId={scanId}
-          url={result.crawl?.url ?? ""}
+          url={preview.crawl?.url ?? ""}
           email={null}
           status="completed"
-          result={result}
+          result={preview}
+          isLimitedPreview={true}
         />
       );
     }
@@ -63,13 +88,15 @@ export default async function ScanResultsPage({ params, searchParams }: Props) {
           result = null;
         }
       }
+      const preview = toLimitedPreview(result);
       return (
         <ScanResultsClient
           scanId={scanId}
           url={scan.url}
           email={scan.email}
           status={scan.status}
-          result={result}
+          result={preview}
+          isLimitedPreview={true}
         />
       );
     }

@@ -10,6 +10,7 @@ interface Props {
   email: string | null;
   status: string;
   result: any;
+  isLimitedPreview?: boolean;
 }
 
 function ScoreCard({ score }: { score: number }) {
@@ -25,7 +26,7 @@ function ScoreCard({ score }: { score: number }) {
   );
 }
 
-function IssueList({ issues, severity }: { issues: any[]; severity: "critical" | "warning" | "info" }) {
+function IssueList({ issues, severity, isLimited }: { issues: any[]; severity: "critical" | "warning" | "info"; isLimited?: boolean }) {
   const icons = { critical: XCircle, warning: AlertTriangle, info: CheckCircle };
   const colors = {
     critical: "border-red-500/30 bg-red-500/5",
@@ -38,6 +39,8 @@ function IssueList({ issues, severity }: { issues: any[]; severity: "critical" |
     info: "text-blue-400",
   };
   const Icon = icons[severity];
+  const displayed = isLimited ? issues.slice(0, 5) : issues;
+  const hidden = issues.length - displayed.length;
 
   if (!issues.length) return null;
 
@@ -47,15 +50,18 @@ function IssueList({ issues, severity }: { issues: any[]; severity: "critical" |
         <Icon className={`w-4 h-4 ${iconColors[severity]}`} />
         <span className="font-semibold text-white capitalize">{severity} Issues</span>
         <span className="text-white/30 text-xs">({issues.length})</span>
+        {isLimited && hidden > 0 && (
+          <span className="text-amber-400 text-xs ml-auto">+{hidden} more</span>
+        )}
       </div>
       <ul className="space-y-2">
-        {issues.map((issue: any, i: number) => (
+        {displayed.map((issue: any, i: number) => (
           <li key={i} className="text-sm text-white/70 flex items-start gap-2">
             <span className="text-white/30 mt-0.5 shrink-0">—</span>
             <div>
               <span className="text-white font-medium">{issue.rule}: </span>
               {issue.message}
-              {issue.fix && (
+              {!isLimited && issue.fix && (
                 <div className="mt-1 text-xs text-white/40 bg-white/5 rounded px-2 py-1">
                   Fix: {issue.fix}
                 </div>
@@ -77,7 +83,7 @@ function normalizeIssue(c: any) {
   };
 }
 
-function FindingsSection({ result }: { result: any }) {
+function FindingsSection({ result, isLimitedPreview }: { result: any; isLimitedPreview?: boolean }) {
   const all = result.ruleChecks || [];
   const critical = all
     .filter((c: any) => c.severity === "critical" || c.severity === "error")
@@ -99,11 +105,11 @@ function FindingsSection({ result }: { result: any }) {
     <div className="space-y-6">
       {score !== null && <ScoreCard score={score} />}
 
-      {critical.length > 0 && <IssueList issues={critical} severity="critical" />}
-      {warnings.length > 0 && <IssueList issues={warnings} severity="warning" />}
-      {passed.length > 0 && <IssueList issues={passed} severity="info" />}
+      {critical.length > 0 && <IssueList issues={critical} severity="critical" isLimited={isLimitedPreview} />}
+      {warnings.length > 0 && <IssueList issues={warnings} severity="warning" isLimited={isLimitedPreview} />}
+      {passed.length > 0 && <IssueList issues={passed} severity="info" isLimited={isLimitedPreview} />}
 
-      {result.aiAnalysis && (
+      {!isLimitedPreview && result.aiAnalysis && (
         <div className="bg-midnight-light border border-white/10 rounded-xl p-6">
           <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
             <FileText className="w-4 h-4 text-accent-blue" />
@@ -131,7 +137,7 @@ function FindingsSection({ result }: { result: any }) {
   );
 }
 
-export default function ScanResultsClient({ scanId, url, email, status, result }: Props) {
+export default function ScanResultsClient({ scanId, url, email, status, result, isLimitedPreview }: Props) {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showAccountModal, setShowAccountModal] = useState(false);
@@ -210,6 +216,21 @@ export default function ScanResultsClient({ scanId, url, email, status, result }
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-10">
+        {isLimitedPreview && (
+          <div className="mb-6 bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 text-sm text-amber-200 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 mt-0.5 shrink-0" />
+            <span>
+              <strong>Free preview.</strong> Showing top 5 issues per category.{" "}
+              <button
+                onClick={() => setShowUpgradeModal(true)}
+                className="underline hover:no-underline font-medium"
+              >
+                Upgrade
+              </button>{" "}
+              to unlock all issues, fixes, and AI analysis.
+            </span>
+          </div>
+        )}
         {status === "processing" && (
           <div className="text-center py-20">
             <div className="inline-flex items-center gap-3 text-white/60">
@@ -278,7 +299,7 @@ export default function ScanResultsClient({ scanId, url, email, status, result }
             {/* Key findings */}
             <div className="mb-8">
               <h2 className="text-xl font-semibold text-white mb-4">Key Findings</h2>
-              <FindingsSection result={result} />
+              <FindingsSection result={result} isLimitedPreview={isLimitedPreview} />
             </div>
 
             {/* Upgrade CTA */}
