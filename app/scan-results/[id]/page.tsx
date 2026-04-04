@@ -11,13 +11,21 @@ interface Props {
 function decodeResultFromParam(encoded: string): any | null {
   try {
     const raw = Buffer.from(encoded, "base64");
+    // Raw deflate (0x78 da) — Python zlib.compress(), Node.js zlib.deflateSync()
+    if (raw[0] === 0x78 && (raw[1] === 0x9c || raw[1] === 0xda || raw[1] === 0x01)) {
+      const decompressed = require("zlib")
+        .inflateSync(raw)
+        .toString("utf8");
+      return JSON.parse(decompressed);
+    }
+    // Gzip (0x1f 0x8b) — Node.js zlib.gzipSync()
     if (raw[0] === 0x1f && raw[1] === 0x8b) {
       const decompressed = require("zlib")
         .gunzipSync(raw)
         .toString("utf8");
       return JSON.parse(decompressed);
     }
-    // Plain base64 (no gzip)
+    // Plain base64 JSON (fallback)
     return JSON.parse(Buffer.from(encoded, "base64").toString("utf8"));
   } catch {
     return null;
