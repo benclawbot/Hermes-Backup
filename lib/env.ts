@@ -2,20 +2,16 @@
  * Unified environment adapter for Cloudflare Workers and Next.js.
  *
  * Cloudflare Pages ( Workers runtime ):
- *   - DB = D1Database (bound via wrangler.toml d1_databases)
+ *   - DB = D1Database (bound via wrangler.jsonc d1_databases)
  *   - COMPRESSION = CompressionStream/DecompressionStream (Web APIs)
  *   - R2 = R2Bucket (optional, for PDF storage)
  *   - QUEUE = Queue (optional, for background scan jobs)
- *
- * Local dev (next dev, Node.js):
- *   - Falls back to Vercel Postgres client for convenience
- *   - Set DATABASE_URL for local PostgreSQL
- *   - Or run: wrangler pages dev .open-next (injects D1 binding)
  *
  * Usage in API routes:
  *   import { getDb, compressGzip, decompressGzip } from '@/lib/env';
  *
  * In Cloudflare Pages functions, env is passed as the 3rd param (Next.js route handler convention).
+ * getDb() throws if called outside Cloudflare Pages context (no D1 binding).
  */
 
 // ---------------------------------------------------------------------------
@@ -61,134 +57,21 @@ function createD1Client(db: D1Database): DbClient {
   };
 }
 
-function createVercelPostgresClient(): DbClient {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { Pool } = require('@vercel/postgres');
-  const DATABASE_URL = process.env.DATABASE_URL;
-  if (!DATABASE_URL) {
-    throw new Error('DATABASE_URL environment variable is not set');
-  }
-  const pool = new Pool({ connectionString: DATABASE_URL });
+// Local dev fallback (optional) — for running against a local PostgreSQL via DATABASE_URL.
+// Not needed for Cloudflare Pages deployment. Commented out to avoid build errors.
+// function createLocalPgClient(): DbClient { ... }
 
-  // Convert PostgreSQL $1, $2, ... placeholders to ? (for compatibility)
-  function convertPlaceholders(sql: string): string {
-    // Match $1, $2, etc. and replace with ?
-    return sql.replace(/\$(\d+)/g, '?');
-  }
-
-  return {
-    prepare(sqlStr: string) {
-      const pgSql = convertPlaceholders(sqlStr);
-      return {
-        bind: (...params: any[]) => ({
-          get: () => pool.query(pgSql, params).then((r: any) => r.rows[0] ?? null),
-          all: () => pool.query(pgSql, params).then((r: any) => r.rows),
-          run: () => pool.query(pgSql, params).then(() => ({ success: true })),
-        }),
-        get: (...args: any[]) => pool.query(pgSql, args).then((r: any) => r.rows[0] ?? null),
-        all: (...args: any[]) => pool.query(pgSql, args).then((r: any) => r.rows),
-        run: (...args: any[]) => pool.query(pgSql, args).then(() => ({ success: true })),
-      };
-    },
-    exec(sqlStr: string) {
-      return pool.query(convertPlaceholders(sqlStr)).then(() => { /* no-op */ });
-    },
-  };
-}
-
-let _nodeDb: DbClient | null = null;
 export function getDb(env?: any): DbClient {
-  // Cloudflare Pages Workers runtime — env.DB is a D1Database
+  // Cloudflare Pages Workers runtime — env.DB is a D1Database bound in wrangler.jsonc
   if (env?.DB) {
     return createD1Client(env.DB);
   }
-  // Next.js / Vercel — use Vercel Postgres
-  if (!_nodeDb) {
-    _nodeDb = createVercelPostgresClient();
-  }
-  return _nodeDb;
+  throw new Error('getDb() called without env.DB in Cloudflare Pages context. '
+    + 'Ensure this API route is deployed to Cloudflare Pages with a D1 binding.');
 }
-
-// ---------------------------------------------------------------------------
-// Schema initialization (runs once on first connection)
 // ---------------------------------------------------------------------------
 
-let _schemaInitialized = false;
-
-async function initializeSchemaPostgres(db: DbClient): Promise<void> {
-  if (_schemaInitialized) return;
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS users (
-      id TEXT PRIMARY KEY,
-      email TEXT UNIQUE NOT NULL,
-      password_hash TEXT NOT NULL,
-      created_at TEXT NOT NULL DEFAULT (NOW()::TEXT)
-    );
-
-    CREATE TABLE IF NOT EXISTS sessions (
-      token TEXT PRIMARY KEY,
-      user_id TEXT NOT NULL,
-      created_at TEXT NOT NULL DEFAULT (NOW()::TEXT),
-      last_used_at TEXT,
-      FOREIGN KEY (user_id) REFERENCES users(id)
-    );
-
-    CREATE TABLE IF NOT EXISTS scans (
-      id TEXT PRIMARY KEY,
-      url TEXT NOT NULL,
-      status TEXT NOT NULL DEFAULT 'pending',
-      result_json TEXT,
-      email TEXT,
-      stripe_session_id TEXT,
-      subscriber_id TEXT,
-      user_id TEXT,
-      created_at TEXT NOT NULL DEFAULT (NOW()::TEXT),
-      completed_at TEXT
-    );
-
-    CREATE TABLE IF NOT EXISTS subscribers (
-      id TEXT PRIMARY KEY,
-      stripe_customer_id TEXT UNIQUE NOT NULL,
-      email TEXT NOT NULL,
-      plan TEXT NOT NULL DEFAULT 'monthly',
-      status TEXT NOT NULL DEFAULT 'active',
-      current_period_end TEXT,
-      cancel_at_period_end INTEGER NOT NULL DEFAULT 0,
-      created_at TEXT NOT NULL DEFAULT (NOW()::TEXT),
-      updated_at TEXT NOT NULL DEFAULT (NOW()::TEXT)
-    );
-
-    CREATE TABLE IF NOT EXISTS subscriber_tokens (
-      token TEXT PRIMARY KEY,
-      subscriber_id TEXT NOT NULL,
-      expires_at TEXT,
-      created_at TEXT NOT NULL DEFAULT (NOW()::TEXT),
-      last_used_at TEXT,
-      FOREIGN KEY (subscriber_id) REFERENCES subscribers(id)
-    );
-
-    CREATE TABLE IF NOT EXISTS agency_clients (
-      id TEXT PRIMARY KEY,
-      agency_subscriber_id TEXT NOT NULL,
-      name TEXT NOT NULL,
-      url TEXT NOT NULL,
-      created_at TEXT NOT NULL DEFAULT (NOW()::TEXT),
-      FOREIGN KEY (agency_subscriber_id) REFERENCES subscribers(id)
-    );
-  `);
-  _schemaInitialized = true;
-}
-
-// Call schema init on first getDb for Node.js
-const _origGetDb = getDb;
-(getDb as any) = function(env?: any): DbClient {
-  const db = _origGetDb(env);
-  // Initialize schema on first call (fire and forget)
-  if (!env?.DB) {
-    initializeSchemaPostgres(db).catch(console.error);
-  }
-  return db;
-};
+// D1 migrations are run via wrangler d1 migrations apply --remote (handled in CI/CD).
 
 // ---------------------------------------------------------------------------
 // Compression — Web API in Workers, Node.js zlib fallback
