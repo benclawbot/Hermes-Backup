@@ -1,4 +1,4 @@
-name: Deploy to Cloudflare Pages
+name: Deploy to Vercel
 
 on:
   push:
@@ -7,24 +7,11 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to Cloudflare Pages
+    name: Deploy to Vercel
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      deployments: write
-    # Skip if only docs/markdown changed
-    if: |
-      github.event_name == 'workflow_dispatch' ||
-      !contains(join(github.event.commits.*.modified, ''), '.md') ||
-      !contains(join(github.event.commits.*.added, ''), 'DEPLOY.md') ||
-      !contains(join(github.event.commits.*.modified, ''), 'TESTING_PLAN.md')
     steps:
       - name: Checkout repository
-        run: |
-          git init /home/runner/work/complyscan/complyscan
-          git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/benclawbot/complyscan.git
-          git fetch origin ${{ github.sha }} --depth=1
-          git checkout ${{ github.sha }}
+        uses: actions/checkout@v4
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -35,18 +22,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build for Cloudflare Pages
-        run: |
-          npx @opennextjs/cloudflare build --skipWranglerConfigCheck
-          mv .open-next/worker.js .open-next/_worker.js
-          cp -r .open-next/assets/. .open-next/
-          node -e "require('fs').writeFileSync('.open-next/_routes.json', JSON.stringify({version:1,include:['/*'],exclude:['/_next/static/*','/favicon.ico','/robots.txt','/sitemap.xml','/feed.xml','/404.html','/BUILD_ID','/search.json','/tags/*']},null,2))"
-
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: compliance-checker
-          directory: .open-next
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
