@@ -29,9 +29,9 @@ type DbClient = {
       all: () => Promise<any[]>;
       run: () => Promise<any>;
     };
-    get: () => Promise<any>;
-    all: () => Promise<any[]>;
-    run: () => Promise<any>;
+    get: (...args: any[]) => Promise<any>;
+    all: (...args: any[]) => Promise<any[]>;
+    run: (...args: any[]) => Promise<any>;
   };
   exec(sql: string): Promise<void>;
 };
@@ -81,13 +81,13 @@ function createVercelPostgresClient(): DbClient {
       const pgSql = convertPlaceholders(sqlStr);
       return {
         bind: (...params: any[]) => ({
-          get: () => pool.query(pgSql, params).then(r => r.rows[0] ?? null),
-          all: () => pool.query(pgSql, params).then(r => r.rows),
+          get: () => pool.query(pgSql, params).then((r: any) => r.rows[0] ?? null),
+          all: () => pool.query(pgSql, params).then((r: any) => r.rows),
           run: () => pool.query(pgSql, params).then(() => ({ success: true })),
         }),
-        get: () => pool.query(pgSql).then(r => r.rows[0] ?? null),
-        all: () => pool.query(pgSql).then(r => r.rows),
-        run: () => pool.query(pgSql).then(() => ({ success: true })),
+        get: (...args: any[]) => pool.query(pgSql, args).then((r: any) => r.rows[0] ?? null),
+        all: (...args: any[]) => pool.query(pgSql, args).then((r: any) => r.rows),
+        run: (...args: any[]) => pool.query(pgSql, args).then(() => ({ success: true })),
       };
     },
     exec(sqlStr: string) {
