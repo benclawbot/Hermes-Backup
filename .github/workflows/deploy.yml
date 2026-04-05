@@ -30,6 +30,9 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
+      - name: Remove build cache artifacts
+        run: rm -rf .next/cache
+
       - name: Convert to Cloudflare Worker
         run: npx @opennextjs/cloudflare build
 
@@ -39,5 +42,5 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: complyscan
-          directory: .next
+          directory: .open-next
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
