@@ -30,8 +30,8 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      - name: Remove build cache artifacts
-        run: rm -rf .next/cache
+      - name: Convert to Cloudflare Worker
+        run: npx @opennextjs/cloudflare build
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
