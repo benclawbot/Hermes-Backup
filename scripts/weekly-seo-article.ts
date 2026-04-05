@@ -9,7 +9,7 @@
  *  1. Reads the SEO strategy to find the next article topic
  *  2. Writes a full SEO-optimised blog article (~800–1200 words)
  *  3. Commits to GitHub
- *  4. Triggers Vercel production deploy
+ *  4. Triggers Cloudflare Pages production deploy (via GitHub Actions)
  *  5. Logs result to SESSION.md
  */
 
@@ -489,9 +489,9 @@ async function main() {
     );
     console.log('   ✓ Committed to git');
 
-    // Push to trigger Vercel deploy
+    // Push to trigger Cloudflare Pages deploy (via GitHub Actions)
     execSync('git push origin main', { cwd: PROJECT_ROOT });
-    console.log('   ✓ Pushed to GitHub → Vercel deploy triggered');
+    console.log('   ✓ Pushed to GitHub → Cloudflare Pages deploy triggered');
 
     // Log to SESSION.md
     const sessionEntry = `
@@ -499,14 +499,14 @@ async function main() {
 action: PUBLISH
 capability: seo-content-flywheel
 outcome: SUCCESS
-detail: Published article "${nextSpec.title}" targeting "${nextSpec.targetKeyword}". GitHub push triggered Vercel deploy.
+detail: Published article "${nextSpec.title}" targeting "${nextSpec.targetKeyword}". GitHub push triggered Cloudflare Pages deploy.
 next_action_needed: Monitor GSC in 2 weeks for indexing and ranking changes
 `;
     const sessionPath = '/home/thomas/Dropbox/SESSION.md';
     const existingSession = fs.readFileSync(sessionPath, 'utf8');
     fs.writeFileSync(sessionPath, existingSession + sessionEntry, 'utf8');
   } catch (err: any) {
-    console.error(`   ✗ Git/Vercel error: ${err.message}`);
+    console.error(`   ✗ Git/Deploy error: ${err.message}`);
   }
 
   console.log('\n✅ Article published and deploy triggered.');

@@ -1,4 +1,8 @@
-const DB_PATH = process.env.DATABASE_PATH || (process.env.VERCEL ? '/tmp/complyscan.db' : './data/complyscan.db');
+// DEPRECATED — This module is no longer used.
+// All database access goes through lib/env.ts (Cloudflare D1 or Vercel Postgres).
+// Keeping this file for reference only.
+// @deprecated
+const DB_PATH = process.env.DATABASE_PATH || (process.env.CF_PAGES ? '/tmp/complyscan.db' : './data/complyscan.db');
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let db: any;

@@ -5,7 +5,7 @@ import { getDb, compressGzip, sendScanJob } from '@/lib/env';
  * POST /api/scan/trigger
  *
  * Cloudflare Pages: writes to D1, sends job to SCAN_QUEUE, returns immediately.
- * Vercel fallback: runs scan synchronously (original behavior).
+ * Local dev fallback (no SCAN_QUEUE): runs scan synchronously.
  *
  * Expected body: { scanId?, url, email? }
  * Returns: { status: 'queued'|'processing', scanId }
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
   let env: any;
   try {
     // In Cloudflare Pages, env is passed as second param to pages functions
-    // Next.js API routes don't have this — we fall back to Vercel/sync mode
+    // No env.SCAN_QUEUE in local dev — fall back to synchronous scan
     env = (request as any).env ?? (globalThis as any).__env ?? undefined;
   } catch {
     env = undefined;
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ status: 'queued', scanId });
   }
 
-  // ── Vercel fallback: run synchronously ────────────────────────────────────
+  // ── Local dev fallback: run synchronously (no SCAN_QUEUE available) ───────
   // Keep original synchronous behavior as fallback
   db.prepare(`UPDATE scans SET status = 'processing' WHERE id = ?`).run(scanId);
 

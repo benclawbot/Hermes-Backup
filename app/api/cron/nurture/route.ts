@@ -1,16 +1,20 @@
 /**
  * Cron: Nurture email sequences
  * Run weekly: sends Day-7 upgrade email to free-scan users who haven't upgraded.
- * Secured via VERCEL_OIDC_TOKEN (set in .env.local)
+ * Secured via CRON_SECRET environment variable (Cloudflare Pages cron trigger).
+ * Cloudflare Pages sets X-Cootie-Secret header for cron triggers — verify against CRON_SECRET.
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/env';
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }, env: any) {
-  // Verify cron secret
-  const authHeader = request.headers.get('authorization');
-  const expectedToken = process.env.VERCEL_OIDC_TOKEN;
-  if (!expectedToken || authHeader !== `Bearer ${expectedToken}`) {
+  // Verify cron secret (Cloudflare Pages sets X-Cootie-Secret header for cron triggers)
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret) {
+    return NextResponse.json({ error: 'CRON_SECRET not configured' }, { status: 500 });
+  }
+  const cootieSecret = request.headers.get('x-cootie-secret');
+  if (!cootieSecret || cootieSecret !== cronSecret) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

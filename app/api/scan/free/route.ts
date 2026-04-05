@@ -19,8 +19,8 @@ function getMonthlyScanCount(db: any, email: string): number {
 /**
  * POST /api/scan/free
  *
- * Cloudflare: writes to D1, sends job to SCAN_QUEUE, returns { status: 'queued' }
- * Vercel fallback: runs synchronously (original behavior)
+ * Cloudflare Pages: writes to D1, sends job to SCAN_QUEUE, returns { status: 'queued' }
+ * Local dev: falls back to synchronous scan (no SCAN_QUEUE)
  */
 export async function POST(request: NextRequest) {
   const { url, email } = await request.json() as { url?: string; email?: string };
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Email is required for free scans' }, { status: 400 });
   }
 
-  // Get env for Cloudflare Pages (falls back to undefined for Vercel)
+  // Get env for Cloudflare Pages (falls back to undefined for local dev)
   const env: any = (request as any).env ?? (globalThis as any).__env ?? undefined;
   const db = getDb(env);
 
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ scanId, status: 'queued' });
   }
 
-  // ── Vercel fallback: run synchronously ──────────────────────────────────
+  // ── Local dev fallback: run synchronously (no SCAN_QUEUE) ─────────────────
   db.prepare(`UPDATE scans SET status = 'processing' WHERE id = ?`).run(scanId);
 
   try {

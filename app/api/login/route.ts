@@ -32,7 +32,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json({ notFound: true }, { status: 200 });
     }
 
-    const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app'}/dashboard?token=${tokenRecord.token}`;
+    // NEXT_PUBLIC_APP_URL must be set in Cloudflare Pages environment variables
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+    if (!appUrl) {
+      return NextResponse.json({ error: 'NEXT_PUBLIC_APP_URL not configured' }, { status: 500 });
+    }
+    const dashboardUrl = `${appUrl}/dashboard?token=${tokenRecord.token}`;
 
     return NextResponse.json({ dashboardUrl });
   } catch (error: any) {

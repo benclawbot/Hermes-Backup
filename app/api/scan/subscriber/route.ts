@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // ── Vercel fallback: run synchronously ─────────────────────────────────
+    // ── Local dev fallback: run synchronously (no SCAN_QUEUE) ───────────────
     db.prepare(`UPDATE scans SET status = 'processing' WHERE id = ?`).run(scanId);
 
     const { crawlPage } = await import('@/lib/crawler');

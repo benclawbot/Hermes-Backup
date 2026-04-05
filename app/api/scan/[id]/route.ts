@@ -5,7 +5,7 @@ import { getDb, parseResultJson } from '@/lib/env';
  * GET /api/scan/[id]
  *
  * Returns scan record from D1 (polled by the report page).
- * Works in both Vercel (better-sqlite3) and Cloudflare Pages (D1).
+ * Works in both Cloudflare Pages (D1) and local dev (Vercel Postgres fallback via DATABASE_URL).
  */
 export async function GET(
   request: NextRequest,

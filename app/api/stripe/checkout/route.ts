@@ -39,7 +39,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Scan ID is required for PDF purchase' }, { status: 400 });
     }
 
-    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://complyscan2.vercel.app').trim();
+    // NEXT_PUBLIC_APP_URL must be set in Cloudflare Pages environment variables
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+    if (!appUrl) {
+      return NextResponse.json({ error: 'NEXT_PUBLIC_APP_URL not configured' }, { status: 500 });
+    }
     const stripe = new Stripe(stripeKey);
 
     // Build Stripe checkout session params.

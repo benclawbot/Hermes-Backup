@@ -4,7 +4,8 @@ import puppeteer, { Browser } from 'puppeteer-core';
 const chromium = require('@sparticuz/chromium-min') as any;
 
 // Use @sparticuz/chromium-min for serverless (pre-packaged binary), fallback to system chrome locally
-const IS_VERCEL = !!process.env.VERCEL;
+// Cloudflare Pages Workers runtime — no Chrome installed, must use Browserless
+const IS_CLOUDFLARE_PAGES = !!process.env.CF_PAGES;
 
 export interface CrawlResult {
   url: string;
@@ -286,9 +287,9 @@ function analysePrivacyPolicyHtml(html: string): Partial<CrawlResult> {
 
 // ── Browser-based crawl ───────────────────────────────────────────────────────
 async function crawlWithBrowser(url: string): Promise<CrawlResult> {
-  // On Vercel: use Browserless (headless Chrome in the cloud)
+  // On Cloudflare Pages Workers: no Chrome installed, must use Browserless
   // Locally: use Puppeteer with system Chrome
-  if (IS_VERCEL) {
+  if (IS_CLOUDFLARE_PAGES) {
     return await crawlWithBrowserless(url);
   } else {
     return await crawlWithPuppeteerLocal(url);
@@ -913,9 +914,9 @@ async function crawlWithFetch(url: string): Promise<CrawlResult> {
 }
 
 export async function crawlPage(url: string): Promise<CrawlResult> {
-  // On Vercel, try fetch first (browserless.io may be blocked by serverless network).
-  // curl fallback is inside crawlWithFetch and can bypass Node.js fetch restrictions.
-  if (IS_VERCEL) {
+  // On Cloudflare Pages Workers: try fetch first (may bypass some network restrictions), then Browserless.
+  // curl fallback inside crawlWithFetch can bypass Workers fetch limitations.
+  if (IS_CLOUDFLARE_PAGES) {
     try {
       return await crawlWithFetch(url);
     } catch (fetchError: any) {

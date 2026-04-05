@@ -2,7 +2,7 @@
 
 > Created: 2026-04-03
 > Updated: 2026-04-03
-> Canonical domain: **ComplyScan.ch** (Thomas owns — connect in Vercel dashboard)
+> Canonical domain: **ComplyScan.ch** (Thomas owns — connect in Cloudflare Dashboard)
 > Source: Competitor SERP analysis + content extraction (no paid SEO tools)
 
 ---
@@ -182,7 +182,7 @@ Competitors: $0 free / $29-199/month. Keep free tier as lead gen. Agency tier is
 - [ ] Create blog post: "GDPR Fines 2025: What Small Businesses Actually Risk" (target: `gdpr fines small business`)
 - [ ] Add page: /features — target `gdpr audit tool` + `gdpr compliance software agencies`
 - [ ] Test PDF report flow (scan → download PDF) — verify it works end-to-end
-- [ ] Deploy to Vercel production (live URL for SEO)
+- [ ] Deploy to Cloudflare Pages production (live URL for SEO)
 - [ ] Submit to G2, Capterra, Product Hunt
 - [ ] Set up GSC for the production domain
 - [ ] Run agency outreach email to 20 web agencies

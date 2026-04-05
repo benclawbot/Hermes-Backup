@@ -48,7 +48,7 @@ export default {
     );
   },
 
-  // HTTP endpoint for Vercel to enqueue jobs (queue producer)
+  // HTTP endpoint to enqueue scan jobs (queue producer for the scan-processor worker)
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 

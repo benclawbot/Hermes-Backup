@@ -2,20 +2,20 @@
  * Unified environment adapter for Cloudflare Workers and Next.js.
  *
  * Cloudflare Pages ( Workers runtime ):
- *   - DB = D1Database
+ *   - DB = D1Database (bound via wrangler.toml d1_databases)
  *   - COMPRESSION = CompressionStream/DecompressionStream (Web APIs)
- *   - R2 = R2Bucket (optional)
- *   - QUEUE = Queue (optional)
+ *   - R2 = R2Bucket (optional, for PDF storage)
+ *   - QUEUE = Queue (optional, for background scan jobs)
  *
- * Next.js / Vercel (Node.js):
- *   - db = Vercel Postgres (pg Pool)
- *   - zlib for compression
+ * Local dev (next dev, Node.js):
+ *   - Falls back to Vercel Postgres client for convenience
+ *   - Set DATABASE_URL for local PostgreSQL
+ *   - Or run: wrangler pages dev .open-next (injects D1 binding)
  *
  * Usage in API routes:
  *   import { getDb, compressGzip, decompressGzip } from '@/lib/env';
  *
- * In Cloudflare Pages functions, env is passed as the 3rd param.
- * In Next.js API routes, we detect the runtime via process.env.VERCEL / globalThis.constructor.name.
+ * In Cloudflare Pages functions, env is passed as the 3rd param (Next.js route handler convention).
  */
 
 // ---------------------------------------------------------------------------
@@ -284,7 +284,7 @@ export async function parseResultJson(rawJson: string): Promise<any | null> {
 }
 
 // ---------------------------------------------------------------------------
-// R2 (Cloudflare Workers only — no-op on Vercel)
+// R2 (Cloudflare Workers only — no-op on local dev / Node.js)
 // ---------------------------------------------------------------------------
 
 export async function storeReport(scanId: string, pdfData: ArrayBuffer, env?: any): Promise<string | null> {
@@ -304,7 +304,7 @@ export async function getSignedReportUrl(scanId: string, env?: any): Promise<str
 }
 
 // ---------------------------------------------------------------------------
-// Queue — send a scan job to the Cloudflare Queue (no-op on Vercel)
+// Queue — send a scan job to the Cloudflare Queue (no-op on local dev)
 // ---------------------------------------------------------------------------
 
 export async function sendScanJob(job: { scanId: string; url: string; email?: string; trigger: string }, env?: any): Promise<void> {
