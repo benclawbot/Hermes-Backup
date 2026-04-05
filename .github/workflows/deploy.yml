@@ -31,7 +31,7 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Convert to Cloudflare Pages
-        run: npx @cloudflare/next-on-pages --no-perf
+        run: npx @cloudflare/next-on-pages --skip-build
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
