@@ -15,7 +15,7 @@ export async function GET(
   const env: any = (request as any).env ?? (globalThis as any).__env ?? undefined;
   const db = getDb(env);
 
-  const scan = db.prepare('SELECT * FROM scans WHERE id = ?').get(id) as any;
+  const scan = await db.prepare('SELECT * FROM scans WHERE id = ?').get(id) as any;
 
   if (!scan) {
     return NextResponse.json({ error: 'Scan not found' }, { status: 404 });

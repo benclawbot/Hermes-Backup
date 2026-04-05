@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
 
   let existingScan: any = null;
   if (scanId) {
-    existingScan = db.prepare('SELECT * FROM scans WHERE id = ?').get(scanId) as any;
+    existingScan = await db.prepare('SELECT * FROM scans WHERE id = ?').get(scanId) as any;
   }
 
   if (existingScan) {
