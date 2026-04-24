@@ -299,43 +299,52 @@ def render_chart(
         y = [float(d.get("value", 0)) for d in data]
 
     fig, ax = plt.subplots(figsize=(10, 5))
-    fig.patch.set_facecolor("#1e1e1e")
-    ax.set_facecolor("#2d2d2d")
-    ax.tick_params(colors="#cccccc")
-    ax.xaxis.label.set_color("#cccccc")
-    ax.yaxis.label.set_color("#cccccc")
-    ax.title.set_color("#ffffff")
+    # Warm off-white background tuned for Obsidian light theme
+    fig.patch.set_facecolor("#FAFAF8")
+    ax.set_facecolor("#FFFFFF")
+    ax.tick_params(colors="#444444")
+    ax.xaxis.label.set_color("#333333")
+    ax.yaxis.label.set_color("#333333")
+    ax.title.set_color("#1A1A1A")
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
+    ax.spines["left"].set_color("#DDDDDD")
+    ax.spines["bottom"].set_color("#DDDDDD")
+    ax.grid(True, alpha=0.2, color="#CCCCCC", axis="y")
+
+    # Warm amber/terracotta palette for bars
+    warm_colors = ["#D4854A", "#C4763A", "#A65D2E", "#8B4E26", "#6F3D1E",
+                   "#5A3018", "#4A2814", "#3A2010", "#2A180C"]
 
     slug = re.sub(r"[^a-z0-9]+", "-", title.lower())[:40]
 
     if chart_type == "bar":
-        bars = ax.bar(x, y, color="#6c9bd1", edgecolor="#4a7ab5", linewidth=0.5)
-        ax.bar_label(bars, fmt="%.1f", color="#cccccc", fontsize=8, padding=3)
+        bars = ax.bar(x, y, color=warm_colors[0], edgecolor="none", linewidth=0, width=0.7)
+        ax.bar_label(bars, fmt="%.1f", color="#333333", fontsize=10, padding=3)
         ax.set_ylim(0, max(y) * 1.2 if y else 1)
     elif chart_type == "line":
-        ax.plot(x, y, color="#6c9bd1", linewidth=2, marker="o", markersize=4)
-        ax.fill_between(range(len(y)), y, alpha=0.15, color="#6c9bd1")
+        ax.plot(x, y, color=warm_colors[0], linewidth=2.5, marker="o", markersize=5,
+                markerfacecolor="#FFFFFF", markeredgecolor=warm_colors[0])
+        ax.fill_between(range(len(y)), y, alpha=0.1, color=warm_colors[0])
     elif chart_type == "pie":
         wedges, labels, autotexts = ax.pie(
             y, labels=x, autopct="%1.1f%%",
-            colors=plt.cm.Set3(range(len(y))),
-            textprops={"color": "#cccccc"}
+            colors=warm_colors[:len(y)],
+            textprops={"color": "#333333"}
         )
         for at in autotexts:
-            at.set_color("#1e1e1e")
+            at.set_color("#FFFFFF")
     else:
-        ax.scatter(x, y, color="#6c9bd1", s=60)
+        ax.scatter(x, y, color=warm_colors[0], s=60)
 
-    ax.set_title(title, color="white", fontsize=14, pad=12)
-    ax.grid(True, alpha=0.15, color="#555555")
-    plt.xticks(rotation=30, ha="right", fontsize=8)
+    ax.set_title(title, color="#1A1A1A", fontsize=16, fontweight="bold", pad=12)
+    plt.xticks(rotation=30, ha="right", fontsize=10, color="#444444")
+    plt.yticks(fontsize=9, color="#444444")
     plt.tight_layout()
 
     out_name = filename or f"{slug}.png"
     out_path = out_dir / out_name
-    plt.savefig(out_path, dpi=150, facecolor="#1e1e1e")
+    plt.savefig(out_path, dpi=150, facecolor="#FAFAF8", bbox_inches="tight")
     plt.close()
     return out_path
 
