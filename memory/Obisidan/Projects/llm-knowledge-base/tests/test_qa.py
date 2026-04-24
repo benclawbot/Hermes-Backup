@@ -43,3 +43,61 @@ title: "Liquidity Pools v2"
         result = cite_formatter(sources)
         # Should pick up frontmatter title
         assert "Liquidity Pools" in result or "lp" in result.lower()
+
+
+# ── filing_decision tests ─────────────────────────────────────────────────────
+
+from qa import filing_decision, auto_file
+
+def test_filing_decision_short_single_source():
+    """Short answer from one source → questions/"""
+    decision = filing_decision(
+        answer_text="Solana block time is 0.4 seconds.",
+        source_count=1
+    )
+    assert decision["target"] == "questions"
+
+def test_filing_decision_long_multi_source():
+    """Long answer from multiple sources → articles/"""
+    long_text = " ".join(["word"] * 900)
+    decision = filing_decision(answer_text=long_text, source_count=4)
+    assert decision["target"] == "articles"
+
+def test_filing_decision_medium_multi_source():
+    """Medium answer from multiple sources → concepts/"""
+    medium = " ".join(["word"] * 300)
+    decision = filing_decision(answer_text=medium, source_count=3)
+    assert decision["target"] == "concepts"
+
+def test_filing_decision_medium_single_source():
+    """Medium answer but single source → still questions (length < 150 OR single source)"""
+    medium = " ".join(["word"] * 200)
+    decision = filing_decision(answer_text=medium, source_count=1)
+    assert decision["target"] == "questions"
+
+def test_auto_file_creates_file(tmp_path):
+    """auto_file should create a file in the correct wiki subdirectory."""
+    wiki_root = tmp_path / "wiki"
+    wiki_root.mkdir()
+    question = "What is Solana's block time?"
+    answer = "Solana has a 0.4 second block time."
+    sources = [{"path": "/wiki/concepts/solana.md", "title": "Solana", "score": 0.8}]
+    dest = auto_file(question, answer, sources, wiki_root)
+    assert dest is not None
+    assert dest.exists()
+    assert "solana" in dest.name.lower() or "block-time" in dest.name.lower()
+
+def test_auto_file_append_if_exists(tmp_path):
+    """If target file exists, append as new question entry."""
+    wiki_root = tmp_path / "wiki"
+    concepts = wiki_root / "questions"
+    concepts.mkdir(parents=True)
+    existing = concepts / "q-what-is-solana.md"
+    existing.write_text("# Existing\n\nOld answer.")
+    question = "What is Solana's block time?"
+    answer = "Solana block time is 0.4 seconds."
+    sources = []
+    dest = auto_file(question, answer, sources, wiki_root)
+    assert dest == existing
+    content = existing.read_text()
+    assert "New Q" in content or "What is Solana" in content

@@ -51,6 +51,93 @@ def cite_formatter(sources: list[dict]) -> str:
     return "Sources: " + ", ".join(parts)
 
 
+def filing_decision(answer_text: str, source_count: int) -> dict:
+    """
+    Decide where to file an answer based on length and source count.
+    Returns: {target, slug, word_count, source_count}
+    """
+    word_count = len(answer_text.split())
+    slug = slugify(answer_text[:60])
+
+    if word_count < 150 or source_count == 1:
+        target = "questions"
+    elif word_count > 800 or source_count >= 4:
+        target = "articles"
+    else:
+        target = "concepts"
+
+    return {"target": target, "slug": slug, "word_count": word_count, "source_count": source_count}
+
+
+def auto_file(question: str, answer_text: str, sources: list[dict],
+              wiki_root: Path) -> Path | None:
+    """
+    Route and write a Q&A answer to the correct wiki location automatically.
+    Returns the Path of the created file, or None if filing failed.
+    """
+    decision = filing_decision(answer_text, len(sources))
+    target_dir = wiki_root / decision["target"]
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    # Use question-based slug for the filename
+    slug = slugify(question)
+    dest = target_dir / f"q-{slug[:40]}.md"
+
+    # If file exists, append as new question entry instead of overwriting
+    if dest.exists():
+        existing = dest.read_text(encoding="utf-8")
+        separator = f"\n\n---\n\n## Q: {question}\n\n"
+        new_entry = separator + answer_text.strip() + "\n\n" + cite_formatter(sources)
+        dest.write_text(existing + new_entry, encoding="utf-8")
+        print(f"  Appended to existing: {dest.name}")
+        return dest
+
+    # Try base slug match (without URL-encoded chars) to handle possessive forms
+    base = slug.split('-')[0:3]
+    # Strip trailing 's' from last base word for possessive matching
+    if len(base) >= 3 and base[2].endswith('s'):
+        base = base[:2] + [base[2][:-1]]
+    for candidate in target_dir.glob("q-*.md"):
+        cand_slug = candidate.stem  # e.g. "q-what-is-solana"
+        # Strip leading "q-" prefix
+        cand_parts = cand_slug.split('-')[1:4]  # ['what', 'is', 'solana']
+        if len(cand_parts) >= 3 and cand_parts[2].endswith('s'):
+            cand_parts = cand_parts[:2] + [cand_parts[2][:-1]]
+        if cand_parts == base:
+            dest = candidate
+            existing = dest.read_text(encoding="utf-8")
+            separator = f"\n\n---\n\n## Q: {question}\n\n"
+            new_entry = separator + answer_text.strip() + "\n\n" + cite_formatter(sources)
+            dest.write_text(existing + new_entry, encoding="utf-8")
+            print(f"  Appended to existing: {dest.name}")
+            return dest
+
+    citations = cite_formatter(sources)
+    frontmatter = f'''---
+title: "{question[:80]}"
+question: "{question}"
+answered: {datetime.now().date()}
+target: {decision["target"]}
+word_count: {decision["word_count"]}
+sources: {decision["source_count"]}
+tags: [research]
+---
+
+# {question}
+
+{answer_text.strip()}
+
+{citations}
+'''
+    try:
+        dest.write_text(frontmatter, encoding="utf-8")
+        print(f"  Filed to: {dest}")
+        return dest
+    except Exception as e:
+        print(f"  WARNING: Filing failed ({e}) — answer not saved to wiki")
+        return None
+
+
 # ── context gathering ─────────────────────────────────────────────────────────
 
 def load_wiki_context(max_files: int = 30, max_words: int = 80000) -> str:
