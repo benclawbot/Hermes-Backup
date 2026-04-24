@@ -7,9 +7,22 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #semiconductors, #manufacturing, #wafer-fab, #process]
+tags:
+  - '#concept'
+  - '#semiconductors'
+  - '#manufacturing'
+  - '#wafer-fab'
+  - '#process'
 created: 2026-04-24
-strong_links: [["Semiconductor Industry Overview", "Foundry Business Model", "EUV Lithography Systems", "Semiconductor Equipment Makers"], ["Advanced Packaging Technologies", "300mm Wafer Fab Economics", "Advanced Node Technology Roadmap", "Semiconductor Materials Market"]]
+strong_links:
+  - ['Semiconductor Industry Overview']
+  - ['Foundry Business Model']
+  - ['EUV Lithography Systems']
+  - ['Semiconductor Equipment Makers']
+  - ['Advanced Packaging Technologies']
+  - ['300mm Wafer Fab Economics']
+  - ['Advanced Node Technology Roadmap']
+  - ['Semiconductor Materials Market']
 opposition_links: []
 ---
 

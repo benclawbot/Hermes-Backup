@@ -7,9 +7,22 @@ controversy: medium
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #materials, #photoresist, #lithography, #chemicals]
+tags:
+  - '#concept'
+  - '#materials'
+  - '#photoresist'
+  - '#lithography'
+  - '#chemicals'
 created: 2026-04-24
-strong_links: [["Semiconductor Materials Market", "EUV Lithography Systems", "EUV Lithography Market Analysis", "Advanced Node Technology Roadmap"], ["ASML Business Analysis", "Foundry Business Model", "TSMC Competitive Position", "Semiconductor Gas Suppliers"]]
+strong_links:
+  - ['Semiconductor Materials Market']
+  - ['EUV Lithography Systems']
+  - ['EUV Lithography Market Analysis']
+  - ['Advanced Node Technology Roadmap']
+  - ['ASML Business Analysis']
+  - ['Foundry Business Model']
+  - ['TSMC Competitive Position']
+  - ['Semiconductor Gas Suppliers']
 opposition_links: []
 ---
 

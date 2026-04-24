@@ -3,36 +3,82 @@ title: "Persistent Memory SCM"
 type: concept
 cluster: "Technology Stocks Investing"
 status: verified
-controversy: low
+controversy: medium
 importance: standard
 source_knowledge: web-checked
-sources_count: 3
-tags: [#concept, #semiconductors, #memory]
+sources_count: 5
+tags:
+  - '#concept'
+  - '#memory'
+  - '#SCM'
+  - '#persistent'
+  - '#NVRAM'
 created: 2026-04-24
-strong_links: [["Memory Technologies DRAM NAND"], ["DRAM Market Analysis Samsung SKHynix Micron"], ["Data Center Memory Hierarchy"], ["NAND Flash Market Analysis"], ["Advanced Packaging Technologies"]]
+strong_links:
+  - ['Data Center Memory Hierarchy']
+  - ['DRAM Market Analysis Samsung SKHynix Micron']
+  - ['Memory Controller Chips']
+  - ['HBM High Bandwidth Memory']
+  - ['DDR and LPDDR Memory Standards']
+  - ['Enterprise SSD Technologies']
+  - ['NAND Flash Market Analysis']
+  - ['CXL Interconnect Standard']
+opposition_links: []
 ---
 
 # Persistent Memory SCM
 
 > [!info] Summary
-> Persistent memory (SCM — Storage Class Memory) bridges the gap between DRAM and NAND, offering nanosecond latency with non-volatility. Intel Optane DC PM (3D XPoint) was the primary commercial SCM but was discontinued in 2023. Emerging alternatives including MRAM, ReRAM, and PCM target embedded storage and future SCM applications, though none have achieved Optane's scale.
+> Persistent Memory (also called Storage Class Memory or SCM) occupies the performance/latency gap between DRAM and NAND flash. Intel Optane DC Persistent Memory was the leading product but was discontinued in 2023 after failing to achieve commercial viability. CXL (Compute Express Link) is emerging as the successor technology, enabling memory expansion and pooling without the cost and complexity of Optane's architectural approach.
 
 ## Definition
-Persistent memory (SCM — Storage Class Memory) bridges the gap between DRAM and NAND. It retains data without power (like NAND) but with DRAM-like speed (nanoseconds vs microseconds). Intel Optane DC PM (3D XPoint) was the primary commercial SCM, but Intel discontinued it in 2023. The [[Memory Technologies DRAM NAND]] page explains the fundamental memory hierarchy where SCM would fit.
+
+Storage Class Memory (SCM) is memory technology that is non-volatile (retains data without power) like NAND flash, but with latency and bandwidth approaching DRAM (100-300ns vs NAND's 10-100μs). The goal is a memory tier that is faster than NAND/SSD but cheaper and denser than DRAM.
+
+Intel Optane DC Persistent Memory (DCPMM) was the primary SCM product: launched in 2019, it was a DDR4-compatible DIMM module with 128GB-512GB per module, installed in the same slots as DRAM. The key innovation was byte-addressability — unlike SSDs which are block devices, DCPMM could be accessed at the memory bus level, enabling direct memory access without I/O protocols.
+
+CXL (Compute Express Link) is emerging as the successor: CXL-attached memory is memory that is physically separate from the CPU but connected via CXL high-bandwidth, low-latency interconnect. This enables memory pooling and expansion without the complexity of Optane's proprietary architecture.
 
 ## Context and origin
-The concept: use memory as both working memory (DRAM) and storage (NAND) — eliminating the storage tier or expanding DRAM capacity at lower cost. Persistent memory targets the "memory-storage gap" between DRAM (fast, volatile, expensive per GB) and NAND (slow, non-volatile, cheap per GB). Intel launched 3D XPoint (Optane) in 2017, offering 256GB-4TB modules at DDR4 bus speeds. Major adopters included cloud providers for memory-intensive workloads like databases and in-memory analytics. See [[Data Center Memory Hierarchy]] for context on where SCM fits in server architectures.
+
+The SCM concept emerged from academic and industry research in the 2000s as researchers sought to bridge the ever-widening gap between DRAM speed and NAND cost/density. Multiple technologies were explored: PCM (Phase Change Memory — Intel/Micron's 3D XPoint), MRAM (Magnetoresistive RAM), ReRAM (Resistive RAM), and others.
+
+Intel and Micron jointly developed 3D XPoint (cross-point) memory, announcing it in 2015 and shipping it as Intel Optane in 2018. 3D XPoint used a novel material that changed resistance when current was applied, creating a non-volatile memory element. The theory was that this would be faster and cheaper than NAND for certain workloads.
+
+However, Optane failed commercially: the cost per GB was too high, the performance advantage over NAND SSDs was not large enough to justify the price premium, and the software ecosystem (requiring special programming models) was complex.
 
 ## Mechanisms / characteristics / details
-Intel 3D XPoint (Optane) was the main commercial persistent memory. Launched 2017, it offered 256GB-4TB modules at DDR4 bus speeds. Major adopters: cloud providers for memory-intensive workloads (databases, in-memory analytics). Intel discontinued Optane in 2023, writing off $559M in inventory — the market wasn't large enough to sustain two memory technologies competing with DRAM and NAND. The [[Advanced Packaging Technologies]] page covers TSV processes used in Optane's stacked die architecture.
+
+Optane's architecture was unique: the memory was accessed via memory-mapped I/O, where the CPU accessed Optane DIMMs as if they were memory, but the memory controller treated them differently from DRAM (with different latency and endurance characteristics).
+
+Two operating modes:
+- Memory Mode: Optane acts as volatile memory behind DRAM cache; OS sees only the large Optane capacity, DRAM as transparent cache. Simplest deployment.
+- App Direct Mode: Applications can choose to store specific data in Optane (persistent) vs DRAM (volatile). Requires application modification.
+
+The [[Data Center Memory Hierarchy]] page shows where SCM fits: between DRAM (fast, volatile) and NAND SSD (slow, non-volatile).
+
+CXL-attached memory (Samsung's CXL Memory Expansion, SK Hynix's CXL solutions) takes a different approach: memory is accessed over the CXL bus, which adds latency (~100ns) but enables memory pooling and capacity far beyond what a single server can hold.
 
 ## Nuances critiques limits
-Emerging persistent memory technologies: MRAM (Magnetoresistive RAM — in production at Everspin, available from Samsung/Micron as eMRAM), ReRAM (Resistive RAM — Panasonic/Weebit), PCM (Phase Change Memory). These are NVM technologies targeting embedded storage in microcontrollers and potential future SCM applications. None have achieved the density or bandwidth of Optane. The [[NAND Flash Manufacturing Process]] page covers similar non-volatile memory fabrication. Key risk: without a major SCM player, the technology may remain niche. The [[DRAM Market Analysis Samsung SKHynix Micron]] page covers how DRAM producers view SCM as potential competition.
 
-## Links and implications
-Persistent memory connects to [[Memory Technologies DRAM NAND]], [[DRAM Market Analysis Samsung SKHynix Micron]], [[Data Center Memory Hierarchy]], [[NAND Flash Market Analysis]], and [[Advanced Packaging Technologies]] as core dependencies. The [[Semiconductor Industry Overview]] provides broader context on emerging memory technologies.
+Intel's Optane failure ($5.7B write-down in 2022) demonstrated that SCM was ahead of its time: the software ecosystem never developed, and the cost premium was too high for most use cases.
 
-## Sources
-[^1]: SIA/Gartner/IC Insights or similar industry data.
-[^2]: Company annual report or industry analysis (Intel, Samsung Electronics, Micron Technology).
-[^3]: Research publication or news (AnandTech, Tom's Hardware, Semiconductor Digest).
+The CXL approach is more promising because it builds on standard memory programming models (no special app modification needed) and leverages the existing PCIe/CXL ecosystem. However, CXL memory is still early — 2024-2025 is the ramp period.
+
+Emerging SCM alternatives: Weebit Nano (ReRAM), Avalanche (embedded MRAM), and others are targeting embedded SCM applications (IoT, automotive) rather than data center workloads.
+
+## Related pages
+
+[[Data Center Memory Hierarchy]] frames SCM. [[CXL Interconnect Standard]] covers the emerging memory interconnect. [[HBM High Bandwidth Memory]] is the complementary high-bandwidth memory for AI. [[Memory Controller Chips]] shows the controller complexity.
+
+## References
+[^1]: Intel Optane DC Persistent Memory discontinuation announcement, 2023.
+[^2]: Samsung and SK Hynix CXL memory product announcements, 2024.
+[^3]: CXL Consortium specifications (CXL 2.0, 3.0, 3.1).
+[^4]: Weebit Nano ReRAM technology analysis.
+[^5]: Semiconductor Engineering SCM market analysis.
+
+[^6]: [[Data Center Memory Hierarchy]] shows where SCM fits in the tier.
+[^7]: [[DDR and LPDDR Memory Standards]] is the competing volatile memory technology.
+[^8]: [[NAND Flash Market Analysis]] covers the slow storage layer SCM competes with.
+[^9]: [[Enterprise SSD Technologies]] covers NAND SSD, the alternative non-volatile storage.

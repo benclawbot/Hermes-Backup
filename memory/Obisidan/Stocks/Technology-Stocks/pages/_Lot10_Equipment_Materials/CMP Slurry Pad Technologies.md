@@ -7,9 +7,22 @@ controversy: low
 importance: deep-cut
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #materials, #cmp, #planarization, #consumables]
+tags:
+  - '#concept'
+  - '#materials'
+  - '#cmp'
+  - '#planarization'
+  - '#consumables'
 created: 2026-04-24
-strong_links: [["Semiconductor Materials Market", "Applied Materials Business Analysis", "Advanced Node Technology Roadmap", "300mm Wafer Fab Economics"], ["Foundry Business Model", "Semiconductor Equipment Makers", "Photoresist Chemical Suppliers", "Semiconductor Gas Suppliers"]]
+strong_links:
+  - ['Semiconductor Materials Market']
+  - ['Applied Materials Business Analysis']
+  - ['Advanced Node Technology Roadmap']
+  - ['300mm Wafer Fab Economics']
+  - ['Foundry Business Model']
+  - ['Semiconductor Equipment Makers']
+  - ['Photoresist Chemical Suppliers']
+  - ['Semiconductor Gas Suppliers']
 opposition_links: []
 ---
 

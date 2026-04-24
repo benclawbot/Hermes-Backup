@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #medical, #imaging, #semiconductors, #healthcare]
+tags:
+  - '#sector'
+  - '#medical'
+  - '#imaging'
+  - '#semiconductors'
+  - '#healthcare'
 created: 2026-04-24
-strong_links: [["CMOS Image Sensor Market", "Data Converter Market", "Power Management ICs", "Analog Chip Market Overview"], ["Machine Vision Industrial AI", "Foundry Business Model", "Advanced Packaging Technologies", "Data Center Power Management"]]
+strong_links:
+  - ['CMOS Image Sensor Market']
+  - ['Data Converter Market']
+  - ['Power Management ICs']
+  - ['Analog Chip Market Overview']
+  - ['Machine Vision Industrial AI']
+  - ['Foundry Business Model']
+  - ['Advanced Packaging Technologies']
+  - ['Data Center Power Management']
 opposition_links: []
 ---
 

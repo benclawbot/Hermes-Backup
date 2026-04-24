@@ -7,9 +7,22 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #automotive, #semiconductors, #ev, #adas]
+tags:
+  - '#sector'
+  - '#automotive'
+  - '#semiconductors'
+  - '#ev'
+  - '#adas'
 created: 2026-04-24
-strong_links: [["Automotive Grade Semiconductor Requirements", "EV Power Electronics Systems", "ADAS Domain Controller Architecture", "Power Management ICs"], ["Foundry Business Model", "Advanced Packaging Technologies", "Fabless vs IDM Comparison", "AI Accelerator Market Overview"]]
+strong_links:
+  - ['Automotive Grade Semiconductor Requirements']
+  - ['EV Power Electronics Systems']
+  - ['ADAS Domain Controller Architecture']
+  - ['Power Management ICs']
+  - ['Foundry Business Model']
+  - ['Advanced Packaging Technologies']
+  - ['Fabless vs IDM Comparison']
+  - ['AI Accelerator Market Overview']
 opposition_links: []
 ---
 

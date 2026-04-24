@@ -7,9 +7,22 @@ controversy: medium
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #fan-out, #wlp, #packaging, #mobile]
+tags:
+  - '#concept'
+  - '#fan-out'
+  - '#wlp'
+  - '#packaging'
+  - '#mobile'
 created: 2026-04-24
-strong_links: [["Advanced Packaging Technology Overview", "2.5D Interposer Technologies", "System in Package SiP", "OSAT Provider Analysis ASE Amkor"], ["Chiplet Based Design Ecosystem", "Automotive Packaging Reliability", "Test Equipment Market Teradyne", "Semiconductor Assembly Test Services"]]
+strong_links:
+  - ['Advanced Packaging Technology Overview']
+  - ['2.5D Interposer Technologies']
+  - ['System in Package SiP']
+  - ['OSAT Provider Analysis ASE Amkor']
+  - ['Chiplet Based Design Ecosystem']
+  - ['Automotive Packaging Reliability']
+  - ['Test Equipment Market Teradyne']
+  - ['Semiconductor Assembly Test Services']
 opposition_links: []
 ---
 

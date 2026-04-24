@@ -7,9 +7,22 @@ controversy: medium
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #micron, #memory, #dram, #nand]
+tags:
+  - '#company'
+  - '#micron'
+  - '#memory'
+  - '#dram'
+  - '#nand'
 created: 2026-04-24
-strong_links: [["DRAM Memory Market", "NAND Flash Memory", "Hynix Memory Business", "Samsung Memory Business"], ["High Bandwidth Memory HBM", "AI Accelerator Chips", "Cloud Infrastructure Spending", "Solid State Drives"]]
+strong_links:
+  - ['DRAM Memory Market']
+  - ['NAND Flash Memory']
+  - ['Hynix Memory Business']
+  - ['Samsung Memory Business']
+  - ['High Bandwidth Memory HBM']
+  - ['AI Accelerator Chips']
+  - ['Cloud Infrastructure Spending']
+  - ['Solid State Drives']
 opposition_links: []
 ---
 

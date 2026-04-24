@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #automotive, #reliability, #packaging, #aec-q]
+tags:
+  - '#concept'
+  - '#automotive'
+  - '#reliability'
+  - '#packaging'
+  - '#aec-q'
 created: 2026-04-24
-strong_links: [["Defense Semiconductor Requirements", "Power Semiconductor Packaging", "Military Avionics Systems", "Semiconductor Assembly Test Services"], ["OSAT Provider Analysis ASE Amkor", "Fan Out Wafer Level Packaging", "Wide Bandgap Material Economics", "System in Package SiP"]]
+strong_links:
+  - ['Defense Semiconductor Requirements']
+  - ['Power Semiconductor Packaging']
+  - ['Military Avionics Systems']
+  - ['Semiconductor Assembly Test Services']
+  - ['OSAT Provider Analysis ASE Amkor']
+  - ['Fan Out Wafer Level Packaging']
+  - ['Wide Bandgap Material Economics']
+  - ['System in Package SiP']
 opposition_links: []
 ---
 

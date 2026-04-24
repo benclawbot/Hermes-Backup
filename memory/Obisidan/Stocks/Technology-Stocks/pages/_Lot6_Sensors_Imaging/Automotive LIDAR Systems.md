@@ -7,9 +7,22 @@ controversy: medium
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #automotive, #lidar, #autonomous-driving, #sensors]
+tags:
+  - '#sector'
+  - '#automotive'
+  - '#lidar'
+  - '#autonomous-driving'
+  - '#sensors'
 created: 2026-04-24
-strong_links: [["CMOS Image Sensor Market", "Advanced Packaging Technologies", "AI Accelerator Market Overview", "Machine Vision Industrial AI"], ["Foundry Business Model", "5G Infrastructure Market", "Edge Computing Infrastructure", "mmWave Radar Technologies"]]
+strong_links:
+  - ['CMOS Image Sensor Market']
+  - ['Advanced Packaging Technologies']
+  - ['AI Accelerator Market Overview']
+  - ['Machine Vision Industrial AI']
+  - ['Foundry Business Model']
+  - ['5G Infrastructure Market']
+  - ['Edge Computing Infrastructure']
+  - ['mmWave Radar Technologies']
 opposition_links: []
 ---
 

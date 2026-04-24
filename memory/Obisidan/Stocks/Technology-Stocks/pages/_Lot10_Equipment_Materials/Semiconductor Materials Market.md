@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #materials, #semiconductors, #wafers, #chemicals]
+tags:
+  - '#sector'
+  - '#materials'
+  - '#semiconductors'
+  - '#wafers'
+  - '#chemicals'
 created: 2026-04-24
-strong_links: [["Semiconductor Equipment Makers", "Foundry Business Model", "Advanced Node Technology Roadmap", "300mm Wafer Fab Economics"], ["Photoresist Chemical Suppliers", "Semiconductor Gas Suppliers", "CMP Slurry Pad Technologies", "Applied Materials Business Analysis"]]
+strong_links:
+  - ['Semiconductor Equipment Makers']
+  - ['Foundry Business Model']
+  - ['Advanced Node Technology Roadmap']
+  - ['300mm Wafer Fab Economics']
+  - ['Photoresist Chemical Suppliers']
+  - ['Semiconductor Gas Suppliers']
+  - ['CMP Slurry Pad Technologies']
+  - ['Applied Materials Business Analysis']
 opposition_links: []
 ---
 

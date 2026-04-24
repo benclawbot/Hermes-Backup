@@ -7,9 +7,22 @@ controversy: medium
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #3d-ic, #tsv, #stacking, #packaging]
+tags:
+  - '#concept'
+  - '#3d-ic'
+  - '#tsv'
+  - '#stacking'
+  - '#packaging'
 created: 2026-04-24
-strong_links: [["Advanced Packaging Technology Overview", "2.5D Interposer Technologies", "Fan Out Wafer Level Packaging", "Chiplet Based Design Ecosystem"], ["System in Package SiP", "OSAT Provider Analysis ASE Amkor", "Test Equipment Market Teradyne", "Memory for Data Centers"]]
+strong_links:
+  - ['Advanced Packaging Technology Overview']
+  - ['2.5D Interposer Technologies']
+  - ['Fan Out Wafer Level Packaging']
+  - ['Chiplet Based Design Ecosystem']
+  - ['System in Package SiP']
+  - ['OSAT Provider Analysis ASE Amkor']
+  - ['Test Equipment Market Teradyne']
+  - ['Memory for Data Centers']
 opposition_links: []
 ---
 

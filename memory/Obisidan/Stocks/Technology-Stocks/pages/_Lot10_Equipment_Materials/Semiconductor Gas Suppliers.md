@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #materials, #gases, #semiconductors, #fab-operations]
+tags:
+  - '#concept'
+  - '#materials'
+  - '#gases'
+  - '#semiconductors'
+  - '#fab-operations'
 created: 2026-04-24
-strong_links: [["Semiconductor Materials Market", "Foundry Business Model", "300mm Wafer Fab Economics", "Applied Materials Business Analysis"], ["Lam Research Business Analysis", "Photoresist Chemical Suppliers", "Advanced Node Technology Roadmap", "Semiconductor Equipment Makers"]]
+strong_links:
+  - ['Semiconductor Materials Market']
+  - ['Foundry Business Model']
+  - ['300mm Wafer Fab Economics']
+  - ['Applied Materials Business Analysis']
+  - ['Lam Research Business Analysis']
+  - ['Photoresist Chemical Suppliers']
+  - ['Advanced Node Technology Roadmap']
+  - ['Semiconductor Equipment Makers']
 opposition_links: []
 ---
 

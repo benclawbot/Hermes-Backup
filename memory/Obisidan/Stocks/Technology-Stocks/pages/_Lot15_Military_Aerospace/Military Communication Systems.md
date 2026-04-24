@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #military, #communications, #secure, #satellite]
+tags:
+  - '#concept'
+  - '#military'
+  - '#communications'
+  - '#secure'
+  - '#satellite'
 created: 2026-04-24
-strong_links: [["Secure Processor Technologies", "Defense Semiconductor Requirements", "Military Avionics Systems", "Radiation Hardened Chips Space"], ["Defense Contractor Semiconductor Content", "Trusted Foundry Program", "Semiconductor Export Controls ITAR", "DARPA Electronics Resurgence"]]
+strong_links:
+  - ['Secure Processor Technologies']
+  - ['Defense Semiconductor Requirements']
+  - ['Military Avionics Systems']
+  - ['Radiation Hardened Chips Space']
+  - ['Defense Contractor Semiconductor Content']
+  - ['Trusted Foundry Program']
+  - ['Semiconductor Export Controls ITAR']
+  - ['DARPA Electronics Resurgence']
 opposition_links: []
 ---
 

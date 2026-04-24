@@ -7,9 +7,22 @@ controversy: medium
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #adas, #autonomous, #ai, #automotive]
+tags:
+  - '#concept'
+  - '#adas'
+  - '#autonomous'
+  - '#ai'
+  - '#automotive'
 created: 2026-04-24
-strong_links: [["Automotive Semiconductor Market Overview", "AI Accelerator Market Overview", "CMOS Image Sensor Market", "Automotive LIDAR Systems"], ["Foundry Business Model", "Advanced Packaging Technologies", "Edge Computing Infrastructure", "Data Center Power Management"]]
+strong_links:
+  - ['Automotive Semiconductor Market Overview']
+  - ['AI Accelerator Market Overview']
+  - ['CMOS Image Sensor Market']
+  - ['Automotive LIDAR Systems']
+  - ['Foundry Business Model']
+  - ['Advanced Packaging Technologies']
+  - ['Edge Computing Infrastructure']
+  - ['Data Center Power Management']
 opposition_links: []
 ---
 

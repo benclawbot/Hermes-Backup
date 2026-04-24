@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #test-equipment, #teradyne, #semiconductor, #ate]
+tags:
+  - '#company'
+  - '#test-equipment'
+  - '#teradyne'
+  - '#semiconductor'
+  - '#ate'
 created: 2026-04-24
-strong_links: [["Semiconductor Assembly Test Services", "Advanced Packaging Technology Overview", "OSAT Provider Analysis ASE Amkor", "System in Package SiP"], ["Chiplet Based Design Ecosystem", "Fan Out Wafer Level Packaging", "Automotive Packaging Reliability", "Power Semiconductor Packaging"]]
+strong_links:
+  - ['Semiconductor Assembly Test Services']
+  - ['Advanced Packaging Technology Overview']
+  - ['OSAT Provider Analysis ASE Amkor']
+  - ['System in Package SiP']
+  - ['Chiplet Based Design Ecosystem']
+  - ['Fan Out Wafer Level Packaging']
+  - ['Automotive Packaging Reliability']
+  - ['Power Semiconductor Packaging']
 opposition_links: []
 ---
 

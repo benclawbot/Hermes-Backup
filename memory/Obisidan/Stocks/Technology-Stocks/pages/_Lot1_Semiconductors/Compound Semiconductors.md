@@ -7,9 +7,17 @@ controversy: low
 importance: deep-cut
 source_knowledge: web-checked
 sources_count: 3
-tags: [#sector, #semiconductors, #technology]
+tags:
+  - '#sector'
+  - '#semiconductors'
+  - '#technology'
 created: 2026-04-24
-strong_links: [["Semiconductor Industry Overview", "Foundry Business Model", "EUV Lithography Systems"], ["AI Accelerator Market Overview", "5G Infrastructure"]]
+strong_links:
+  - ['Semiconductor Industry Overview']
+  - ['Foundry Business Model']
+  - ['EUV Lithography Systems']
+  - ['AI Accelerator Market Overview']
+  - ['5G Infrastructure']
 opposition_links: []
 ---
 

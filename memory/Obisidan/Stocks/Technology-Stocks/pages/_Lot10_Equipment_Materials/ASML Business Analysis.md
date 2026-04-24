@@ -7,9 +7,22 @@ controversy: high
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #equipment, #asml, #euv, #lithography]
+tags:
+  - '#company'
+  - '#equipment'
+  - '#asml'
+  - '#euv'
+  - '#lithography'
 created: 2026-04-24
-strong_links: [["EUV Lithography Systems", "EUV Lithography Market Analysis", "Advanced Node Technology Roadmap", "TSMC Competitive Position"], ["Foundry Business Model", "300mm Wafer Fab Economics", "Intel Foundry Services Ambitions", "Samsung Foundry Strategy"]]
+strong_links:
+  - ['EUV Lithography Systems']
+  - ['EUV Lithography Market Analysis']
+  - ['Advanced Node Technology Roadmap']
+  - ['TSMC Competitive Position']
+  - ['Foundry Business Model']
+  - ['300mm Wafer Fab Economics']
+  - ['Intel Foundry Services Ambitions']
+  - ['Samsung Foundry Strategy']
 opposition_links: []
 ---
 

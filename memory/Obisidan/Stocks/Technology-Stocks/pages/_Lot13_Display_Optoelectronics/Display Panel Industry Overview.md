@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #displays, #panels, #manufacturing, #oled]
+tags:
+  - '#sector'
+  - '#displays'
+  - '#panels'
+  - '#manufacturing'
+  - '#oled'
 created: 2026-04-24
-strong_links: [["OLED Display Technology", "QDOT Display Technology", "MicroLED Technology", "BOE Display Industry Position"], ["Samsung Display Business Analysis", "LG Display Business Analysis", "Semiconductor Materials Market", "Consumer Electronics Demand"]]
+strong_links:
+  - ['OLED Display Technology']
+  - ['QDOT Display Technology']
+  - ['MicroLED Technology']
+  - ['BOE Display Industry Position']
+  - ['Samsung Display Business Analysis']
+  - ['LG Display Business Analysis']
+  - ['Semiconductor Materials Market']
+  - ['Consumer Electronics Demand']
 opposition_links: []
 ---
 

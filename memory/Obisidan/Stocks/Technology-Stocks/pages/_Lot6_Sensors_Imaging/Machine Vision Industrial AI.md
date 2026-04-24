@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #industrial, #ai, #automation, #vision]
+tags:
+  - '#sector'
+  - '#industrial'
+  - '#ai'
+  - '#automation'
+  - '#vision'
 created: 2026-04-24
-strong_links: [["CMOS Image Sensor Market", "Time of Flight 3D Sensing", "AI Accelerator Market Overview", "Edge Computing Infrastructure"], ["Foundry Business Model", "Fabless vs IDM Comparison", "Data Center Power Management", "Advanced Packaging Technologies"]]
+strong_links:
+  - ['CMOS Image Sensor Market']
+  - ['Time of Flight 3D Sensing']
+  - ['AI Accelerator Market Overview']
+  - ['Edge Computing Infrastructure']
+  - ['Foundry Business Model']
+  - ['Fabless vs IDM Comparison']
+  - ['Data Center Power Management']
+  - ['Advanced Packaging Technologies']
 opposition_links: []
 ---
 

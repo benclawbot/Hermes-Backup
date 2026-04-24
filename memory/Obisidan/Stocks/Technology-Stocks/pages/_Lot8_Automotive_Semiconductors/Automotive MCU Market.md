@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #automotive, #mcu, #embedded, #semiconductors]
+tags:
+  - '#sector'
+  - '#automotive'
+  - '#mcu'
+  - '#embedded'
+  - '#semiconductors'
 created: 2026-04-24
-strong_links: [["Automotive Semiconductor Market Overview", "Automotive Grade Semiconductor Requirements", "Vehicle Networking CAN LIN FlexRay", "Power Management ICs"], ["EV Power Electronics Systems", "Automotive Display and Infotainment", "Fabless vs IDM Comparison", "Foundry Business Model"]]
+strong_links:
+  - ['Automotive Semiconductor Market Overview']
+  - ['Automotive Grade Semiconductor Requirements']
+  - ['Vehicle Networking CAN LIN FlexRay']
+  - ['Power Management ICs']
+  - ['EV Power Electronics Systems']
+  - ['Automotive Display and Infotainment']
+  - ['Fabless vs IDM Comparison']
+  - ['Foundry Business Model']
 opposition_links: []
 ---
 

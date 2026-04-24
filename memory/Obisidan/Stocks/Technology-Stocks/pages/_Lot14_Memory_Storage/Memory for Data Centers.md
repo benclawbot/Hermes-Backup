@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #memory, #data-center, #dram, #server]
+tags:
+  - '#concept'
+  - '#memory'
+  - '#data-center'
+  - '#dram'
+  - '#server'
 created: 2026-04-24
-strong_links: [["DRAM Memory Market", "High Bandwidth Memory HBM", "Cloud Infrastructure Spending", "Data Center Storage Architecture"], ["AI Accelerator Chips", "NAND Flash Memory", "Enterprise Storage Semiconductors", "CXL Memory Expansion"]]
+strong_links:
+  - ['DRAM Memory Market']
+  - ['High Bandwidth Memory HBM']
+  - ['Cloud Infrastructure Spending']
+  - ['Data Center Storage Architecture']
+  - ['AI Accelerator Chips']
+  - ['NAND Flash Memory']
+  - ['Enterprise Storage Semiconductors']
+  - ['CXL Memory Expansion']
 opposition_links: []
 ---
 

@@ -7,9 +7,22 @@ controversy: medium
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #automotive, #supply-chain, #foundry, #semiconductors]
+tags:
+  - '#concept'
+  - '#automotive'
+  - '#supply-chain'
+  - '#foundry'
+  - '#semiconductors'
 created: 2026-04-24
-strong_links: [["Automotive Semiconductor Market Overview", "Automotive Grade Semiconductor Requirements", "Foundry Business Model", "Automotive MCU Market"], ["EV Power Electronics Systems", "Fabless vs IDM Comparison", "Automotive Camera Modules", "Data Center Power Management"]]
+strong_links:
+  - ['Automotive Semiconductor Market Overview']
+  - ['Automotive Grade Semiconductor Requirements']
+  - ['Foundry Business Model']
+  - ['Automotive MCU Market']
+  - ['EV Power Electronics Systems']
+  - ['Fabless vs IDM Comparison']
+  - ['Automotive Camera Modules']
+  - ['Data Center Power Management']
 opposition_links: []
 ---
 

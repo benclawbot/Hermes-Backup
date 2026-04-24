@@ -7,9 +7,20 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #semiconductors, #servers]
+tags:
+  - '#sector'
+  - '#semiconductors'
+  - '#servers'
 created: 2026-04-24
-strong_links: [["Hyperscale Data Center Operators", "Cloud Infrastructure Market", "Advanced Packaging Technologies", "Data Center Cooling Technologies"], ["AI Accelerator Market Overview", "DRAM Market Analysis Samsung SKHynix Micron", "Memory Technologies DRAM NAND", "Foundry Business Model"]]
+strong_links:
+  - ['Hyperscale Data Center Operators']
+  - ['Cloud Infrastructure Market']
+  - ['Advanced Packaging Technologies']
+  - ['Data Center Cooling Technologies']
+  - ['AI Accelerator Market Overview']
+  - ['DRAM Market Analysis Samsung SKHynix Micron']
+  - ['Memory Technologies DRAM NAND']
+  - ['Foundry Business Model']
 opposition_links: []
 ---
 

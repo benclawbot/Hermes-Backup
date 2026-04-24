@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #ssd, #storage, #nand-flash, #data-center]
+tags:
+  - '#concept'
+  - '#ssd'
+  - '#storage'
+  - '#nand-flash'
+  - '#data-center'
 created: 2026-04-24
-strong_links: [["NAND Flash Memory", "Enterprise Storage Semiconductors", "Enterprise SSD Controllers", "NAND Flash Technology"], ["Cloud Infrastructure Spending", "PC CPU Socket Market", "Data Center Storage Architecture", "Consumer Electronics Demand"]]
+strong_links:
+  - ['NAND Flash Memory']
+  - ['Enterprise Storage Semiconductors']
+  - ['Enterprise SSD Controllers']
+  - ['NAND Flash Technology']
+  - ['Cloud Infrastructure Spending']
+  - ['PC CPU Socket Market']
+  - ['Data Center Storage Architecture']
+  - ['Consumer Electronics Demand']
 opposition_links: []
 ---
 

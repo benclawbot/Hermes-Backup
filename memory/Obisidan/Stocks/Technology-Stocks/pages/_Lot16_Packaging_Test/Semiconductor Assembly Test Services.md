@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #assembly, #test, #osat, #packaging]
+tags:
+  - '#sector'
+  - '#assembly'
+  - '#test'
+  - '#osat'
+  - '#packaging'
 created: 2026-04-24
-strong_links: [["OSAT Provider Analysis ASE Amkor", "Test Equipment Market Teradyne", "Advanced Packaging Technology Overview", "Fan Out Wafer Level Packaging"], ["Chiplet Based Design Ecosystem", "System in Package SiP", "Automotive Packaging Reliability", "Semiconductor Equipment Market"]]
+strong_links:
+  - ['OSAT Provider Analysis ASE Amkor']
+  - ['Test Equipment Market Teradyne']
+  - ['Advanced Packaging Technology Overview']
+  - ['Fan Out Wafer Level Packaging']
+  - ['Chiplet Based Design Ecosystem']
+  - ['System in Package SiP']
+  - ['Automotive Packaging Reliability']
+  - ['Semiconductor Equipment Market']
 opposition_links: []
 ---
 

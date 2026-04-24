@@ -7,9 +7,23 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #osat, #ase, #amkor, #assembly, #test]
+tags:
+  - '#company'
+  - '#osat'
+  - '#ase'
+  - '#amkor'
+  - '#assembly'
+  - '#test'
 created: 2026-04-24
-strong_links: [["Semiconductor Assembly Test Services", "Advanced Packaging Technology Overview", "Fan Out Wafer Level Packaging", "System in Package SiP"], ["Chiplet Based Design Ecosystem", "Automotive Packaging Reliability", "Test Equipment Market Teradyne", "Power Semiconductor Packaging"]]
+strong_links:
+  - ['Semiconductor Assembly Test Services']
+  - ['Advanced Packaging Technology Overview']
+  - ['Fan Out Wafer Level Packaging']
+  - ['System in Package SiP']
+  - ['Chiplet Based Design Ecosystem']
+  - ['Automotive Packaging Reliability']
+  - ['Test Equipment Market Teradyne']
+  - ['Power Semiconductor Packaging']
 opposition_links: []
 ---
 

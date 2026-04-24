@@ -7,9 +7,19 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 3
-tags: [#fabless, #IDM, #business-model, #semiconductor, #manufacturing]
+tags:
+  - '#fabless'
+  - '#IDM'
+  - '#business-model'
+  - '#semiconductor'
+  - '#manufacturing'
 created: 2026-04-24
-strong_links: [["Semiconductor Industry Overview", "Foundry Business Model"], ["AI Accelerator Market Overview", "Semiconductor Equipment Makers"]]]
+strong_links:
+  - ['Semiconductor Industry Overview']
+  - ['Foundry Business Model']
+  - ['AI Accelerator Market Overview']
+  - ['Semiconductor Equipment Makers']
+  - []
 opposition_links: []
 ---
 

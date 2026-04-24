@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #lg, #display, #oled, #television]
+tags:
+  - '#company'
+  - '#lg'
+  - '#display'
+  - '#oled'
+  - '#television'
 created: 2026-04-24
-strong_links: [["OLED Display Technology", "Display Panel Industry Overview", "Samsung Display Business Analysis", "QDOT Display Technology"], ["BOE Display Industry Position", "Consumer Electronics Demand", "Semiconductor Materials Market", "Samsung Display Business Analysis"]]
+strong_links:
+  - ['OLED Display Technology']
+  - ['Display Panel Industry Overview']
+  - ['Samsung Display Business Analysis']
+  - ['QDOT Display Technology']
+  - ['BOE Display Industry Position']
+  - ['Consumer Electronics Demand']
+  - ['Semiconductor Materials Market']
+  - ['Samsung Display Business Analysis']
 opposition_links: []
 ---
 

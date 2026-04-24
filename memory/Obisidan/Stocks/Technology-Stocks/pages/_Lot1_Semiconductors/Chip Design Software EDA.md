@@ -7,9 +7,18 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 3
-tags: [#sector, #semiconductors, #software, #technology]
+tags:
+  - '#sector'
+  - '#semiconductors'
+  - '#software'
+  - '#technology'
 created: 2026-04-24
-strong_links: [["Semiconductor Industry Overview", "Foundry Business Model", "AI Accelerator Market Overview"], ["Fabless vs IDM Comparison", "Advanced Packaging Technologies"]]
+strong_links:
+  - ['Semiconductor Industry Overview']
+  - ['Foundry Business Model']
+  - ['AI Accelerator Market Overview']
+  - ['Fabless vs IDM Comparison']
+  - ['Advanced Packaging Technologies']
 opposition_links: []
 ---
 

@@ -7,9 +7,20 @@ controversy: medium
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #semiconductors, #satellite]
+tags:
+  - '#concept'
+  - '#semiconductors'
+  - '#satellite'
 created: 2026-04-24
-strong_links: [["5G Infrastructure Market", "Cellular Baseband Modems", "RF Front End Modules", "WiFi Chip Market"], ["Subsea Cable Networks", "mmWave Radar Technologies", "Edge Computing Infrastructure", "Compound Semiconductors"]]
+strong_links:
+  - ['5G Infrastructure Market']
+  - ['Cellular Baseband Modems']
+  - ['RF Front End Modules']
+  - ['WiFi Chip Market']
+  - ['Subsea Cable Networks']
+  - ['mmWave Radar Technologies']
+  - ['Edge Computing Infrastructure']
+  - ['Compound Semiconductors']
 opposition_links: []
 ---
 

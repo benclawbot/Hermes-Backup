@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #sensors, #radar, #sensor-fusion, #automotive]
+tags:
+  - '#concept'
+  - '#sensors'
+  - '#radar'
+  - '#sensor-fusion'
+  - '#automotive'
 created: 2026-04-24
-strong_links: [["mmWave Radar Technologies", "Automotive LIDAR Systems", "CMOS Image Sensor Market", "Time of Flight 3D Sensing"], ["AI Accelerator Market Overview", "Edge Computing Infrastructure", "Machine Vision Industrial AI", "Advanced Packaging Technologies"]]
+strong_links:
+  - ['mmWave Radar Technologies']
+  - ['Automotive LIDAR Systems']
+  - ['CMOS Image Sensor Market']
+  - ['Time of Flight 3D Sensing']
+  - ['AI Accelerator Market Overview']
+  - ['Edge Computing Infrastructure']
+  - ['Machine Vision Industrial AI']
+  - ['Advanced Packaging Technologies']
 opposition_links: []
 ---
 

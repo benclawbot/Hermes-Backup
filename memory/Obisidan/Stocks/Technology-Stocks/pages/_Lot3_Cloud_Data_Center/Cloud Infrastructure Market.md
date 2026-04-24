@@ -7,9 +7,20 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #technology, #cloud]
+tags:
+  - '#sector'
+  - '#technology'
+  - '#cloud'
 created: 2026-04-24
-strong_links: [["Hyperscale Data Center Operators", "Server CPU Market Intel AMD Arm", "AI Accelerator Market Overview", "Data Center Networking Chips", "Data Center Power Management"], ["Edge Computing Infrastructure", "Subsea Cable Networks", "DRAM Market Analysis Samsung SKHynix Micron"]]
+strong_links:
+  - ['Hyperscale Data Center Operators']
+  - ['Server CPU Market Intel AMD Arm']
+  - ['AI Accelerator Market Overview']
+  - ['Data Center Networking Chips']
+  - ['Data Center Power Management']
+  - ['Edge Computing Infrastructure']
+  - ['Subsea Cable Networks']
+  - ['DRAM Market Analysis Samsung SKHynix Micron']
 opposition_links: []
 ---
 

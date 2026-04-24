@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #fabless, #competition, #pricing, #semiconductors]
+tags:
+  - '#concept'
+  - '#fabless'
+  - '#competition'
+  - '#pricing'
+  - '#semiconductors'
 created: 2026-04-24
-strong_links: [["Fabless Semiconductor Model", "Qualcomm Business Analysis", "NVIDIA Business Analysis", "AMD Business Analysis"], ["Broadcom Business Analysis", "MediaTek Business Analysis", "Foundry Business Model", "TSMC Competitive Position"]]
+strong_links:
+  - ['Fabless Semiconductor Model']
+  - ['Qualcomm Business Analysis']
+  - ['NVIDIA Business Analysis']
+  - ['AMD Business Analysis']
+  - ['Broadcom Business Analysis']
+  - ['MediaTek Business Analysis']
+  - ['Foundry Business Model']
+  - ['TSMC Competitive Position']
 opposition_links: []
 ---
 

@@ -7,9 +7,23 @@ controversy: medium
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #boe, #china, #display, #lcd, #oled]
+tags:
+  - '#company'
+  - '#boe'
+  - '#china'
+  - '#display'
+  - '#lcd'
+  - '#oled'
 created: 2026-04-24
-strong_links: [["Display Panel Industry Overview", "OLED Display Technology", "Samsung Display Business Analysis", "Consumer Electronics Demand"], ["Samsung Display Business Analysis", "LG Display Business Analysis", "Semiconductor Materials Market", "China Semiconductor Policy"]]
+strong_links:
+  - ['Display Panel Industry Overview']
+  - ['OLED Display Technology']
+  - ['Samsung Display Business Analysis']
+  - ['Consumer Electronics Demand']
+  - ['Samsung Display Business Analysis']
+  - ['LG Display Business Analysis']
+  - ['Semiconductor Materials Market']
+  - ['China Semiconductor Policy']
 opposition_links: []
 ---
 

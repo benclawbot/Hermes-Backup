@@ -7,9 +7,22 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #eda, #semiconductor, #design, #tools]
+tags:
+  - '#concept'
+  - '#eda'
+  - '#semiconductor'
+  - '#design'
+  - '#tools'
 created: 2026-04-24
-strong_links: [["Semiconductor IP Licensing", "Advanced Node Technology Roadmap", "Foundry Business Model", "TSMC Competitive Position"], ["Synopsys Business Analysis", "Cadence Design Systems", "Fabless Semiconductor Model", "300mm Wafer Fab Economics"]]
+strong_links:
+  - ['Semiconductor IP Licensing']
+  - ['Advanced Node Technology Roadmap']
+  - ['Foundry Business Model']
+  - ['TSMC Competitive Position']
+  - ['Synopsys Business Analysis']
+  - ['Cadence Design Systems']
+  - ['Fabless Semiconductor Model']
+  - ['300mm Wafer Fab Economics']
 opposition_links: []
 ---
 

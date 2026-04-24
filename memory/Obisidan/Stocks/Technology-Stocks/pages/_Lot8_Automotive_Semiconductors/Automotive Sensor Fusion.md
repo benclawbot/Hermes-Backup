@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #sensors, #fusion, #adas, #perception]
+tags:
+  - '#concept'
+  - '#sensors'
+  - '#fusion'
+  - '#adas'
+  - '#perception'
 created: 2026-04-24
-strong_links: [["ADAS Domain Controller Architecture", "Automotive LIDAR Systems", "mmWave Radar Technologies", "CMOS Image Sensor Market"], ["Edge Computing Infrastructure", "AI Accelerator Market Overview", "Foundry Business Model", "Radar Sensing Convergence"]]
+strong_links:
+  - ['ADAS Domain Controller Architecture']
+  - ['Automotive LIDAR Systems']
+  - ['mmWave Radar Technologies']
+  - ['CMOS Image Sensor Market']
+  - ['Edge Computing Infrastructure']
+  - ['AI Accelerator Market Overview']
+  - ['Foundry Business Model']
+  - ['Radar Sensing Convergence']
 opposition_links: []
 ---
 

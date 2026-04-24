@@ -7,9 +7,20 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 4
-tags: [#concept, #telecom, #wireless]
+tags:
+  - '#concept'
+  - '#telecom'
+  - '#wireless'
 created: 2026-04-24
-strong_links: [["5G Infrastructure Market", "Small Cell Deployment", "Cloud Infrastructure Market", "Subsea Cable Networks"], ["Data Center Networking Chips", "Hyperscale Data Center Operators", "Edge Computing Infrastructure", "Compound Semiconductors"]]
+strong_links:
+  - ['5G Infrastructure Market']
+  - ['Small Cell Deployment']
+  - ['Cloud Infrastructure Market']
+  - ['Subsea Cable Networks']
+  - ['Data Center Networking Chips']
+  - ['Hyperscale Data Center Operators']
+  - ['Edge Computing Infrastructure']
+  - ['Compound Semiconductors']
 opposition_links: []
 ---
 

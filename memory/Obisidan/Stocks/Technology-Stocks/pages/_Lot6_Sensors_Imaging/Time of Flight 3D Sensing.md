@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #sensors, #3d-sensing, #mobile, #ai]
+tags:
+  - '#concept'
+  - '#sensors'
+  - '#3d-sensing'
+  - '#mobile'
+  - '#ai'
 created: 2026-04-24
-strong_links: [["CMOS Image Sensor Market", "Fingerprint Sensor Technologies", "Machine Vision Industrial AI", "Advanced Packaging Technologies"], ["mmWave Radar Technologies", "Automotive LIDAR Systems", "Foundry Business Model", "Edge Computing Infrastructure"]]
+strong_links:
+  - ['CMOS Image Sensor Market']
+  - ['Fingerprint Sensor Technologies']
+  - ['Machine Vision Industrial AI']
+  - ['Advanced Packaging Technologies']
+  - ['mmWave Radar Technologies']
+  - ['Automotive LIDAR Systems']
+  - ['Foundry Business Model']
+  - ['Edge Computing Infrastructure']
 opposition_links: []
 ---
 

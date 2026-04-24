@@ -7,9 +7,20 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #technology, #cloud]
+tags:
+  - '#sector'
+  - '#technology'
+  - '#cloud'
 created: 2026-04-24
-strong_links: [["Cloud Infrastructure Market", "Data Center Networking Chips", "Data Center Power Management", "AI Accelerator Market Overview", "Server CPU Market Intel AMD Arm"], ["Edge Computing Infrastructure", "Subsea Cable Networks", "Colocation Real Estate Investment Trusts"]]
+strong_links:
+  - ['Cloud Infrastructure Market']
+  - ['Data Center Networking Chips']
+  - ['Data Center Power Management']
+  - ['AI Accelerator Market Overview']
+  - ['Server CPU Market Intel AMD Arm']
+  - ['Edge Computing Infrastructure']
+  - ['Subsea Cable Networks']
+  - ['Colocation Real Estate Investment Trusts']
 opposition_links: []
 ---
 

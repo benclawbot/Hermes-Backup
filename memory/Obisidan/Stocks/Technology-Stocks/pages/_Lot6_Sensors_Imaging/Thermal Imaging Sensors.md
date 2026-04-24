@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #sensors, #thermal, #imaging, #defense]
+tags:
+  - '#concept'
+  - '#sensors'
+  - '#thermal'
+  - '#imaging'
+  - '#defense'
 created: 2026-04-24
-strong_links: [["CMOS Image Sensor Market", "mmWave Radar Technologies", "Automotive LIDAR Systems", "Military Aerospace Semiconductors"], ["Machine Vision Industrial AI", "Edge Computing Infrastructure", "Foundry Business Model", "Compound Semiconductors"]]
+strong_links:
+  - ['CMOS Image Sensor Market']
+  - ['mmWave Radar Technologies']
+  - ['Automotive LIDAR Systems']
+  - ['Military Aerospace Semiconductors']
+  - ['Machine Vision Industrial AI']
+  - ['Edge Computing Infrastructure']
+  - ['Foundry Business Model']
+  - ['Compound Semiconductors']
 opposition_links: []
 ---
 

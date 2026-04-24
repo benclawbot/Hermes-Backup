@@ -7,9 +7,22 @@ controversy: low
 importance: deep-cut
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #open-source, #silicon, #risc-v, #design]
+tags:
+  - '#concept'
+  - '#open-source'
+  - '#silicon'
+  - '#risc-v'
+  - '#design'
 created: 2026-04-24
-strong_links: [["RISC-V Architecture", "Electronic Design Automation", "Semiconductor IP Licensing", "Fabless Semiconductor Model"], ["ARM IP Licensing Business", "Synopsys Business Analysis", "Foundry Business Model", "Custom Silicon ASIC Trend"]]
+strong_links:
+  - ['RISC-V Architecture']
+  - ['Electronic Design Automation']
+  - ['Semiconductor IP Licensing']
+  - ['Fabless Semiconductor Model']
+  - ['ARM IP Licensing Business']
+  - ['Synopsys Business Analysis']
+  - ['Foundry Business Model']
+  - ['Custom Silicon ASIC Trend']
 opposition_links: []
 ---
 

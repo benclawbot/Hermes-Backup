@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #fabless, #custom-silicon, #cloud, #storage]
+tags:
+  - '#company'
+  - '#fabless'
+  - '#custom-silicon'
+  - '#cloud'
+  - '#storage'
 created: 2026-04-24
-strong_links: [["Custom Silicon ASIC Trend", "Cloud Data Center Infrastructure", "Fabless Semiconductor Model", "TSMC Competitive Position"], ["Foundry Business Model", "5G Infrastructure Silicon", "AI Accelerator Market", "Network Interface Cards"]]
+strong_links:
+  - ['Custom Silicon ASIC Trend']
+  - ['Cloud Data Center Infrastructure']
+  - ['Fabless Semiconductor Model']
+  - ['TSMC Competitive Position']
+  - ['Foundry Business Model']
+  - ['5G Infrastructure Silicon']
+  - ['AI Accelerator Market']
+  - ['Network Interface Cards']
 opposition_links: []
 ---
 

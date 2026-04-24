@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #tape-out, #manufacturing, #semiconductors, #design]
+tags:
+  - '#concept'
+  - '#tape-out'
+  - '#manufacturing'
+  - '#semiconductors'
+  - '#design'
 created: 2026-04-24
-strong_links: [["Electronic Design Automation", "Advanced Node Technology Roadmap", "300mm Wafer Fab Economics", "Foundry Business Model"], ["Synopsys Business Analysis", "Cadence Design Systems", "Semiconductor IP Licensing", "SoC Design Complexity Trends"]]
+strong_links:
+  - ['Electronic Design Automation']
+  - ['Advanced Node Technology Roadmap']
+  - ['300mm Wafer Fab Economics']
+  - ['Foundry Business Model']
+  - ['Synopsys Business Analysis']
+  - ['Cadence Design Systems']
+  - ['Semiconductor IP Licensing']
+  - ['SoC Design Complexity Trends']
 opposition_links: []
 ---
 

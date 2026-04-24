@@ -7,9 +7,22 @@ controversy: medium
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #analog-mixed-signal, #economics, #design, #semiconductors]
+tags:
+  - '#concept'
+  - '#analog-mixed-signal'
+  - '#economics'
+  - '#design'
+  - '#semiconductors'
 created: 2026-04-24
-strong_links: [["Analog Chip Market Overview", "Fabless vs IDM Comparison", "Foundry Business Model", "Advanced Node Technology Roadmap"], ["Power Management ICs", "Data Converter Market", "Semiconductor Industry Overview", "Texas Instruments Business Analysis"]]
+strong_links:
+  - ['Analog Chip Market Overview']
+  - ['Fabless vs IDM Comparison']
+  - ['Foundry Business Model']
+  - ['Advanced Node Technology Roadmap']
+  - ['Power Management ICs']
+  - ['Data Converter Market']
+  - ['Semiconductor Industry Overview']
+  - ['Texas Instruments Business Analysis']
 opposition_links: []
 ---
 

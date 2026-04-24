@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #enterprise-storage, #ssd, #storage, #data-center]
+tags:
+  - '#concept'
+  - '#enterprise-storage'
+  - '#ssd'
+  - '#storage'
+  - '#data-center'
 created: 2026-04-24
-strong_links: [["Solid State Drives", "NAND Flash Memory", "Data Center Storage Architecture", "Enterprise SSD Controllers"], ["Cloud Infrastructure Spending", "Memory for Data Centers", "High Bandwidth Memory HBM", "Storage Class Memory"]]
+strong_links:
+  - ['Solid State Drives']
+  - ['NAND Flash Memory']
+  - ['Data Center Storage Architecture']
+  - ['Enterprise SSD Controllers']
+  - ['Cloud Infrastructure Spending']
+  - ['Memory for Data Centers']
+  - ['High Bandwidth Memory HBM']
+  - ['Storage Class Memory']
 opposition_links: []
 ---
 

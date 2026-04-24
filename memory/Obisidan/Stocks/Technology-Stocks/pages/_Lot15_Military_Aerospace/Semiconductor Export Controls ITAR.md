@@ -7,9 +7,22 @@ controversy: medium
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #export-control, #itar, #defense, #regulation]
+tags:
+  - '#concept'
+  - '#export-control'
+  - '#itar'
+  - '#defense'
+  - '#regulation'
 created: 2026-04-24
-strong_links: [["Defense Semiconductor Requirements", "Trusted Foundry Program", "Defense Contractor Semiconductor Content", "Secure Processor Technologies"], ["DARPA Electronics Resurgence", "Radiation Hardened Chips Space", "Military Communication Systems", "Military Avionics Systems"]]
+strong_links:
+  - ['Defense Semiconductor Requirements']
+  - ['Trusted Foundry Program']
+  - ['Defense Contractor Semiconductor Content']
+  - ['Secure Processor Technologies']
+  - ['DARPA Electronics Resurgence']
+  - ['Radiation Hardened Chips Space']
+  - ['Military Communication Systems']
+  - ['Military Avionics Systems']
 opposition_links: []
 ---
 

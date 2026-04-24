@@ -7,9 +7,23 @@ controversy: medium
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #cpu, #intel, #amd, #arm, #processor]
+tags:
+  - '#sector'
+  - '#cpu'
+  - '#intel'
+  - '#amd'
+  - '#arm'
+  - '#processor'
 created: 2026-04-24
-strong_links: [["Intel Business Analysis", "AMD Business Analysis", "Arm-Based Server CPUs", "Fabless Semiconductor Model"], ["RISC-V Architecture", "Mobile Chipset Market", "PC Gaming Hardware Market", "Chiplet Based Design Ecosystem"]]
+strong_links:
+  - ['Intel Business Analysis']
+  - ['AMD Business Analysis']
+  - ['Arm-Based Server CPUs']
+  - ['Fabless Semiconductor Model']
+  - ['RISC-V Architecture']
+  - ['Mobile Chipset Market']
+  - ['PC Gaming Hardware Market']
+  - ['Chiplet Based Design Ecosystem']
 opposition_links: []
 ---
 

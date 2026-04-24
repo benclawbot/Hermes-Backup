@@ -7,9 +7,22 @@ controversy: medium
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #fabless, #networking, #custom-silicon, #infrastructure]
+tags:
+  - '#company'
+  - '#fabless'
+  - '#networking'
+  - '#custom-silicon'
+  - '#infrastructure'
 created: 2026-04-24
-strong_links: [["Custom Silicon ASIC Trend", "Network Interface Cards", "Cloud Data Center Infrastructure", "AI Accelerator Market"], ["Fabless Semiconductor Model", "Foundry Business Model", "TSMC Competitive Position", "Semiconductor Industry Overview"]]
+strong_links:
+  - ['Custom Silicon ASIC Trend']
+  - ['Network Interface Cards']
+  - ['Cloud Data Center Infrastructure']
+  - ['AI Accelerator Market']
+  - ['Fabless Semiconductor Model']
+  - ['Foundry Business Model']
+  - ['TSMC Competitive Position']
+  - ['Semiconductor Industry Overview']
 opposition_links: []
 ---
 

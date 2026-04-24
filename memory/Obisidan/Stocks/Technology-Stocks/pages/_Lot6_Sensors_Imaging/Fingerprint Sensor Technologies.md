@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #sensors, #biometrics, #security, #mobile]
+tags:
+  - '#concept'
+  - '#sensors'
+  - '#biometrics'
+  - '#security'
+  - '#mobile'
 created: 2026-04-24
-strong_links: [["CMOS Image Sensor Market", "Analog Chip Market Overview", "Power Management ICs", "Cellular Baseband Modems"], ["Foundry Business Model", "Advanced Packaging Technologies", "Machine Vision Industrial AI", "Fabless vs IDM Comparison"]]
+strong_links:
+  - ['CMOS Image Sensor Market']
+  - ['Analog Chip Market Overview']
+  - ['Power Management ICs']
+  - ['Cellular Baseband Modems']
+  - ['Foundry Business Model']
+  - ['Advanced Packaging Technologies']
+  - ['Machine Vision Industrial AI']
+  - ['Fabless vs IDM Comparison']
 opposition_links: []
 ---
 

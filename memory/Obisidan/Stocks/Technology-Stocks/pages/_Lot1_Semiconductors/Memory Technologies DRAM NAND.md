@@ -7,9 +7,19 @@ controversy: low
 importance: pillar
 source_knowledge: "Samsung, SK Hynix, Micron dominate DRAM and NAND. ~$100B memory market highly cyclical. HBM AI demand reshaping DRAM. NAND under pressure from SSD substitution. Commoditization vs differentiation debate ongoing."
 sources_count: 8
-tags: [#sector, #memory, #dram, #nand, #ai-infrastructure]
+tags:
+  - '#sector'
+  - '#memory'
+  - '#dram'
+  - '#nand'
+  - '#ai-infrastructure'
 created: 2026-04-24
-strong_links: [["Semiconductor Industry Overview", "Foundry Business Model"], ["HBM High Bandwidth Memory", "Advanced Packaging Technologies", "DRAM Market Analysis Samsung SKHynix Micron"]]
+strong_links:
+  - ['Semiconductor Industry Overview']
+  - ['Foundry Business Model']
+  - ['HBM High Bandwidth Memory']
+  - ['Advanced Packaging Technologies']
+  - ['DRAM Market Analysis Samsung SKHynix Micron']
 opposition_links: []
 ---
 

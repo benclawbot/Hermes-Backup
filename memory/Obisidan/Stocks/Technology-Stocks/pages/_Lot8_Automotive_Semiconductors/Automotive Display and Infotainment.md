@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #automotive, #displays, #infotainment, #semiconductors]
+tags:
+  - '#sector'
+  - '#automotive'
+  - '#displays'
+  - '#infotainment'
+  - '#semiconductors'
 created: 2026-04-24
-strong_links: [["CMOS Image Sensor Market", "Power Management ICs", "Automotive Semiconductor Market Overview", "Display Driver IC Market"], ["Foundry Business Model", "Advanced Packaging Technologies", "Edge Computing Infrastructure", "Data Center Power Management"]]
+strong_links:
+  - ['CMOS Image Sensor Market']
+  - ['Power Management ICs']
+  - ['Automotive Semiconductor Market Overview']
+  - ['Display Driver IC Market']
+  - ['Foundry Business Model']
+  - ['Advanced Packaging Technologies']
+  - ['Edge Computing Infrastructure']
+  - ['Data Center Power Management']
 opposition_links: []
 ---
 

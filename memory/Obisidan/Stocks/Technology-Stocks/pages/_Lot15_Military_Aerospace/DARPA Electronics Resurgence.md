@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #darpa, #research, #electronics, #funding]
+tags:
+  - '#concept'
+  - '#darpa'
+  - '#research'
+  - '#electronics'
+  - '#funding'
 created: 2026-04-24
-strong_links: [["Defense Semiconductor Requirements", "Trusted Foundry Program", "Wide Bandgap Material Economics", "Radiation Hardened Chips Space"], ["Defense Contractor Semiconductor Content", "Semiconductor Export Controls ITAR", "Military Avionics Systems", "Military Communication Systems"]]
+strong_links:
+  - ['Defense Semiconductor Requirements']
+  - ['Trusted Foundry Program']
+  - ['Wide Bandgap Material Economics']
+  - ['Radiation Hardened Chips Space']
+  - ['Defense Contractor Semiconductor Content']
+  - ['Semiconductor Export Controls ITAR']
+  - ['Military Avionics Systems']
+  - ['Military Communication Systems']
 opposition_links: []
 ---
 

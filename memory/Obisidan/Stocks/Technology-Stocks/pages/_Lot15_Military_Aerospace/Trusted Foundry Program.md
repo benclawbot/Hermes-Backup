@@ -7,9 +7,22 @@ controversy: medium
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #trusted-foundry, #defense, #supply-chain, #security]
+tags:
+  - '#concept'
+  - '#trusted-foundry'
+  - '#defense'
+  - '#supply-chain'
+  - '#security'
 created: 2026-04-24
-strong_links: [["Defense Semiconductor Requirements", "Secure Processor Technologies", "Defense Contractor Semiconductor Content", "Semiconductor Export Controls ITAR"], ["Radiation Hardened Chips Space", "DARPA Electronics Resurgence", "Military Avionics Systems", "Military Communication Systems"]]
+strong_links:
+  - ['Defense Semiconductor Requirements']
+  - ['Secure Processor Technologies']
+  - ['Defense Contractor Semiconductor Content']
+  - ['Semiconductor Export Controls ITAR']
+  - ['Radiation Hardened Chips Space']
+  - ['DARPA Electronics Resurgence']
+  - ['Military Avionics Systems']
+  - ['Military Communication Systems']
 opposition_links: []
 ---
 

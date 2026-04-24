@@ -7,9 +7,22 @@ controversy: high
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #foundry, #intel, #idm, #geopolitics]
+tags:
+  - '#concept'
+  - '#foundry'
+  - '#intel'
+  - '#idm'
+  - '#geopolitics'
 created: 2026-04-24
-strong_links: [["Foundry Business Model", "Advanced Node Technology Roadmap", "TSMC Competitive Position", "Samsung Foundry Strategy"], ["Fabless vs IDM Comparison", "Advanced Packaging Technologies", "AI Accelerator Market Overview", "Cloud Infrastructure Market"]]
+strong_links:
+  - ['Foundry Business Model']
+  - ['Advanced Node Technology Roadmap']
+  - ['TSMC Competitive Position']
+  - ['Samsung Foundry Strategy']
+  - ['Fabless vs IDM Comparison']
+  - ['Advanced Packaging Technologies']
+  - ['AI Accelerator Market Overview']
+  - ['Cloud Infrastructure Market']
 opposition_links: []
 ---
 

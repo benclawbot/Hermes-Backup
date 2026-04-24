@@ -7,9 +7,22 @@ controversy: medium
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #fabless, #mobile, #snapdragon, #wireless]
+tags:
+  - '#company'
+  - '#fabless'
+  - '#mobile'
+  - '#snapdragon'
+  - '#wireless'
 created: 2026-04-24
-strong_links: [["Mobile SoC Architecture", "5G Technology Infrastructure", "Wireless Infrastructure Cycle", "Snapdragon Platform Strategy"], ["Fabless Semiconductor Model", "ARM IP Licensing Business", "Apple Silicon Competition", "Foundry Business Model"]]
+strong_links:
+  - ['Mobile SoC Architecture']
+  - ['5G Technology Infrastructure']
+  - ['Wireless Infrastructure Cycle']
+  - ['Snapdragon Platform Strategy']
+  - ['Fabless Semiconductor Model']
+  - ['ARM IP Licensing Business']
+  - ['Apple Silicon Competition']
+  - ['Foundry Business Model']
 opposition_links: [["MediaTek Business Analysis"]]
 ---
 

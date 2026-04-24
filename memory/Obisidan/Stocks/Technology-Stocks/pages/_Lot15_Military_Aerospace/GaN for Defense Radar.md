@@ -7,9 +7,22 @@ controversy: medium
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #gan, #radar, #defense, #wide-bandgap]
+tags:
+  - '#concept'
+  - '#gan'
+  - '#radar'
+  - '#defense'
+  - '#wide-bandgap'
 created: 2026-04-24
-strong_links: [["Wide Bandgap Material Economics", "Military Avionics Systems", "Defense Semiconductor Requirements", "Radiation Hardened Chips Space"], ["Military Communication Systems", "Trusted Foundry Program", "DARPA Electronics Resurgence", "Defense Contractor Semiconductor Content"]]
+strong_links:
+  - ['Wide Bandgap Material Economics']
+  - ['Military Avionics Systems']
+  - ['Defense Semiconductor Requirements']
+  - ['Radiation Hardened Chips Space']
+  - ['Military Communication Systems']
+  - ['Trusted Foundry Program']
+  - ['DARPA Electronics Resurgence']
+  - ['Defense Contractor Semiconductor Content']
 opposition_links: []
 ---
 

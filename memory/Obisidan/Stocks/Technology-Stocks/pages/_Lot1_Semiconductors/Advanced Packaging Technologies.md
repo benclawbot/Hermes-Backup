@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #semiconductors, #technology, #packaging, #chiplets]
+tags:
+  - '#sector'
+  - '#semiconductors'
+  - '#technology'
+  - '#packaging'
+  - '#chiplets'
 created: 2026-04-24
-strong_links: [["Semiconductor Industry Overview", "Foundry Business Model", "EUV Lithography Systems", "Fabless vs IDM Comparison"], ["AI Accelerator Market Overview", "HBM High Bandwidth Memory", "CoWoS Advanced Packaging", "Chiplet-based AI Accelerators"]]
+strong_links:
+  - ['Semiconductor Industry Overview']
+  - ['Foundry Business Model']
+  - ['EUV Lithography Systems']
+  - ['Fabless vs IDM Comparison']
+  - ['AI Accelerator Market Overview']
+  - ['HBM High Bandwidth Memory']
+  - ['CoWoS Advanced Packaging']
+  - ['Chiplet-based AI Accelerators']
 opposition_links: [["Commoditization Risk Semiconductors"]]
 ---
 

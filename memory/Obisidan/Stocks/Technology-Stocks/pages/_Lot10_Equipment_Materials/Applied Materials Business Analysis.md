@@ -7,9 +7,22 @@ controversy: medium
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #equipment, #applied-materials, #semiconductors, #capex]
+tags:
+  - '#company'
+  - '#equipment'
+  - '#applied-materials'
+  - '#semiconductors'
+  - '#capex'
 created: 2026-04-24
-strong_links: [["Semiconductor Equipment Makers", "Foundry Business Model", "300mm Wafer Fab Economics", "Advanced Node Technology Roadmap"], ["EUV Lithography Market Analysis", "Advanced Packaging Technologies", "TSMC Competitive Position", "Semiconductor Materials Market"]]
+strong_links:
+  - ['Semiconductor Equipment Makers']
+  - ['Foundry Business Model']
+  - ['300mm Wafer Fab Economics']
+  - ['Advanced Node Technology Roadmap']
+  - ['EUV Lithography Market Analysis']
+  - ['Advanced Packaging Technologies']
+  - ['TSMC Competitive Position']
+  - ['Semiconductor Materials Market']
 opposition_links: []
 ---
 

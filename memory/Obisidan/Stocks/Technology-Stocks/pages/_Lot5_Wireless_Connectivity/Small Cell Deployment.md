@@ -7,9 +7,20 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 4
-tags: [#concept, #wireless, #infrastructure]
+tags:
+  - '#concept'
+  - '#wireless'
+  - '#infrastructure'
 created: 2026-04-24
-strong_links: [["5G Infrastructure Market", "Wireless Infrastructure Investment Cycle", "RF Front End Modules", "Edge Computing Infrastructure"], ["Cloud Infrastructure Market", "mmWave Radar Technologies", "Compound Semiconductors", "Hyperscale Data Center Operators"]]
+strong_links:
+  - ['5G Infrastructure Market']
+  - ['Wireless Infrastructure Investment Cycle']
+  - ['RF Front End Modules']
+  - ['Edge Computing Infrastructure']
+  - ['Cloud Infrastructure Market']
+  - ['mmWave Radar Technologies']
+  - ['Compound Semiconductors']
+  - ['Hyperscale Data Center Operators']
 opposition_links: []
 ---
 

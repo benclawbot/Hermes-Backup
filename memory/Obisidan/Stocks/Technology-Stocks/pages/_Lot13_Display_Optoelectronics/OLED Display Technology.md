@@ -7,9 +7,22 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #oled, #display, #technology, #manufacturing]
+tags:
+  - '#concept'
+  - '#oled'
+  - '#display'
+  - '#technology'
+  - '#manufacturing'
 created: 2026-04-24
-strong_links: [["Display Panel Industry Overview", "Samsung Display Business Analysis", "QDOT Display Technology", "MicroLED Technology"], ["BOE Display Industry Position", "LG Display Business Analysis", "Semiconductor Materials Market", "Consumer Electronics Demand"]]
+strong_links:
+  - ['Display Panel Industry Overview']
+  - ['Samsung Display Business Analysis']
+  - ['QDOT Display Technology']
+  - ['MicroLED Technology']
+  - ['BOE Display Industry Position']
+  - ['LG Display Business Analysis']
+  - ['Semiconductor Materials Market']
+  - ['Consumer Electronics Demand']
 opposition_links: []
 ---
 

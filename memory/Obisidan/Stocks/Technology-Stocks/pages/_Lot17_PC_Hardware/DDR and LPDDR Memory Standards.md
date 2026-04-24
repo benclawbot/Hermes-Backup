@@ -7,9 +7,23 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #memory, #ddr, #lpddr, #dram, #standards]
+tags:
+  - '#concept'
+  - '#memory'
+  - '#ddr'
+  - '#lpddr'
+  - '#dram'
+  - '#standards'
 created: 2026-04-24
-strong_links: [["DRAM Memory Market", "High Bandwidth Memory HBM", "Samsung Memory Business", "Memory for Data Centers"], ["Solid State Drives", "Mobile Chipset Market", "GPU Computing Demand", "PC Gaming Hardware Market"]]
+strong_links:
+  - ['DRAM Memory Market']
+  - ['High Bandwidth Memory HBM']
+  - ['Samsung Memory Business']
+  - ['Memory for Data Centers']
+  - ['Solid State Drives']
+  - ['Mobile Chipset Market']
+  - ['GPU Computing Demand']
+  - ['PC Gaming Hardware Market']
 opposition_links: []
 ---
 

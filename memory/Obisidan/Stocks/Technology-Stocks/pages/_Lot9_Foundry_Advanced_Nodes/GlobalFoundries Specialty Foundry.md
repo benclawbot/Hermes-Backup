@@ -7,9 +7,22 @@ controversy: medium
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #foundry, #globalfoundries, #specialty-process, #mature-node]
+tags:
+  - '#company'
+  - '#foundry'
+  - '#globalfoundries'
+  - '#specialty-process'
+  - '#mature-node'
 created: 2026-04-24
-strong_links: [["Foundry Business Model", "SOI Technology and FDX Platform", "Samsung Foundry Strategy", "Intel Foundry Services Ambitions"], ["Fabless vs IDM Comparison", "Automotive Semiconductor Market Overview", "RF Front End Modules", "Semiconductor Process Technology Comparisons"]]
+strong_links:
+  - ['Foundry Business Model']
+  - ['SOI Technology and FDX Platform']
+  - ['Samsung Foundry Strategy']
+  - ['Intel Foundry Services Ambitions']
+  - ['Fabless vs IDM Comparison']
+  - ['Automotive Semiconductor Market Overview']
+  - ['RF Front End Modules']
+  - ['Semiconductor Process Technology Comparisons']
 opposition_links: []
 ---
 

@@ -7,9 +7,20 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #semiconductors, #wireless]
+tags:
+  - '#concept'
+  - '#semiconductors'
+  - '#wireless'
 created: 2026-04-24
-strong_links: [["RF Front End Modules", "Cellular Baseband Modems", "Cloud Infrastructure Market", "Edge Computing Infrastructure"], ["mmWave Radar Technologies", "Compound Semiconductors", "Subsea Cable Networks", "Data Center Networking Chips"]]
+strong_links:
+  - ['RF Front End Modules']
+  - ['Cellular Baseband Modems']
+  - ['Cloud Infrastructure Market']
+  - ['Edge Computing Infrastructure']
+  - ['mmWave Radar Technologies']
+  - ['Compound Semiconductors']
+  - ['Subsea Cable Networks']
+  - ['Data Center Networking Chips']
 opposition_links: []
 ---
 

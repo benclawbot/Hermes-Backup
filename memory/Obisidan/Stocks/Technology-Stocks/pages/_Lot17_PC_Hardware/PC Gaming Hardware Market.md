@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #gaming, #pc, #gpu, #discrete-graphics]
+tags:
+  - '#sector'
+  - '#gaming'
+  - '#pc'
+  - '#gpu'
+  - '#discrete-graphics'
 created: 2026-04-24
-strong_links: [["GPU Computing Demand", "NVIDIA Business Analysis", "AMD Business Analysis", "Display Panel Industry Overview"], ["CPU Market Intel AMD ARM", "DDR and LPDDR Memory Standards", "PC Cooling Technologies", "High Bandwidth Memory HBM"]]
+strong_links:
+  - ['GPU Computing Demand']
+  - ['NVIDIA Business Analysis']
+  - ['AMD Business Analysis']
+  - ['Display Panel Industry Overview']
+  - ['CPU Market Intel AMD ARM']
+  - ['DDR and LPDDR Memory Standards']
+  - ['PC Cooling Technologies']
+  - ['High Bandwidth Memory HBM']
 opposition_links: []
 ---
 

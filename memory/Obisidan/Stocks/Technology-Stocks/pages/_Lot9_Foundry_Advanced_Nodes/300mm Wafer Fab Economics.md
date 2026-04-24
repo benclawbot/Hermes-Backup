@@ -7,9 +7,22 @@ controversy: medium
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #foundry, #manufacturing, #300mm, #capex]
+tags:
+  - '#concept'
+  - '#foundry'
+  - '#manufacturing'
+  - '#300mm'
+  - '#capex'
 created: 2026-04-24
-strong_links: [["Foundry Business Model", "TSMC Competitive Position", "Intel Foundry Services Ambitions", "Semiconductor Equipment Market Overview"], ["Advanced Node Technology Roadmap", "EUV Lithography Market Analysis", "GlobalFoundries Specialty Foundry", "Fabless vs IDM Comparison"]]
+strong_links:
+  - ['Foundry Business Model']
+  - ['TSMC Competitive Position']
+  - ['Intel Foundry Services Ambitions']
+  - ['Semiconductor Equipment Market Overview']
+  - ['Advanced Node Technology Roadmap']
+  - ['EUV Lithography Market Analysis']
+  - ['GlobalFoundries Specialty Foundry']
+  - ['Fabless vs IDM Comparison']
 opposition_links: []
 ---
 

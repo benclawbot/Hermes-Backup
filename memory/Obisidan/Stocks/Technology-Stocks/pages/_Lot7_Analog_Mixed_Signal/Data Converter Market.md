@@ -7,9 +7,22 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #topic, #data-converter]
+tags:
+  - '#concept'
+  - '#topic'
+  - '#data-converter'
 created: 2026-04-24
-strong_links: [["Analog Chip Market Overview", "Signal Amplifier Technologies", "High Speed Interface ICs", "Semiconductor Industry Overview", "5G Infrastructure Market"], ["Enterprise SSD Technologies", "Cellular Baseband Modems", "Medical Imaging Semiconductor Technologies", "RF Front End Modules", "Industrial Sensor Interfaces"]]
+strong_links:
+  - ['Analog Chip Market Overview']
+  - ['Signal Amplifier Technologies']
+  - ['High Speed Interface ICs']
+  - ['Semiconductor Industry Overview']
+  - ['5G Infrastructure Market']
+  - ['Enterprise SSD Technologies']
+  - ['Cellular Baseband Modems']
+  - ['Medical Imaging Semiconductor Technologies']
+  - ['RF Front End Modules']
+  - ['Industrial Sensor Interfaces']
 opposition_links: []
 ---
 

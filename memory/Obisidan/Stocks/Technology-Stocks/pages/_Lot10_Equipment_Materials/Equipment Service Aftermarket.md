@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #equipment, #services, #aftermarket, #semiconductors]
+tags:
+  - '#concept'
+  - '#equipment'
+  - '#services'
+  - '#aftermarket'
+  - '#semiconductors'
 created: 2026-04-24
-strong_links: [["Applied Materials Business Analysis", "Lam Research Business Analysis", "ASML Business Analysis", "KLA Tencor Business Analysis"], ["Semiconductor Equipment Makers", "Foundry Business Model", "300mm Wafer Fab Economics", "Advanced Node Technology Roadmap"]]
+strong_links:
+  - ['Applied Materials Business Analysis']
+  - ['Lam Research Business Analysis']
+  - ['ASML Business Analysis']
+  - ['KLA Tencor Business Analysis']
+  - ['Semiconductor Equipment Makers']
+  - ['Foundry Business Model']
+  - ['300mm Wafer Fab Economics']
+  - ['Advanced Node Technology Roadmap']
 opposition_links: []
 ---
 

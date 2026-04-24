@@ -7,9 +7,21 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #sensors, #imaging, #semiconductors]
+tags:
+  - '#sector'
+  - '#sensors'
+  - '#imaging'
+  - '#semiconductors'
 created: 2026-04-24
-strong_links: [["Semiconductor Industry Overview", "Advanced Packaging Technologies", "Foundry Business Model", "Automotive LIDAR Systems"], ["Machine Vision Industrial AI", "Time of Flight 3D Sensing", "Thermal Imaging Sensors", "Medical Imaging Semiconductors"]]
+strong_links:
+  - ['Semiconductor Industry Overview']
+  - ['Advanced Packaging Technologies']
+  - ['Foundry Business Model']
+  - ['Automotive LIDAR Systems']
+  - ['Machine Vision Industrial AI']
+  - ['Time of Flight 3D Sensing']
+  - ['Thermal Imaging Sensors']
+  - ['Medical Imaging Semiconductors']
 opposition_links: []
 ---
 

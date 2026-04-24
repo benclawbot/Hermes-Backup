@@ -7,9 +7,22 @@ controversy: medium
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #equipment, #lam-research, #etch, #deposition]
+tags:
+  - '#company'
+  - '#equipment'
+  - '#lam-research'
+  - '#etch'
+  - '#deposition'
 created: 2026-04-24
-strong_links: [["Semiconductor Equipment Makers", "Advanced Node Technology Roadmap", "NAND Flash Manufacturing Process", "Foundry Business Model"], ["Applied Materials Business Analysis", "TSMC Competitive Position", "HBM High Bandwidth Memory", "300mm Wafer Fab Economics"]]
+strong_links:
+  - ['Semiconductor Equipment Makers']
+  - ['Advanced Node Technology Roadmap']
+  - ['NAND Flash Manufacturing Process']
+  - ['Foundry Business Model']
+  - ['Applied Materials Business Analysis']
+  - ['TSMC Competitive Position']
+  - ['HBM High Bandwidth Memory']
+  - ['300mm Wafer Fab Economics']
 opposition_links: []
 ---
 

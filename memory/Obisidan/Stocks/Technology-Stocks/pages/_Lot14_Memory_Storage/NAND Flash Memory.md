@@ -7,9 +7,22 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #nand-flash, #memory, #storage, #semiconductors]
+tags:
+  - '#concept'
+  - '#nand-flash'
+  - '#memory'
+  - '#storage'
+  - '#semiconductors'
 created: 2026-04-24
-strong_links: [["DRAM Memory Market", "Solid State Drives", "Enterprise Storage Semiconductors", "NAND Flash Technology"], ["Hynix Memory Business", "Samsung Memory Business", "Kioxia IPO", "Cloud Infrastructure Spending"]]
+strong_links:
+  - ['DRAM Memory Market']
+  - ['Solid State Drives']
+  - ['Enterprise Storage Semiconductors']
+  - ['NAND Flash Technology']
+  - ['Hynix Memory Business']
+  - ['Samsung Memory Business']
+  - ['Kioxia IPO']
+  - ['Cloud Infrastructure Spending']
 opposition_links: []
 ---
 

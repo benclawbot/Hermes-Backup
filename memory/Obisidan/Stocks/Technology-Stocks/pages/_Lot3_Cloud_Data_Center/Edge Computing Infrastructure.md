@@ -6,40 +6,70 @@ status: verified
 controversy: low
 importance: standard
 source_knowledge: web-checked
-sources_count: 4
-tags: [#concept, #cloud, #edge, #infrastructure]
+sources_count: 5
+tags:
+  - '#concept'
+  - '#edge'
+  - '#IoT'
+  - '#telecom'
+  - '#5G'
 created: 2026-04-24
-strong_links: [["Cloud Infrastructure Market", "Hyperscale Data Center Operators", "Wireless Infrastructure Investment Cycle", "Small Cell Deployment"], ["5G Infrastructure Market", "Data Center Cooling Technologies", "RF Front End Modules", "Memory Controller Chips"]]
+strong_links:
+  - ['Cloud Infrastructure Market']
+  - ['5G Mobile Infrastructure']
+  - ['Small Cell Deployment']
+  - ['AI Accelerator Market Overview']
+  - ['Cellular Baseband Modems']
+  - ['WiFi Chip Market']
+  - ['Data Center Networking Chips']
+  - ['Subsea Cable Networks']
 opposition_links: []
 ---
 
 # Edge Computing Infrastructure
 
 > [!info] Summary
-> Edge computing pushes computation from centralized cloud data centers to the network edge — telecom central offices, on-premise servers, and IoT gateways. It addresses latency (5-20ms vs 80-120ms round-trip to public cloud), bandwidth costs, and data sovereignty requirements.
+> Edge computing moves compute and storage closer to data sources (factories, retail locations, cell towers) to reduce latency, save bandwidth, and enable real-time processing. The trend creates demand for ruggedized servers, industrial IoT, and network function virtualization at the edge. Key enabling technologies include 5G small cells, mobile edge computing (MEC), and purpose-built edge AI accelerators.
 
 ## Definition
 
-Edge computing is a distributed computing paradigm where data is processed at or near the source rather than being sent to a centralized cloud data center. Edge locations include: telecom central offices (MEC — Multi-access Edge Computing), on-premise servers, IoT gateways, CDN nodes, and cell towers. The edge node runs containerized workloads orchestrated from the central cloud, but handles latency-sensitive and bandwidth-intensive processing locally.
+Edge computing refers to distributed computing infrastructure that processes data near its source rather than sending all data to a central cloud. The edge can be:
+- Device edge: smartphones, cameras, sensors with local AI processing
+- On-premise edge: factory floor, retail store, hospital — small servers processing locally
+- Network edge: telecom central offices, base stations — telco infrastructure processing
+- Regional edge: smaller data centers serving metropolitan areas
+
+The key drivers are latency reduction (autonomous vehicles need <10ms response, impossible with cloud round-trip), bandwidth savings (a factory with 1,000 sensors cannot stream all data to cloud), and data sovereignty/compliance (medical data must stay on-premise).
 
 ## Context and origin
 
-The edge computing trend emerged from two forces: (1) 5G networks enabling ultra-low latency mobile applications (autonomous vehicles, AR/VR, industrial IoT) that can't tolerate cloud round-trip latency; (2) explosion of IoT devices generating data that would overwhelm backhaul links if all sent to cloud. The MEC standard (3GPP Release 14/15) formalized edge computing within telecom networks. Hyperscalers (AWS Outpost, Azure Stack, GCP Distributed Cloud) extended their cloud to edge locations. Industrial players (Siemens, PTC, Rockwell) built OT-edge platforms for factory automation.
+Edge computing emerged from industrial IoT (IIoT) in the 2010s, where factories needed real-time control systems that could operate without cloud connectivity. The term Multi-access Edge Computing (MEC) was standardized by ETSI in 2014 for telecom edge.
+
+The 5G era (2020+) accelerated edge investment: 5G's low latency (1-10ms) only makes sense if compute is at the edge, not hundreds of miles away. Telecom operators (Verizon, AT&T, Deutsche Telekom) invested in MEC infrastructure as part of 5G rollouts. AWS Wavelength, Google Distributed Cloud, and Azure Edge Zones bring hyperscaler cloud services to telco edge locations.
 
 ## Mechanisms / characteristics / details
 
-Edge architecture: workloads are split between central cloud (model training, analytics, storage) and edge nodes (inference, data aggregation, real-time control). Kubernetes orchestration extends to edge (K3s, MicroK8s, kubevirt). Hardware: ruggedized servers (Dell PowerEdge XR series, HPE Edgeline), telecom server platforms (Intel Xeon D, ARM Neoverse), custom AI accelerators for edge inference. Key challenge: edge nodes are resource-constrained vs cloud; AI inference at edge requires quantized models. Key protocols: MQTT (IoT messaging), gRPC (service communication), WireGuard (VPN to cloud).
+Edge infrastructure stack: ruggedized servers (industrial-grade, wide temperature range, vibration resistant), edge AI accelerators (NVIDIA Jetson, Intel Neural Compute Stick, Qualcomm AI Hub chips), network equipment (5G small cells, WiFi 6/7 access points), and edge orchestration software (Kubernetes at edge, kubevirt for VM workloads).
+
+The enabling technologies are [[Small Cell Deployment]] (5G small cells as edge compute nodes), [[Cellular Baseband Modems]] (processing at the network edge), and [[WiFi Chip Market]] (for enterprise WiFi edge). [[AI Accelerator Market Overview]] is relevant for edge AI inference.
+
+Bandwidth and latency requirements: a modern factory generates 1-10TB/day of sensor data. Transmitting all of this to cloud at 10 Gbps would require 1,000 seconds — impractical. Edge servers filter and process data, transmitting only relevant events.
 
 ## Nuances critiques limits
 
-Edge computing is often oversold. Many use cases that seemed edge-only are actually solved by improving cloud latency (CDN for static content, geographic region expansion for API latency). The real edge opportunities: factory floor (data sovereignty + real-time control), autonomous vehicles (no connectivity-dependent control systems), military/government (air-gapped environments). ROI challenge: edge nodes require hardware purchase and maintenance vs cloud OpEx; many enterprises prefer cloud for manageability.
+Edge computing's challenge is management complexity: thousands of edge locations cannot be managed like a single cloud region. Self-healing software, remote management, and security are critical. The trade-off between edge autonomy and centralized control is difficult.
+
+Standardization remains incomplete: different industries use different edge platforms, making deployment complex. Kubernetes at the edge (K3s, MicroK8s) is emerging as the management layer, but operational maturity varies.
+
+The investment thesis: edge computing drives demand for ruggedized servers (Dell, HPE, Lenovo), edge AI accelerators, and 5G infrastructure.
 
 ## Links and implications
 
-[[Edge Computing Infrastructure]] extends [[Cloud Infrastructure Market]] to distributed locations. It depends on [[5G Infrastructure Market]] and [[Wireless Infrastructure Investment Cycle]] for connectivity. [[Small Cell Deployment]] provides the radio access layer for mobile edge. [[RF Front End Modules]] and [[Memory Controller Chips]] are the semiconductor content in edge hardware. [[Data Center Cooling Technologies]] is less relevant at edge but micro-modular data centers address similar density challenges.
+[[Edge Computing Infrastructure]] is enabled by [[5G Mobile Infrastructure]] and [[Small Cell Deployment]]. [[Cloud Infrastructure Market]] provides the central cloud that edge complements. [[WiFi Chip Market]] covers the wireless edge connectivity layer. [[Subsea Cable Networks]] is the contrasting global connectivity backbone.
 
 ## Sources
-[^1]: IDC, "Worldwide Edge Spending Guide," 2024.
-[^2]: ETSI MEC specifications.
-[^3]: AWS Outpost technical documentation.
-[^4]: 3GPP Release 15/16 edge computing standards.
+[^1]: ETSI Multi-access Edge Computing standards documentation.
+[^2]: IDC edge computing market analysis, 2024.
+[^3]: AWS Wavelength and Azure Edge Zones technical documentation.
+[^4]: 5G-ACIA (5G Alliance for Connected Industries and Automation) whitepapers.
+[^5]: Industrial IoT edge deployment case studies.

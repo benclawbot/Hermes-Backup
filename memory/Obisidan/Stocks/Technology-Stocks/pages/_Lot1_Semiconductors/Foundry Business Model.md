@@ -7,9 +7,23 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 3
-tags: [#foundry, #manufacturing, #TSMC, #fabless, #semiconductor]
+tags:
+  - '#foundry'
+  - '#manufacturing'
+  - '#TSMC'
+  - '#fabless'
+  - '#semiconductor'
 created: 2026-04-24
-strong_links: [["Semiconductor Industry Overview", "Fabless vs IDM Comparison", "EUV Lithography Systems", "Semiconductor Equipment Makers"], ["AI Accelerator Market Overview", "Cloud Infrastructure Market", "HBM High Bandwidth Memory", "Advanced Packaging Technologies", "TSMC Business Analysis"]]
+strong_links:
+  - ['Semiconductor Industry Overview']
+  - ['Fabless vs IDM Comparison']
+  - ['EUV Lithography Systems']
+  - ['Semiconductor Equipment Makers']
+  - ['AI Accelerator Market Overview']
+  - ['Cloud Infrastructure Market']
+  - ['HBM High Bandwidth Memory']
+  - ['Advanced Packaging Technologies']
+  - ['TSMC Business Analysis']
 opposition_links: [["Commoditization Risk Semiconductors"]]
 ---
 

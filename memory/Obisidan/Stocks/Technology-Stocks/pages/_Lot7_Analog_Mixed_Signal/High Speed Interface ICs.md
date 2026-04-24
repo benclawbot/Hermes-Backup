@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #analog, #interface, #serdes, #data-center]
+tags:
+  - '#concept'
+  - '#analog'
+  - '#interface'
+  - '#serdes'
+  - '#data-center'
 created: 2026-04-24
-strong_links: [["Analog Chip Market Overview", "Data Converter Market", "Semiconductor Equipment Market Overview", "Advanced Packaging Technologies"], ["Foundry Business Model", "Cloud Infrastructure Market", "AI Accelerator Market Overview", "Fabless vs IDM Comparison"]]
+strong_links:
+  - ['Analog Chip Market Overview']
+  - ['Data Converter Market']
+  - ['Semiconductor Equipment Market Overview']
+  - ['Advanced Packaging Technologies']
+  - ['Foundry Business Model']
+  - ['Cloud Infrastructure Market']
+  - ['AI Accelerator Market Overview']
+  - ['Fabless vs IDM Comparison']
 opposition_links: []
 ---
 

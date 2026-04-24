@@ -7,9 +7,23 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #packaging, #advanced-packaging, #2.5d, #3d, #chiplets]
+tags:
+  - '#concept'
+  - '#packaging'
+  - '#advanced-packaging'
+  - '#2.5d'
+  - '#3d'
+  - '#chiplets'
 created: 2026-04-24
-strong_links: [["Chiplet Based Design Ecosystem", "2.5D Interposer Technologies", "3D IC Stacking TSV", "Fan Out Wafer Level Packaging"], ["System in Package SiP", "OSAT Provider Analysis ASE Amkor", "Semiconductor Assembly Test Services", "Test Equipment Market Teradyne"]]
+strong_links:
+  - ['Chiplet Based Design Ecosystem']
+  - ['2.5D Interposer Technologies']
+  - ['3D IC Stacking TSV']
+  - ['Fan Out Wafer Level Packaging']
+  - ['System in Package SiP']
+  - ['OSAT Provider Analysis ASE Amkor']
+  - ['Semiconductor Assembly Test Services']
+  - ['Test Equipment Market Teradyne']
 opposition_links: []
 ---
 

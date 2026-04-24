@@ -7,9 +7,20 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #semiconductors, #radar]
+tags:
+  - '#concept'
+  - '#semiconductors'
+  - '#radar'
 created: 2026-04-24
-strong_links: [["5G Infrastructure Market", "RF Front End Modules", "Compound Semiconductors", "Small Cell Deployment"], ["mmWave Radar Technologies", "Subsea Cable Networks", "Edge Computing Infrastructure", "Cloud Infrastructure Market"]]
+strong_links:
+  - ['5G Infrastructure Market']
+  - ['RF Front End Modules']
+  - ['Compound Semiconductors']
+  - ['Small Cell Deployment']
+  - ['mmWave Radar Technologies']
+  - ['Subsea Cable Networks']
+  - ['Edge Computing Infrastructure']
+  - ['Cloud Infrastructure Market']
 opposition_links: []
 ---
 

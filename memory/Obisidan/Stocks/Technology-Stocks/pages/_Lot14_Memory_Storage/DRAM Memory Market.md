@@ -7,9 +7,22 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #dram, #memory, #commodity, #semiconductors]
+tags:
+  - '#sector'
+  - '#dram'
+  - '#memory'
+  - '#commodity'
+  - '#semiconductors'
 created: 2026-04-24
-strong_links: [["NAND Flash Memory", "Hynix Memory Business", "Samsung Memory Business", "Micron Business Analysis"], ["Cloud Infrastructure Spending", "Consumer Electronics Demand", "Mobile Chipset Market", "AI Accelerator Chips"]]
+strong_links:
+  - ['NAND Flash Memory']
+  - ['Hynix Memory Business']
+  - ['Samsung Memory Business']
+  - ['Micron Business Analysis']
+  - ['Cloud Infrastructure Spending']
+  - ['Consumer Electronics Demand']
+  - ['Mobile Chipset Market']
+  - ['AI Accelerator Chips']
 opposition_links: []
 ---
 

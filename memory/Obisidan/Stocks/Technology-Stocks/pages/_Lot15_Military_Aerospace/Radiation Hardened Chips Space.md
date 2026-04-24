@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #rad-hard, #space, #radiation, #spacecraft]
+tags:
+  - '#concept'
+  - '#rad-hard'
+  - '#space'
+  - '#radiation'
+  - '#spacecraft'
 created: 2026-04-24
-strong_links: [["Defense Semiconductor Requirements", "Military Avionics Systems", "Trusted Foundry Program", "Military Communication Systems"], ["Wide Bandgap Material Economics", "DARPA Electronics Resurgence", "Semiconductor Export Controls ITAR", "GaN for Defense Radar"]]
+strong_links:
+  - ['Defense Semiconductor Requirements']
+  - ['Military Avionics Systems']
+  - ['Trusted Foundry Program']
+  - ['Military Communication Systems']
+  - ['Wide Bandgap Material Economics']
+  - ['DARPA Electronics Resurgence']
+  - ['Semiconductor Export Controls ITAR']
+  - ['GaN for Defense Radar']
 opposition_links: []
 ---
 

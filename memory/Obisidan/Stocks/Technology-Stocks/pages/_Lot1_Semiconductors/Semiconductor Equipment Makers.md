@@ -7,9 +7,23 @@ controversy: low
 importance: 85
 source_knowledge: "Applied Materials, Lam Research, KLA Corporation dominate沉积 and etching. ASML monopolizes EUV. Market ~$100B. Equipment makers ride Moore's Law and advanced packaging trends."
 sources_count: 8
-tags: [#sector, #equipment, #semiconductor, #capital-intensive, #moores-law]
+tags:
+  - '#sector'
+  - '#equipment'
+  - '#semiconductor'
+  - '#capital-intensive'
+  - '#moores-law'
 created: 2026-04-24
-strong_links: [["Semiconductor Industry Overview", "EUV Lithography Systems", "Foundry Business Model", "Fabless vs IDM Comparison"], ["AI Accelerator Market Overview", "Advanced Packaging Technologies", "HBM High Bandwidth Memory", "Cloud Infrastructure Market", "DRAM Market Analysis Samsung SKHynix Micron"]]
+strong_links:
+  - ['Semiconductor Industry Overview']
+  - ['EUV Lithography Systems']
+  - ['Foundry Business Model']
+  - ['Fabless vs IDM Comparison']
+  - ['AI Accelerator Market Overview']
+  - ['Advanced Packaging Technologies']
+  - ['HBM High Bandwidth Memory']
+  - ['Cloud Infrastructure Market']
+  - ['DRAM Market Analysis Samsung SKHynix Micron']
 opposition_links: [["China Export Controls Semiconductors"]]
 ---
 

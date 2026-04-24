@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #automotive, #camera, #adas, #sensors]
+tags:
+  - '#sector'
+  - '#automotive'
+  - '#camera'
+  - '#adas'
+  - '#sensors'
 created: 2026-04-24
-strong_links: [["CMOS Image Sensor Market", "Automotive Sensor Fusion", "ADAS Domain Controller Architecture", "Automotive Semiconductor Market Overview"], ["Automotive Grade Semiconductor Requirements", "Time of Flight 3D Sensing", "Power Management ICs", "Advanced Packaging Technologies"]]
+strong_links:
+  - ['CMOS Image Sensor Market']
+  - ['Automotive Sensor Fusion']
+  - ['ADAS Domain Controller Architecture']
+  - ['Automotive Semiconductor Market Overview']
+  - ['Automotive Grade Semiconductor Requirements']
+  - ['Time of Flight 3D Sensing']
+  - ['Power Management ICs']
+  - ['Advanced Packaging Technologies']
 opposition_links: []
 ---
 

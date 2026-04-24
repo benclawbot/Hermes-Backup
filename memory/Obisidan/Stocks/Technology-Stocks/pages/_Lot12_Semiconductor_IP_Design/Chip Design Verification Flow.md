@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #verification, #soc, #design, #quality]
+tags:
+  - '#concept'
+  - '#verification'
+  - '#soc'
+  - '#design'
+  - '#quality'
 created: 2026-04-24
-strong_links: [["Electronic Design Automation", "SoC Design Complexity Trends", "Synopsys Business Analysis", "Cadence Design Systems"], ["Semiconductor IP Licensing", "Advanced Node Technology Roadmap", "Foundry Business Model", "Fabless Semiconductor Model"]]
+strong_links:
+  - ['Electronic Design Automation']
+  - ['SoC Design Complexity Trends']
+  - ['Synopsys Business Analysis']
+  - ['Cadence Design Systems']
+  - ['Semiconductor IP Licensing']
+  - ['Advanced Node Technology Roadmap']
+  - ['Foundry Business Model']
+  - ['Fabless Semiconductor Model']
 opposition_links: []
 ---
 

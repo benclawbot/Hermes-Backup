@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #fabless, #mobile, #5g, #competitive]
+tags:
+  - '#company'
+  - '#fabless'
+  - '#mobile'
+  - '#5g'
+  - '#competitive'
 created: 2026-04-24
-strong_links: [["Qualcomm Business Analysis", "Mobile SoC Architecture", "5G Technology Infrastructure", "Fabless Semiconductor Model"], ["TSMC Competitive Position", "Foundry Business Model", "ARM IP Licensing Business", "Sub-Saharan Africa Mobile Growth"]]
+strong_links:
+  - ['Qualcomm Business Analysis']
+  - ['Mobile SoC Architecture']
+  - ['5G Technology Infrastructure']
+  - ['Fabless Semiconductor Model']
+  - ['TSMC Competitive Position']
+  - ['Foundry Business Model']
+  - ['ARM IP Licensing Business']
+  - ['Sub-Saharan Africa Mobile Growth']
 opposition_links: [["Qualcomm Business Analysis"]]
 ---
 

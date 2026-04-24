@@ -7,9 +7,20 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 4
-tags: [#concept, #semiconductors, #wireless]
+tags:
+  - '#concept'
+  - '#semiconductors'
+  - '#wireless'
 created: 2026-04-24
-strong_links: [["5G Infrastructure Market", "Cellular Baseband Modems", "WiFi Chip Market", "Small Cell Deployment"], ["Compound Semiconductors", "mmWave Radar Technologies", "Cloud Infrastructure Market", "Satellite Communications Chips"]]
+strong_links:
+  - ['5G Infrastructure Market']
+  - ['Cellular Baseband Modems']
+  - ['WiFi Chip Market']
+  - ['Small Cell Deployment']
+  - ['Compound Semiconductors']
+  - ['mmWave Radar Technologies']
+  - ['Cloud Infrastructure Market']
+  - ['Satellite Communications Chips']
 opposition_links: []
 ---
 

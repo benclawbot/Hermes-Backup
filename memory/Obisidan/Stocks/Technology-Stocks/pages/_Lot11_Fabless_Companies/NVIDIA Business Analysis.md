@@ -7,9 +7,22 @@ controversy: medium
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #fabless, #gpu, #ai, #datacenter]
+tags:
+  - '#company'
+  - '#fabless'
+  - '#gpu'
+  - '#ai'
+  - '#datacenter'
 created: 2026-04-24
-strong_links: [["AI Accelerator Market", "GPU Architecture Deep Dive", "Cloud Data Center Infrastructure", "HBM Memory Architecture"], ["Fabless Semiconductor Model", "Foundry Business Model", "TSMC Competitive Position", "CUDA Ecosystem moat"]]
+strong_links:
+  - ['AI Accelerator Market']
+  - ['GPU Architecture Deep Dive']
+  - ['Cloud Data Center Infrastructure']
+  - ['HBM Memory Architecture']
+  - ['Fabless Semiconductor Model']
+  - ['Foundry Business Model']
+  - ['TSMC Competitive Position']
+  - ['CUDA Ecosystem moat']
 opposition_links: []
 ---
 

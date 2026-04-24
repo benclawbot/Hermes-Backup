@@ -7,9 +7,22 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #display, #samsung, #oled, #microled]
+tags:
+  - '#company'
+  - '#display'
+  - '#samsung'
+  - '#oled'
+  - '#microled'
 created: 2026-04-24
-strong_links: [["OLED Display Technology", "QDOT Display Technology", "Display Panel Industry Overview", "MicroLED Technology"], ["BOE Display Industry Position", "LG Display Business Analysis", "Consumer Electronics Demand", "Apple MicroLED Strategy"]]
+strong_links:
+  - ['OLED Display Technology']
+  - ['QDOT Display Technology']
+  - ['Display Panel Industry Overview']
+  - ['MicroLED Technology']
+  - ['BOE Display Industry Position']
+  - ['LG Display Business Analysis']
+  - ['Consumer Electronics Demand']
+  - ['Apple MicroLED Strategy']
 opposition_links: []
 ---
 

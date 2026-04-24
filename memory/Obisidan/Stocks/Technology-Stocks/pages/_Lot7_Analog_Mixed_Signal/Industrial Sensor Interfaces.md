@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #industrial, #sensors, #analog-mixed-signal, #automation]
+tags:
+  - '#concept'
+  - '#industrial'
+  - '#sensors'
+  - '#analog-mixed-signal'
+  - '#automation'
 created: 2026-04-24
-strong_links: [["Analog Chip Market Overview", "Signal Amplifier Technologies", "Data Converter Market", "Machine Vision Industrial AI"], ["Edge Computing Infrastructure", "Power Management ICs", "Medical Imaging Semiconductors", "Automotive Analog Semiconductors"]]
+strong_links:
+  - ['Analog Chip Market Overview']
+  - ['Signal Amplifier Technologies']
+  - ['Data Converter Market']
+  - ['Machine Vision Industrial AI']
+  - ['Edge Computing Infrastructure']
+  - ['Power Management ICs']
+  - ['Medical Imaging Semiconductors']
+  - ['Automotive Analog Semiconductors']
 opposition_links: []
 ---
 

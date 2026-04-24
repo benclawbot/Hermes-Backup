@@ -7,9 +7,22 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #topic, #power-management]
+tags:
+  - '#concept'
+  - '#topic'
+  - '#power-management'
 created: 2026-04-24
-strong_links: [["Analog Chip Market Overview", "Data Center Power Management", "Data Center Cooling Technologies", "Cloud Infrastructure Market", "AI Accelerator Market Overview"], ["Smartphone Component Trends", "Battery Management Systems", "Voltage Regulator Architectures", "Gallium Nitride Power Devices", "Automotive Power Electronics"]]
+strong_links:
+  - ['Analog Chip Market Overview']
+  - ['Data Center Power Management']
+  - ['Data Center Cooling Technologies']
+  - ['Cloud Infrastructure Market']
+  - ['AI Accelerator Market Overview']
+  - ['Smartphone Component Trends']
+  - ['Battery Management Systems']
+  - ['Voltage Regulator Architectures']
+  - ['Gallium Nitride Power Devices']
+  - ['Automotive Power Electronics']
 opposition_links: []
 ---
 

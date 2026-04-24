@@ -7,34 +7,83 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #semiconductors, #manufacturing]
+tags:
+  - '#concept'
+  - '#semiconductors'
+  - '#NAND'
+  - '#manufacturing'
+  - '#3D-NAND'
 created: 2026-04-24
-strong_links: [["NAND Flash Market Analysis"], ["Semiconductor Equipment Makers"], ["Memory Technologies DRAM NAND"], ["Advanced Packaging Technologies"], ["300mm Wafer Fab Economics"]]
+strong_links:
+  - ['NAND Flash Market Analysis']
+  - ['Enterprise SSD Technologies']
+  - ['Memory Controller Chips']
+  - ['Solid State Drives']
+  - ['Foundry Business Model']
+  - ['Semiconductor Process Technology Comparisons']
+  - ['Data Center Memory Hierarchy']
+  - ['Cloud Storage Technologies']
+opposition_links: []
 ---
 
 # NAND Flash Manufacturing Process
 
 > [!info] Summary
-> NAND flash manufacturing relies on 3D stacking of memory cells rather than lithography scaling, with modern 3D NAND exceeding 200 layers through alternating deposition of conductor/insulator materials and high-aspect-ratio etching at 300mm wafer scale.
+> NAND flash is manufactured using 3D stacking processes where memory cells are deposited in vertical layers on silicon wafers. The key steps include deposition of alternating conductor/insulator layers (ONO — oxide-nitride-oxide), channel hole etching through all layers, polysilicon channel formation, and string selection device integration. Current 3D NAND has 128-256 active wordline layers, with 500+ layer roadmaps. Leading manufacturers (Samsung, SK Hynix/Solidigm, WDC/Kioxia, Micron) use different 3D architectures.
 
 ## Definition
-NAND flash memory is manufactured by stacking memory cells vertically in 3D structures, rather than scaling planar (2D) lithography. Modern [[NAND Flash Market Analysis|3D NAND]] products contain over 200 stacked layers, with each layer comprising alternating films of charge-trap material (silicon nitride, SiN) and tunnel oxide (silicon dioxide, SiO2). The process operates at 300mm wafer scale in specialized memory fabs, requiring distinct equipment and process flows from CMOS logic manufacturing.
+
+NAND flash memory stores data as trapped electrons in floating gate or charge trap cells. The manufacturing process differs fundamentally from planar CMOS logic: rather than scaling transistors horizontally, 3D NAND builds memory cells vertically by depositing alternating layers of conductor (polycrystalline silicon wordlines) and insulator (ONO — oxide-nitride-oxide), then etching vertical channel holes and filling them with semiconductor material.
+
+The key process steps:
+1. Well formation and peripheral transistors on the silicon wafer
+2.交替沉积导体和绝缘体层 (alternating deposition of conductor and insulator layers, 64-128 pairs for 128-256 wordline layers)
+3. Channel hole etching (vertical holes ~100nm diameter through all layers simultaneously)
+4. Channel poly-Si deposition and crystallization
+5. Source-side Select Gate (SSL) and Drain-side Select Gate (DSL) formation
+6. Contact and metallization for wordline contacts
+7. Back-end-of-line (BEOL) processing and wafer-level test
 
 ## Context and origin
-The transition from planar NAND to 3D NAND began around 2013-2015 as traditional lithography scaling hit physical and economic limits. Rather than shrinking cells below 15nm, manufacturers stacked cells vertically. The core process sequence involves: depositing approximately 100 alternating SiN/SiO2 layers on a silicon substrate; etching hundreds of microscopic holes (channels) through all layers simultaneously; filling holes with polysilicon to create vertical memory cell channels; and etching slits to replace the SiN charge-trap layer with金属 wordlines. This "stack-and-etch" approach is fundamentally different from CMOS logic manufacturing, which is why [[Semiconductor Equipment Makers|equipment suppliers]] specializing in deposition and etch differ between memory and logic fabs.
+
+The NAND flash industry transitioned from 2D (planar) NAND to 3D NAND around 2014-2015 as planar scaling hit physical limits. At 15-10nm half-pitch, adjacent memory cells' charge would leak into each other, making further scaling unreliable. The solution was building upward rather than shrinking horizontally.
+
+Samsung pioneered 3D NAND with its V-NAND (2013, 24 layers), followed by SK Hynix (2015, 36 layers via its acquisition of LG's memory division), WDC/Kioxia (BiCS, 2015, 48 layers), and Micron (2016, 32 layers). The current leading products have 128-256 layers.
 
 ## Mechanisms / characteristics / details
-Manufacturing challenges escalate as layer counts increase toward 300-500 layers planned for future generations. Etch aspect ratios now approach 100:1, meaning holes must be etched 100 times deeper than their width with angstrom-level uniformity across the wafer. Deposition quality is critical: [[Advanced Packaging Technologies|atomic layer deposition (ALD)]] of the films determines cell retention and endurance characteristics. The "string fail" problem dominates yield dynamics—if any single layer in a vertical NAND string contains a defect, the entire string fails, making overall yield substantially more challenging than in planar NAND where individual cells can be isolated. Equipment suppliers supporting this process include Applied Materials and Lam Research for etch, Tokyo Electron (TEL) for deposition, and ASML for peripheral circuit lithography.
+
+The three dominant 3D NAND architectures:
+
+Samsung V-NAND (CTF — Charge Trap Flash): Uses barium titanate as the charge trap layer, deposited by ALD (Atomic Layer Deposition). This allows vertical wordline scaling without the cell-to-cell interference issues of floating-gate designs. Current V-NAND 9th gen is at 290+ layers.
+
+WDC/Kioxia BiCS (Bit Cost Scaling): Uses floating-gate cells with a "pipe-shaped" string that reduces string resistance. Current generation is 162-layer BiCS 8. The companies are merging BiCS development.
+
+SK Hynix/Solidigm (developed after Intel's出售给 SK Hynix): Uses a "copy-gate" architecture derived from Intel's original 3D NAND design. Current generation is 192-layer 4th Gen.
+
+The layer count metric is not directly comparable across architectures — layer height and bit density per layer vary, making effective bit density (Gb/mm²) a better comparison metric.
 
 ## Nuances critiques limits
-A key distinction from leading-edge [[Memory Technologies DRAM NAND|DRAM]] and logic manufacturing: NAND cell strings do not require EUV lithography. The NAND array uses relatively large feature sizes compared to 3nm/5nm logic processes, so 193nm immersion lithography with multiple patterning suffices. Only the CMOS logic die placed beneath the NAND array (controlling the memory array) uses advanced lithography. This means memory fabs can operate without the massive capital expenditure of EUV scanners, though they still require specialized high-aspect-ratio etch and thick-film deposition equipment. The capital intensity of building new 3D NAND capacity remains extremely high at $10-20B per fab.
 
-## Links and implications
-[[NAND Flash Market Analysis]] provides context on market demand for manufactured NAND, while [[Semiconductor Equipment Makers]] covers the equipment ecosystem feeding into memory fabs. The manufacturing process ties directly to [[Memory Technologies DRAM NAND]] which covers the underlying cell physics. [[Advanced Packaging Technologies]] relates to how 3D NAND is integrated into packaged storage solutions. [[300mm Wafer Fab Economics]] provides the economic framework for understanding fab investment decisions. Additional connections include [[Enterprise SSD Technologies]] as the primary application, [[HBM High Bandwidth Memory]] for comparison of stacked memory approaches, and [[Subsea Cable Networks]] as an emerging bandwidth-intensive application consuming NAND storage.
+The 3D NAND scaling roadmaps face fundamental challenges: as layers increase, channel hole uniformity becomes harder to maintain, and the time to etch and fill hundreds of channel holes per cell (on a wafer containing millions of memory arrays) becomes a manufacturing bottleneck.
 
-## Sources
-[^1]: SIA/Gartner/IC Insights — NAND market sizing and capital expenditure data, 2024-2025.
-[^2]: Company annual reports — Applied Materials, Lam Research, TEL memory equipment segments.
-[^3]: TechInsights/YSMC reverse-tear down analyses of 3D NAND cross-sections.
-[^4]: IEEE International Memory Workshop (IMW) technical papers on 3D NAND scaling.
-[^5]: Counterpoint Research, Samsung/SK Hynix/Micron memory fab expansion announcements.
+The transition from 2D to 3D NAND required completely new manufacturing equipment (applied materials, Lam Research, TEL all developed new deposition and etch tools), creating barriers to entry for new players.
+
+China's YMTC (Yangtze Memory Technologies) developed its own 3D NAND (Xtacking architecture) but was blocked from importing EUV equipment needed for advanced nodes, limiting its competitive trajectory.
+
+The [[Foundry Business Model]] applies: NAND fabs are extremely expensive ($15-20B for a leading-edge 3D NAND fab) and require deep expertise in deposition, etch, and metrology processes.
+
+## Related pages
+
+[[NAND Flash Market Analysis]] covers the market dynamics. [[Enterprise SSD Technologies]] and [[Solid State Drives]] are the products. [[Foundry Business Model]] applies to NAND fab economics.
+
+## References
+[^1]: Samsung V-NAND technology whitepapers.
+[^2]: WDC/Kioxia BiCS NAND architecture documentation.
+[^3]: Applied Materials, Lam Research 3D NAND equipment specifications.
+[^4]: Semiconductor Engineering 3D NAND manufacturing analysis.
+[^5]: IEEE International Memory Workshop (IMW) conference papers.
+
+[^6]: [[NAND Flash Market Analysis]] covers the product economics.
+[^7]: [[Enterprise SSD Technologies]] are the main customer for advanced NAND.
+[^8]: [[Solid State Drives]] shows how NAND is packaged into storage devices.
+[^9]: [[Data Center Memory Hierarchy]] frames NAND in the storage tier.

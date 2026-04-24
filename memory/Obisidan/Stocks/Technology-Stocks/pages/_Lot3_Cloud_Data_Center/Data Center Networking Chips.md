@@ -7,9 +7,20 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #semiconductors, #networking]
+tags:
+  - '#concept'
+  - '#semiconductors'
+  - '#networking'
 created: 2026-04-24
-strong_links: [["Hyperscale Data Center Operators", "AI Accelerator Market Overview", "Networking Silicon Market", "Ethernet Controller Chip Market"], ["GPU Interconnect Technologies", "Silicon Photonics Networking", "Subsea Cable Networks", "Data Center Power Management"]]
+strong_links:
+  - ['Hyperscale Data Center Operators']
+  - ['AI Accelerator Market Overview']
+  - ['Networking Silicon Market']
+  - ['Ethernet Controller Chip Market']
+  - ['GPU Interconnect Technologies']
+  - ['Silicon Photonics Networking']
+  - ['Subsea Cable Networks']
+  - ['Data Center Power Management']
 opposition_links: []
 ---
 

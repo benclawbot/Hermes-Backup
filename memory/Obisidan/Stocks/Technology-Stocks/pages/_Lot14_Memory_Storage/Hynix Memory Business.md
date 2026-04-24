@@ -7,9 +7,22 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #sk-hynix, #memory, #dram, #nand]
+tags:
+  - '#company'
+  - '#sk-hynix'
+  - '#memory'
+  - '#dram'
+  - '#nand'
 created: 2026-04-24
-strong_links: [["DRAM Memory Market", "NAND Flash Memory", "Samsung Memory Business", "Micron Business Analysis"], ["AI Accelerator Chips", "High Bandwidth Memory HBM", "Cloud Infrastructure Spending", "NAND Flash Technology"]]
+strong_links:
+  - ['DRAM Memory Market']
+  - ['NAND Flash Memory']
+  - ['Samsung Memory Business']
+  - ['Micron Business Analysis']
+  - ['AI Accelerator Chips']
+  - ['High Bandwidth Memory HBM']
+  - ['Cloud Infrastructure Spending']
+  - ['NAND Flash Technology']
 opposition_links: []
 ---
 

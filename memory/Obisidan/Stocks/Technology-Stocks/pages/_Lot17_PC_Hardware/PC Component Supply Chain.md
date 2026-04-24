@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #supply-chain, #pc, #components, #semiconductor]
+tags:
+  - '#concept'
+  - '#supply-chain'
+  - '#pc'
+  - '#components'
+  - '#semiconductor'
 created: 2026-04-24
-strong_links: [["Intel Business Analysis", "AMD Business Analysis", "DDR and LPDDR Memory Standards", "PC Gaming Hardware Market"], ["NAND Flash Memory", "Solid State Drives", "PC Cooling Technologies", "Power Semiconductor Packaging"]]
+strong_links:
+  - ['Intel Business Analysis']
+  - ['AMD Business Analysis']
+  - ['DDR and LPDDR Memory Standards']
+  - ['PC Gaming Hardware Market']
+  - ['NAND Flash Memory']
+  - ['Solid State Drives']
+  - ['PC Cooling Technologies']
+  - ['Power Semiconductor Packaging']
 opposition_links: []
 ---
 

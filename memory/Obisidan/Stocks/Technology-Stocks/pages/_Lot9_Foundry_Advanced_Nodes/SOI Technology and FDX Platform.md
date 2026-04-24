@@ -7,9 +7,22 @@ controversy: low
 importance: deep-cut
 source_knowledge: web-checked
 sources_count: 4
-tags: [#concept, #soi, #fd-soi, #transistors, #process-technology]
+tags:
+  - '#concept'
+  - '#soi'
+  - '#fd-soi'
+  - '#transistors'
+  - '#process-technology'
 created: 2026-04-24
-strong_links: [["Advanced Node Technology Roadmap", "Foundry Business Model", "Samsung Foundry Strategy", "Semiconductor Process Technology Comparisons"], ["Advanced Packaging Technologies", "Fabless vs IDM Comparison", "RF Front End Modules", "Cellular Baseband Modems"]]
+strong_links:
+  - ['Advanced Node Technology Roadmap']
+  - ['Foundry Business Model']
+  - ['Samsung Foundry Strategy']
+  - ['Semiconductor Process Technology Comparisons']
+  - ['Advanced Packaging Technologies']
+  - ['Fabless vs IDM Comparison']
+  - ['RF Front End Modules']
+  - ['Cellular Baseband Modems']
 opposition_links: []
 ---
 

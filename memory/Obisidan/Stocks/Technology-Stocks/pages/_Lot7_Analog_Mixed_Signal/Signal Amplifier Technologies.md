@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #topic, #signal-amplifier]
+tags:
+  - '#concept'
+  - '#topic'
+  - '#signal-amplifier'
 created: 2026-04-24
-strong_links: [["Analog Chip Market Overview", "Data Converter Market", "RF Front End Modules", "5G Infrastructure Market", "Semiconductor Industry Overview"], ["mmWave Radar Technologies", "Cellular Baseband Modems", "Enterprise SSD Technologies", "Industrial Sensor Interfaces", "Medical Imaging Semiconductor Technologies"]]
+strong_links:
+  - ['Analog Chip Market Overview']
+  - ['Data Converter Market']
+  - ['RF Front End Modules']
+  - ['5G Infrastructure Market']
+  - ['Semiconductor Industry Overview']
+  - ['mmWave Radar Technologies']
+  - ['Cellular Baseband Modems']
+  - ['Enterprise SSD Technologies']
+  - ['Industrial Sensor Interfaces']
+  - ['Medical Imaging Semiconductor Technologies']
 opposition_links: []
 ---
 

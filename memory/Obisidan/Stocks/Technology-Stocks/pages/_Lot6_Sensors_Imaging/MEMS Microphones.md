@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #sensors, #mems, #audio, #iot]
+tags:
+  - '#concept'
+  - '#sensors'
+  - '#mems'
+  - '#audio'
+  - '#iot'
 created: 2026-04-24
-strong_links: [["CMOS Image Sensor Market", "Analog Chip Market Overview", "Power Management ICs", "Edge Computing Infrastructure"], ["Foundry Business Model", "Fabless vs IDM Comparison", "Advanced Packaging Technologies", "Cellular Baseband Modems"]]
+strong_links:
+  - ['CMOS Image Sensor Market']
+  - ['Analog Chip Market Overview']
+  - ['Power Management ICs']
+  - ['Edge Computing Infrastructure']
+  - ['Foundry Business Model']
+  - ['Fabless vs IDM Comparison']
+  - ['Advanced Packaging Technologies']
+  - ['Cellular Baseband Modems']
 opposition_links: []
 ---
 

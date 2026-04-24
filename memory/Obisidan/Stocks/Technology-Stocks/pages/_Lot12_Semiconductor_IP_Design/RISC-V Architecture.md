@@ -7,9 +7,22 @@ controversy: medium
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #risc-v, #architecture, #open-source, #ip]
+tags:
+  - '#concept'
+  - '#risc-v'
+  - '#architecture'
+  - '#open-source'
+  - '#ip'
 created: 2026-04-24
-strong_links: [["ARM IP Licensing Business", "Semiconductor IP Licensing", "Fabless Semiconductor Model", "Electronic Design Automation"], ["Apple Silicon Competition", "Foundry Business Model", "Synopsys Business Analysis", "Custom Silicon ASIC Trend"]]
+strong_links:
+  - ['ARM IP Licensing Business']
+  - ['Semiconductor IP Licensing']
+  - ['Fabless Semiconductor Model']
+  - ['Electronic Design Automation']
+  - ['Apple Silicon Competition']
+  - ['Foundry Business Model']
+  - ['Synopsys Business Analysis']
+  - ['Custom Silicon ASIC Trend']
 opposition_links: [["ARM IP Licensing Business"]]
 ---
 

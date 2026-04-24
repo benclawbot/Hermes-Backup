@@ -7,9 +7,22 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #fabless, #semiconductors, #business-model, #foundry]
+tags:
+  - '#concept'
+  - '#fabless'
+  - '#semiconductors'
+  - '#business-model'
+  - '#foundry'
 created: 2026-04-24
-strong_links: [["Foundry Business Model", "Advanced Node Technology Roadmap", "Semiconductor IP Licensing", "Advanced Packaging Market Dynamics"], ["NVIDIA Business Analysis", "AMD Business Analysis", "Qualcomm Business Analysis", "Broadcom Business Analysis"]]
+strong_links:
+  - ['Foundry Business Model']
+  - ['Advanced Node Technology Roadmap']
+  - ['Semiconductor IP Licensing']
+  - ['Advanced Packaging Market Dynamics']
+  - ['NVIDIA Business Analysis']
+  - ['AMD Business Analysis']
+  - ['Qualcomm Business Analysis']
+  - ['Broadcom Business Analysis']
 opposition_links: [["Integrated Device Manufacturer Model"]]
 ---
 

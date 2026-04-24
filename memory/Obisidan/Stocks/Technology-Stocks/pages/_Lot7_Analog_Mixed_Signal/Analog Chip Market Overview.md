@@ -7,9 +7,22 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #sector, #analog-mixed-signal]
+tags:
+  - '#concept'
+  - '#sector'
+  - '#analog-mixed-signal'
 created: 2026-04-24
-strong_links: [["Semiconductor Industry Overview", "Power Management ICs", "Data Converter Market", "Signal Amplifier Technologies", "High Speed Interface ICs"], ["Foundry Business Model", "Compound Semiconductors", "AI Accelerator Market Overview", "Cloud Infrastructure Market", "Data Center Power Management"]]
+strong_links:
+  - ['Semiconductor Industry Overview']
+  - ['Power Management ICs']
+  - ['Data Converter Market']
+  - ['Signal Amplifier Technologies']
+  - ['High Speed Interface ICs']
+  - ['Foundry Business Model']
+  - ['Compound Semiconductors']
+  - ['AI Accelerator Market Overview']
+  - ['Cloud Infrastructure Market']
+  - ['Data Center Power Management']
 opposition_links: []
 ---
 

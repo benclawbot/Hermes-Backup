@@ -7,9 +7,22 @@ controversy: medium
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #quantum-dot, #qdolED, #display, #technology]
+tags:
+  - '#concept'
+  - '#quantum-dot'
+  - '#qdolED'
+  - '#display'
+  - '#technology'
 created: 2026-04-24
-strong_links: [["OLED Display Technology", "Display Panel Industry Overview", "MicroLED Technology", "Samsung Display Business Analysis"], ["BOE Display Industry Position", "Consumer Electronics Demand", "Semiconductor Materials Market", "LG Display Business Analysis"]]
+strong_links:
+  - ['OLED Display Technology']
+  - ['Display Panel Industry Overview']
+  - ['MicroLED Technology']
+  - ['Samsung Display Business Analysis']
+  - ['BOE Display Industry Position']
+  - ['Consumer Electronics Demand']
+  - ['Semiconductor Materials Market']
+  - ['LG Display Business Analysis']
 opposition_links: []
 ---
 

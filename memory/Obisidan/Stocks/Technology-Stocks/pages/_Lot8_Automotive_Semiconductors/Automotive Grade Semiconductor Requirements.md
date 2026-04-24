@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #automotive, #quality, #reliability, #safety]
+tags:
+  - '#concept'
+  - '#automotive'
+  - '#quality'
+  - '#reliability'
+  - '#safety'
 created: 2026-04-24
-strong_links: [["Automotive Semiconductor Market Overview", "EV Power Electronics Systems", "Power Management ICs", "Advanced Packaging Technologies"], ["Foundry Business Model", "Fabless vs IDM Comparison", "Cloud Infrastructure Market", "Data Center Power Management"]]
+strong_links:
+  - ['Automotive Semiconductor Market Overview']
+  - ['EV Power Electronics Systems']
+  - ['Power Management ICs']
+  - ['Advanced Packaging Technologies']
+  - ['Foundry Business Model']
+  - ['Fabless vs IDM Comparison']
+  - ['Cloud Infrastructure Market']
+  - ['Data Center Power Management']
 opposition_links: []
 ---
 

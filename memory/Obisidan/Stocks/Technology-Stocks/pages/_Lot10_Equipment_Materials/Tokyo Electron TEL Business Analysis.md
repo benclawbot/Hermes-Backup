@@ -7,9 +7,22 @@ controversy: medium
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #equipment, #tel, #japan, #semiconductors]
+tags:
+  - '#company'
+  - '#equipment'
+  - '#tel'
+  - '#japan'
+  - '#semiconductors'
 created: 2026-04-24
-strong_links: [["Semiconductor Equipment Makers", "Advanced Node Technology Roadmap", "Applied Materials Business Analysis", "Lam Research Business Analysis"], ["Foundry Business Model", "TSMC Competitive Position", "Semiconductor Materials Market", "300mm Wafer Fab Economics"]]
+strong_links:
+  - ['Semiconductor Equipment Makers']
+  - ['Advanced Node Technology Roadmap']
+  - ['Applied Materials Business Analysis']
+  - ['Lam Research Business Analysis']
+  - ['Foundry Business Model']
+  - ['TSMC Competitive Position']
+  - ['Semiconductor Materials Market']
+  - ['300mm Wafer Fab Economics']
 opposition_links: []
 ---
 

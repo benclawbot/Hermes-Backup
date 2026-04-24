@@ -7,9 +7,22 @@ controversy: medium
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #arm, #server, #cpu, #data-center]
+tags:
+  - '#concept'
+  - '#arm'
+  - '#server'
+  - '#cpu'
+  - '#data-center'
 created: 2026-04-24
-strong_links: [["Data Center CPU Architecture", "Server CPU Market", "Cloud Data Center Infrastructure", "Apple Silicon Competition"], ["Fabless Semiconductor Model", "Foundry Business Model", "TSMC Competitive Position", "Ampere Computing"]]
+strong_links:
+  - ['Data Center CPU Architecture']
+  - ['Server CPU Market']
+  - ['Cloud Data Center Infrastructure']
+  - ['Apple Silicon Competition']
+  - ['Fabless Semiconductor Model']
+  - ['Foundry Business Model']
+  - ['TSMC Competitive Position']
+  - ['Ampere Computing']
 opposition_links: [["Intel Competitive Position"]]
 ---
 

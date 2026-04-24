@@ -7,9 +7,22 @@ controversy: medium
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #ip, #arm, #architecture, #licensing]
+tags:
+  - '#company'
+  - '#ip'
+  - '#arm'
+  - '#architecture'
+  - '#licensing'
 created: 2026-04-24
-strong_links: [["Semiconductor IP Licensing", "Mobile SoC Architecture", "Fabless Semiconductor Model", "RISC-V Architecture"], ["Qualcomm Business Analysis", "Apple Silicon Competition", "Foundry Business Model", "Electronic Design Automation"]]
+strong_links:
+  - ['Semiconductor IP Licensing']
+  - ['Mobile SoC Architecture']
+  - ['Fabless Semiconductor Model']
+  - ['RISC-V Architecture']
+  - ['Qualcomm Business Analysis']
+  - ['Apple Silicon Competition']
+  - ['Foundry Business Model']
+  - ['Electronic Design Automation']
 opposition_links: []
 ---
 

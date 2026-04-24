@@ -7,9 +7,22 @@ controversy: medium
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #custom-silicon, #asic, #cloud, #fabless]
+tags:
+  - '#concept'
+  - '#custom-silicon'
+  - '#asic'
+  - '#cloud'
+  - '#fabless'
 created: 2026-04-24
-strong_links: [["AI Accelerator Market", "Marvell Business Analysis", "Broadcom Business Analysis", "TSMC Competitive Position"], ["Fabless Semiconductor Model", "Cloud Data Center Infrastructure", "Foundry Business Model", "Advanced Packaging Market Dynamics"]]
+strong_links:
+  - ['AI Accelerator Market']
+  - ['Marvell Business Analysis']
+  - ['Broadcom Business Analysis']
+  - ['TSMC Competitive Position']
+  - ['Fabless Semiconductor Model']
+  - ['Cloud Data Center Infrastructure']
+  - ['Foundry Business Model']
+  - ['Advanced Packaging Market Dynamics']
 opposition_links: []
 ---
 

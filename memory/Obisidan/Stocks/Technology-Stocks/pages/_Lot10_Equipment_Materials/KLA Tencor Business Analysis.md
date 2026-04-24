@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #equipment, #kla, #inspection, #metrology]
+tags:
+  - '#company'
+  - '#equipment'
+  - '#kla'
+  - '#inspection'
+  - '#metrology'
 created: 2026-04-24
-strong_links: [["Semiconductor Equipment Makers", "Advanced Node Technology Roadmap", "TSMC Competitive Position", "Foundry Business Model"], ["ASML Business Analysis", "Applied Materials Business Analysis", "300mm Wafer Fab Economics", "Advanced Packaging Technologies"]]
+strong_links:
+  - ['Semiconductor Equipment Makers']
+  - ['Advanced Node Technology Roadmap']
+  - ['TSMC Competitive Position']
+  - ['Foundry Business Model']
+  - ['ASML Business Analysis']
+  - ['Applied Materials Business Analysis']
+  - ['300mm Wafer Fab Economics']
+  - ['Advanced Packaging Technologies']
 opposition_links: []
 ---
 

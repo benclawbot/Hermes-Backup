@@ -7,9 +7,22 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 3
-tags: [#sector, #semiconductors, #chips, #hardware]
+tags:
+  - '#sector'
+  - '#semiconductors'
+  - '#chips'
+  - '#hardware'
 created: 2026-04-24
-strong_links: [["Foundry Business Model", "Fabless vs IDM Comparison", "EUV Lithography Systems", "Semiconductor Equipment Makers"], ["AI Accelerator Market Overview", "HBM High Bandwidth Memory", "Cloud Infrastructure Market", "5G Infrastructure Market", "Memory Technologies DRAM NAND"]]
+strong_links:
+  - ['Foundry Business Model']
+  - ['Fabless vs IDM Comparison']
+  - ['EUV Lithography Systems']
+  - ['Semiconductor Equipment Makers']
+  - ['AI Accelerator Market Overview']
+  - ['HBM High Bandwidth Memory']
+  - ['Cloud Infrastructure Market']
+  - ['5G Infrastructure Market']
+  - ['Memory Technologies DRAM NAND']
 opposition_links: [["Commoditization Risk Semiconductors"]]
 ---
 

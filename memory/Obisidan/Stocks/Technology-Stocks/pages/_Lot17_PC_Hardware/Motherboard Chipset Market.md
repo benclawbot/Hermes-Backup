@@ -7,9 +7,23 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #motherboard, #chipset, #intel, #amd, #platform]
+tags:
+  - '#sector'
+  - '#motherboard'
+  - '#chipset'
+  - '#intel'
+  - '#amd'
+  - '#platform'
 created: 2026-04-24
-strong_links: [["Intel Business Analysis", "AMD Business Analysis", "CPU Market Intel AMD ARM", "PC Component Supply Chain"], ["PC Gaming Hardware Market", "DDR and LPDDR Memory Standards", "Power Semiconductor Packaging", "PC Cooling Technologies"]]
+strong_links:
+  - ['Intel Business Analysis']
+  - ['AMD Business Analysis']
+  - ['CPU Market Intel AMD ARM']
+  - ['PC Component Supply Chain']
+  - ['PC Gaming Hardware Market']
+  - ['DDR and LPDDR Memory Standards']
+  - ['Power Semiconductor Packaging']
+  - ['PC Cooling Technologies']
 opposition_links: []
 ---
 

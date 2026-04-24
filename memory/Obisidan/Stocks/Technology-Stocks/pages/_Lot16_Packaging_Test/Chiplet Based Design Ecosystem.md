@@ -7,9 +7,22 @@ controversy: medium
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #chiplets, #architecture, #design, #modular]
+tags:
+  - '#concept'
+  - '#chiplets'
+  - '#architecture'
+  - '#design'
+  - '#modular'
 created: 2026-04-24
-strong_links: [["Advanced Packaging Technology Overview", "2.5D Interposer Technologies", "Fan Out Wafer Level Packaging", "Chiplet Interconnect Standards"], ["3D IC Stacking TSV", "System in Package SiP", "OSAT Provider Analysis ASE Amkor", "Fabless Semiconductor Model"]]
+strong_links:
+  - ['Advanced Packaging Technology Overview']
+  - ['2.5D Interposer Technologies']
+  - ['Fan Out Wafer Level Packaging']
+  - ['Chiplet Interconnect Standards']
+  - ['3D IC Stacking TSV']
+  - ['System in Package SiP']
+  - ['OSAT Provider Analysis ASE Amkor']
+  - ['Fabless Semiconductor Model']
 opposition_links: []
 ---
 

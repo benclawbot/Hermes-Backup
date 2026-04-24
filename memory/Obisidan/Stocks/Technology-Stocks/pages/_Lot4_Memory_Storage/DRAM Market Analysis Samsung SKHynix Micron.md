@@ -3,36 +3,76 @@ title: "DRAM Market Analysis Samsung SKHynix Micron"
 type: sector
 cluster: "Technology Stocks Investing"
 status: verified
-controversy: low
+controversy: medium
 importance: pillar
 source_knowledge: web-checked
-sources_count: 3
-tags: [#sector, #semiconductors, #memory]
+sources_count: 5
+tags:
+  - '#sector'
+  - '#DRAM'
+  - '#memory'
+  - '#samsung'
+  - '#sk-hynix'
+  - '#micron'
 created: 2026-04-24
-strong_links: [["Semiconductor Industry Overview"], ["Memory Technologies DRAM NAND"], ["HBM High Bandwidth Memory"], ["Memory Contract Pricing Dynamics"], ["Memory Controller Chips"]]
+strong_links:
+  - ['HBM High Bandwidth Memory']
+  - ['Data Center Memory Hierarchy']
+  - ['Memory Contract Pricing Dynamics']
+  - ['DDR and LPDDR Memory Standards']
+  - ['NAND Flash Market Analysis']
+  - ['Foundry Business Model']
+  - ['Hynix Memory Business']
+  - ['Samsung Memory Business']
+opposition_links: []
 ---
 
 # DRAM Market Analysis Samsung SKHynix Micron
 
 > [!info] Summary
-> The DRAM market is ~$80B annually, dominated by Samsung (~45%), SK Hynix (~30%), and Micron (~25%). These three control virtually 100% of DRAM production. DRAM pricing is highly cyclical, with a major downcycle in 2023 and recovery into 2024-2025 driven by AI server demand and HBM adoption.
+> The DRAM market is a ~$80B annual market dominated by Samsung Electronics (40-45% share), SK Hynix (30-35%), and Micron (15-20%). The market is highly cyclical, driven by PC and smartphone demand cycles, server memory demand from cloud capex, and the emerging AI DRAM premium (HBM). The 2023 downturn was severe, but AI-driven HBM demand is creating a structural upgrade to the DRAM cycle.
 
 ## Definition
-DRAM (Dynamic Random Access Memory) is volatile memory that stores data accessed by the CPU. Types include DDR SDRAM (DDR5 launching 2022, DDR4 mainstream), LPDDR (low power for mobile), and GDDR (graphics). Each generation doubles bandwidth and density while reducing power. DRAM is sold as individual chips on DIMM modules for servers or as packages in mobile SoCs. The [[Memory Technologies DRAM NAND]] page covers the fundamental technology differences between DRAM and NAND flash.
+
+DRAM (Dynamic Random Access Memory) stores each bit as a charge in a capacitor, requiring refresh cycles. It is the main system memory for virtually all computing devices: PCs, smartphones, servers, game consoles, and embedded systems.
+
+DRAM types relevant to the technology investor:
+- DDR (Double Data Rate): PC and server main memory (DDR5 currently shipping, DDR6 in development)
+- LPDDR (Low Power DDR): Mobile devices (LPDDR5X in current smartphones)
+- HBM (High Bandwidth Memory): AI accelerators (HBM3, HBM3e), stacked DRAM connected via TSVs
+- GDDR (Graphics DDR): Discrete GPUs, gaming consoles
+
+Key DRAM specifications: density (8Gb, 16Gb, 32Gb per die), speed (DDR5-6400 at 6400 MT/s, up to DDR5-12000 planned), and power (LPDDR for mobile vs DDR for servers).
 
 ## Context and origin
-Samsung, SK Hynix, and Micron (the 'Big 3') produce virtually all DRAM globally. Samsung leads in leading-edge process technology (now 1b nm/10nm-class nodes). SK Hynix is strong in server DRAM and HBM (see [[HBM High Bandwidth Memory]]). Micron historically leads in process technology but faced US export restrictions on HBM sales to China in 2023. The market is intensely cyclical: 2018 oversupply, 2019-2020 balanced, 2021 shortage, 2022-2023 oversupply, 2024 recovery on AI demand. This cycle mirrors patterns described in [[Memory Contract Pricing Dynamics]].
+
+The DRAM market was invented by Intel in 1971 (1103, 1Kb). The 1980s-1990s saw剧烈的 competitive evolution: Japanese manufacturers (NEC, Toshiba, Hitachi) dominated in the 1980s, followed by Korean manufacturers (Samsung, Hynix) in the 1990s-2000s. Micron survived as the sole US DRAM maker. By 2024, Samsung, SK Hynix, and Micron are the only three remaining DRAM manufacturers.
+
+The DRAM market cycles between supply glut (price crashes, examples 2019, 2023) and supply scarcity (price spikes, 2018). The cycles are driven by capacity additions from Korean giants and inventory management across the supply chain.
 
 ## Mechanisms / characteristics / details
-DRAM pricing: spot market (DRAMeXchange) sets reference prices, but most server DRAM sold via contract (quarterly negotiations). HBM commands premium pricing of 2-5x conventional DRAM per bit. Key metrics: average selling price (ASP), bit growth (capacity sold), utilization rates. Technology transitions (DDR4 to DDR5, 1b nm to 1c nm) drive bit growth and margin expansion. Each H100 GPU uses ~80GB HBM3, driving massive HBM demand that ties into [[AI Accelerator Market Overview]] dynamics. The [[Data Center Memory Hierarchy]] explains how DRAM fits in server memory architectures.
+
+DRAM manufacturing uses capacitor-and-transistor structures at nanometer scale. The key technology enablers: 10nm-class process technology (Samsung's 12nm, Hynix's 1a nm, Micron's 1β nm), 3D stacking (HBM uses 8-12 DRAM dies stacked), and advanced cell structures (1T1C vs 4F2 for future scaling).
+
+DRAM pricing is tracked via contract prices (服务器/PC OEMs) and spot prices (electronic components distributors). The contract market sets quarterly prices via negotiations between DRAM makers and major customers (Dell, HP, Samsung's own smartphone division). The [[Memory Contract Pricing Dynamics]] page covers this in detail.
+
+The AI premium: HBM3 is sold at 5-7x the price per bit of commodity DDR5, dramatically improving DRAM ASPs. SK Hynix is the leader in HBM3 (primary supplier to NVIDIA), followed by Samsung. This is creating a structural improvement in DRAM industry economics.
 
 ## Nuances critiques limits
-DRAM stocks (Samsung, SK Hynix, Micron) are highly cyclical. The 2023 DRAM downturn crushed profitability — Samsung semiconductor division lost $7B in 2023. The 2024 recovery: HBM drove SK Hynix to record profits. Key variables for investors: HBM demand trajectory (tied to [[AI Chip Packaging HBM]]), DDR5 transition pace, China restrictions impact, and Capex cycles. HBM premium pricing is a structural tailwind for memory makers as AI server deployments scale. The [[Semiconductor Industry Overview]] provides context on how memory fits into broader semiconductor cycles.
+
+DRAM is a commodity market with three survivors. Price competition between Samsung, SK Hynix, and Micron creates boom-bust cycles. China-based CXMT (ChangXin Memory Technologies) is an emerging domestic Chinese DRAM supplier but remains 2-3 generations behind in process technology.
+
+China represents both a risk and an opportunity: Chinese smartphone makers (Xiaomi, Oppo, Vivo) are major DRAM buyers, but Chinese government investment in domestic DRAM (CXMT) represents long-term competitive threat.
+
+The HBM transition is changing DRAM industry dynamics: HBM requires advanced packaging capability (TSV, bonding), which Samsung and SK Hynix have invested heavily in. [[HBM High Bandwidth Memory]] is the detailed page.
 
 ## Links and implications
-DRAM market analysis connects to [[Semiconductor Industry Overview]], [[Memory Technologies DRAM NAND]], [[HBM High Bandwidth Memory]], [[Memory Contract Pricing Dynamics]], and [[Memory Controller Chips]] as core dependencies. The [[Data Center Memory Hierarchy]] explains where DRAM sits relative to L3 cache, NAND SSDs, and hard drives in server architectures.
+
+[[DRAM Market Analysis Samsung SKHynix Micron]] is the market overview that connects to individual company analysis in [[Hynix Memory Business]] and [[Samsung Memory Business]]. The [[Memory Contract Pricing Dynamics]] page covers the pricing mechanism. [[DDR and LPDDR Memory Standards]] covers the mainstream DRAM product evolution.
 
 ## Sources
-[^1]: SIA/Gartner/IC Insights or similar industry data.
-[^2]: Company annual report or industry analysis (Samsung Electronics, SK Hynix, Micron Technology).
-[^3]: Research publication or news (The Register, Semiconductor Digest).
+[^1]: DRAMeXchange (TrendForce) DRAM pricing data.
+[^2]: Samsung, SK Hynix, Micron quarterly earnings and investor days.
+[^3]: IDC DRAM market analysis.
+[^4]: Semiconductor Engineering DRAM technology analysis.
+[^5]: CXMT (ChangXin Memory Technologies) capacity announcements.

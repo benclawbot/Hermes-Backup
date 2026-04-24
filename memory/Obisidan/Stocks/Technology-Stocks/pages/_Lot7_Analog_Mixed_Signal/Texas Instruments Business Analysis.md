@@ -7,9 +7,22 @@ controversy: medium
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #analog-mixed-signal, #texas-instruments, #capital-allocation, #idm]
+tags:
+  - '#company'
+  - '#analog-mixed-signal'
+  - '#texas-instruments'
+  - '#capital-allocation'
+  - '#idm'
 created: 2026-04-24
-strong_links: [["Analog Chip Market Overview", "Power Management ICs", "Analog vs Digital Design Economics", "Fabless vs IDM Comparison"], ["Foundry Business Model", "Industrial Sensor Interfaces", "Automotive Analog Semiconductors", "Semiconductor Industry Overview"]]
+strong_links:
+  - ['Analog Chip Market Overview']
+  - ['Power Management ICs']
+  - ['Analog vs Digital Design Economics']
+  - ['Fabless vs IDM Comparison']
+  - ['Foundry Business Model']
+  - ['Industrial Sensor Interfaces']
+  - ['Automotive Analog Semiconductors']
+  - ['Semiconductor Industry Overview']
 opposition_links: []
 ---
 

@@ -7,9 +7,22 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 6
-tags: [#sector, #semiconductors, #technology, #lithography, #ASML]
+tags:
+  - '#sector'
+  - '#semiconductors'
+  - '#technology'
+  - '#lithography'
+  - '#ASML'
 created: 2026-04-24
-strong_links: [["Semiconductor Industry Overview", "Semiconductor Equipment Makers", "Foundry Business Model", "Advanced Packaging Technologies"], ["AI Accelerator Market Overview", "HBM High Bandwidth Memory", "DUV Lithography Future", "TSMC Business Analysis"]]
+strong_links:
+  - ['Semiconductor Industry Overview']
+  - ['Semiconductor Equipment Makers']
+  - ['Foundry Business Model']
+  - ['Advanced Packaging Technologies']
+  - ['AI Accelerator Market Overview']
+  - ['HBM High Bandwidth Memory']
+  - ['DUV Lithography Future']
+  - ['TSMC Business Analysis']
 opposition_links: [["DUV Lithography Future"]]
 ---
 

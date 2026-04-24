@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #audio, #analog-mixed-signal, #mobile, #consumer]
+tags:
+  - '#concept'
+  - '#audio'
+  - '#analog-mixed-signal'
+  - '#mobile'
+  - '#consumer'
 created: 2026-04-24
-strong_links: [["Analog Chip Market Overview", "Data Converter Market", "Signal Amplifier Technologies", "MEMS Microphones"], ["Cellular Baseband Modems", "Bluetooth LE Audio", "Power Management ICs", "Edge Computing Infrastructure"]]
+strong_links:
+  - ['Analog Chip Market Overview']
+  - ['Data Converter Market']
+  - ['Signal Amplifier Technologies']
+  - ['MEMS Microphones']
+  - ['Cellular Baseband Modems']
+  - ['Bluetooth LE Audio']
+  - ['Power Management ICs']
+  - ['Edge Computing Infrastructure']
 opposition_links: []
 ---
 

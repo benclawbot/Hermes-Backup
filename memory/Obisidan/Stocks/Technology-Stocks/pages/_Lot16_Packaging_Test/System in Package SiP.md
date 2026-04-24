@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #sip, #system-in-package, #packaging, #integration]
+tags:
+  - '#concept'
+  - '#sip'
+  - '#system-in-package'
+  - '#packaging'
+  - '#integration'
 created: 2026-04-24
-strong_links: [["Fan Out Wafer Level Packaging", "Advanced Packaging Technology Overview", "2.5D Interposer Technologies", "Chiplet Based Design Ecosystem"], ["OSAT Provider Analysis ASE Amkor", "Automotive Packaging Reliability", "Test Equipment Market Teradyne", "Mobile Chipset Market"]]
+strong_links:
+  - ['Fan Out Wafer Level Packaging']
+  - ['Advanced Packaging Technology Overview']
+  - ['2.5D Interposer Technologies']
+  - ['Chiplet Based Design Ecosystem']
+  - ['OSAT Provider Analysis ASE Amkor']
+  - ['Automotive Packaging Reliability']
+  - ['Test Equipment Market Teradyne']
+  - ['Mobile Chipset Market']
 opposition_links: []
 ---
 

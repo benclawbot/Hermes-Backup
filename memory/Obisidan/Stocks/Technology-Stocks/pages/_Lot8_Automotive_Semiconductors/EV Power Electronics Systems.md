@@ -7,9 +7,23 @@ controversy: medium
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #automotive, #ev, #power-electronics, #sic, #wbg]
+tags:
+  - '#sector'
+  - '#automotive'
+  - '#ev'
+  - '#power-electronics'
+  - '#sic'
+  - '#wbg'
 created: 2026-04-24
-strong_links: [["Automotive Semiconductor Market Overview", "Automotive Grade Semiconductor Requirements", "Power Management ICs", "Compound Semiconductors"], ["Advanced Packaging Technologies", "Foundry Business Model", "Data Center Power Management", "Fabless vs IDM Comparison"]]
+strong_links:
+  - ['Automotive Semiconductor Market Overview']
+  - ['Automotive Grade Semiconductor Requirements']
+  - ['Power Management ICs']
+  - ['Compound Semiconductors']
+  - ['Advanced Packaging Technologies']
+  - ['Foundry Business Model']
+  - ['Data Center Power Management']
+  - ['Fabless vs IDM Comparison']
 opposition_links: []
 ---
 

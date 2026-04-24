@@ -7,9 +7,22 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #samsung, #memory, #dram, #nand]
+tags:
+  - '#company'
+  - '#samsung'
+  - '#memory'
+  - '#dram'
+  - '#nand'
 created: 2026-04-24
-strong_links: [["DRAM Memory Market", "NAND Flash Memory", "Hynix Memory Business", "Micron Business Analysis"], ["High Bandwidth Memory HBM", "Cloud Infrastructure Spending", "Consumer Electronics Demand", "Solid State Drives"]]
+strong_links:
+  - ['DRAM Memory Market']
+  - ['NAND Flash Memory']
+  - ['Hynix Memory Business']
+  - ['Micron Business Analysis']
+  - ['High Bandwidth Memory HBM']
+  - ['Cloud Infrastructure Spending']
+  - ['Consumer Electronics Demand']
+  - ['Solid State Drives']
 opposition_links: []
 ---
 

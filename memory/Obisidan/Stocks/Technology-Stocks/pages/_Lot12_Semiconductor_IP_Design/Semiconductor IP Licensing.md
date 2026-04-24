@@ -7,9 +7,22 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #ip, #licensing, #arm, #cadence]
+tags:
+  - '#concept'
+  - '#ip'
+  - '#licensing'
+  - '#arm'
+  - '#cadence'
 created: 2026-04-24
-strong_links: [["ARM IP Licensing Business", "Fabless Semiconductor Model", "Electronic Design Automation", "Advanced Node Technology Roadmap"], ["Qualcomm Business Analysis", "NVIDIA Business Analysis", "MediaTek Business Analysis", "Foundry Business Model"]]
+strong_links:
+  - ['ARM IP Licensing Business']
+  - ['Fabless Semiconductor Model']
+  - ['Electronic Design Automation']
+  - ['Advanced Node Technology Roadmap']
+  - ['Qualcomm Business Analysis']
+  - ['NVIDIA Business Analysis']
+  - ['MediaTek Business Analysis']
+  - ['Foundry Business Model']
 opposition_links: []
 ---
 

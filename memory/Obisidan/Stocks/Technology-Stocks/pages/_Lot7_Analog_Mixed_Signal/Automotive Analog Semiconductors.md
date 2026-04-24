@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #automotive, #analog-mixed-signal, #sensors, #power]
+tags:
+  - '#sector'
+  - '#automotive'
+  - '#analog-mixed-signal'
+  - '#sensors'
+  - '#power'
 created: 2026-04-24
-strong_links: [["Analog Chip Market Overview", "Automotive Semiconductor Market Overview", "Power Management ICs", "Automotive Grade Semiconductor Requirements"], ["EV Power Electronics Systems", "mmWave Radar Technologies", "CMOS Image Sensor Market", "Automotive Sensor Fusion"]]
+strong_links:
+  - ['Analog Chip Market Overview']
+  - ['Automotive Semiconductor Market Overview']
+  - ['Power Management ICs']
+  - ['Automotive Grade Semiconductor Requirements']
+  - ['EV Power Electronics Systems']
+  - ['mmWave Radar Technologies']
+  - ['CMOS Image Sensor Market']
+  - ['Automotive Sensor Fusion']
 opposition_links: []
 ---
 

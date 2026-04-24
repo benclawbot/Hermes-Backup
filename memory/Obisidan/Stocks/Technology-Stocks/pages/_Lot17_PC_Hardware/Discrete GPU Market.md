@@ -7,9 +7,23 @@ controversy: medium
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #gpu, #discrete-graphics, #nvidia, #amd, #gaming]
+tags:
+  - '#sector'
+  - '#gpu'
+  - '#discrete-graphics'
+  - '#nvidia'
+  - '#amd'
+  - '#gaming'
 created: 2026-04-24
-strong_links: [["NVIDIA Business Analysis", "AMD Business Analysis", "PC Gaming Hardware Market", "GPU Computing Demand"], ["High Bandwidth Memory HBM", "DDR and LPDDR Memory Standards", "PC Cooling Technologies", "Chiplet Based Design Ecosystem"]]
+strong_links:
+  - ['NVIDIA Business Analysis']
+  - ['AMD Business Analysis']
+  - ['PC Gaming Hardware Market']
+  - ['GPU Computing Demand']
+  - ['High Bandwidth Memory HBM']
+  - ['DDR and LPDDR Memory Standards']
+  - ['PC Cooling Technologies']
+  - ['Chiplet Based Design Ecosystem']
 opposition_links: []
 ---
 

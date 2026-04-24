@@ -7,9 +7,22 @@ controversy: medium
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #security, #processor, #hardware, #defense]
+tags:
+  - '#concept'
+  - '#security'
+  - '#processor'
+  - '#hardware'
+  - '#defense'
 created: 2026-04-24
-strong_links: [["Defense Semiconductor Requirements", "Defense Contractor Semiconductor Content", "Trusted Foundry Program", "Military Communication Systems"], ["Semiconductor Export Controls ITAR", "DARPA Electronics Resurgence", "Radiation Hardened Chips Space", "Military Avionics Systems"]]
+strong_links:
+  - ['Defense Semiconductor Requirements']
+  - ['Defense Contractor Semiconductor Content']
+  - ['Trusted Foundry Program']
+  - ['Military Communication Systems']
+  - ['Semiconductor Export Controls ITAR']
+  - ['DARPA Electronics Resurgence']
+  - ['Radiation Hardened Chips Space']
+  - ['Military Avionics Systems']
 opposition_links: []
 ---
 

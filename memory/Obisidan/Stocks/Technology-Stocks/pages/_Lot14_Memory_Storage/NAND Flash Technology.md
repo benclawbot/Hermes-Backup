@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #nand-flash, #3d-nand, #technology, #manufacturing]
+tags:
+  - '#concept'
+  - '#nand-flash'
+  - '#3d-nand'
+  - '#technology'
+  - '#manufacturing'
 created: 2026-04-24
-strong_links: [["NAND Flash Memory", "Solid State Drives", "Enterprise Storage Semiconductors", "NAND Flash Wafer Processing"], ["Samsung Memory Business", "Hynix Memory Business", "Kioxia IPO", "Semiconductor Equipment Market"]]
+strong_links:
+  - ['NAND Flash Memory']
+  - ['Solid State Drives']
+  - ['Enterprise Storage Semiconductors']
+  - ['NAND Flash Wafer Processing']
+  - ['Samsung Memory Business']
+  - ['Hynix Memory Business']
+  - ['Kioxia IPO']
+  - ['Semiconductor Equipment Market']
 opposition_links: []
 ---
 

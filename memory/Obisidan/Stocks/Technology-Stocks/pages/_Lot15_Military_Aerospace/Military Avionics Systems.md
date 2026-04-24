@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #avionics, #military, #flight, #electronics]
+tags:
+  - '#concept'
+  - '#avionics'
+  - '#military'
+  - '#flight'
+  - '#electronics'
 created: 2026-04-24
-strong_links: [["Defense Semiconductor Requirements", "Radiation Hardened Chips Space", "Secure Processor Technologies", "Military Communication Systems"], ["Defense Contractor Semiconductor Content", "Trusted Foundry Program", "DARPA Electronics Resurgence", "Wide Bandgap Material Economics"]]
+strong_links:
+  - ['Defense Semiconductor Requirements']
+  - ['Radiation Hardened Chips Space']
+  - ['Secure Processor Technologies']
+  - ['Military Communication Systems']
+  - ['Defense Contractor Semiconductor Content']
+  - ['Trusted Foundry Program']
+  - ['DARPA Electronics Resurgence']
+  - ['Wide Bandgap Material Economics']
 opposition_links: []
 ---
 

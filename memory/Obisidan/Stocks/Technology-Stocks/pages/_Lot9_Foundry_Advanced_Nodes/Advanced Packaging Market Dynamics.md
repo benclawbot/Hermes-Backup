@@ -7,9 +7,23 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #packaging, #advanced-packaging, #chiplets, #2.5d, #3d]
+tags:
+  - '#sector'
+  - '#packaging'
+  - '#advanced-packaging'
+  - '#chiplets'
+  - '#2.5d'
+  - '#3d'
 created: 2026-04-24
-strong_links: [["Advanced Packaging Technologies", "Foundry Business Model", "HBM High Bandwidth Memory", "AI Accelerator Market Overview"], ["EUV Lithography Systems", "Semiconductor Equipment Market Overview", "Advanced Node Technology Roadmap", "Fabless vs IDM Comparison"]]
+strong_links:
+  - ['Advanced Packaging Technologies']
+  - ['Foundry Business Model']
+  - ['HBM High Bandwidth Memory']
+  - ['AI Accelerator Market Overview']
+  - ['EUV Lithography Systems']
+  - ['Semiconductor Equipment Market Overview']
+  - ['Advanced Node Technology Roadmap']
+  - ['Fabless vs IDM Comparison']
 opposition_links: []
 ---
 

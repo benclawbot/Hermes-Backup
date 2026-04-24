@@ -7,9 +7,22 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #semiconductors, #packaging, #HBM, #AI]
+tags:
+  - '#concept'
+  - '#semiconductors'
+  - '#packaging'
+  - '#HBM'
+  - '#AI'
 created: 2026-04-24
-strong_links: [["HBM High Bandwidth Memory", "Advanced Packaging Technologies", "Foundry Business Model", "AI Accelerator Market Overview"], ["NVIDIA Business Analysis", "AMD GPU Data Center", "GPU Interconnect Technologies", "Subsea Cable Networks"]]
+strong_links:
+  - ['HBM High Bandwidth Memory']
+  - ['Advanced Packaging Technologies']
+  - ['Foundry Business Model']
+  - ['AI Accelerator Market Overview']
+  - ['NVIDIA Business Analysis']
+  - ['AMD GPU Data Center']
+  - ['GPU Interconnect Technologies']
+  - ['Subsea Cable Networks']
 opposition_links: []
 ---
 
@@ -20,27 +33,39 @@ opposition_links: []
 
 ## Definition
 
-AI chip packaging refers to the physical integration of HBM memory stacks with compute dies using advanced packaging technologies. TSMC's CoWoS (Chip on Wafer on Substrate) and SoIC (System on Integrated Chips) are the dominant packaging approaches. HBM3 stacks (up to 12-high) sit alongside GPU/ASIC dies on an interposer, connected by thousands of microbumps. This integration eliminates the memory bandwidth bottleneck of traditional DDR/GDDR approaches.
+AI accelerators like NVIDIA H100 and AMD MI300X require massive memory bandwidth (3-5 TB/s) that standard DDR/LPDDR cannot provide. HBM solves this by stacking DRAM dies vertically and connecting them to the logic die via thousands of through-silicon vias (TSVs), achieving much higher bandwidth in a smaller footprint.
+
+HBM integration requires advanced packaging: TSMC's CoWoS (Chip-on-Wafer-on-Substrate) for NVIDIA and AMD GPUs, and Samsung's X-Cube for its own AI chips. CoWoS is the primary packaging technology for AI accelerators, creating a interposer-based solution that connects GPU die and HBM stacks to the package substrate.
 
 ## Context and origin
 
-HBM was originally developed for GPU memory in 2013 (HBM1, AMD Fiji). The AI boom made HBM the critical component: HBM2E delivers 460 GB/s vs DDR5's ~100 GB/s. SK Hynix and Samsung are the sole HBM suppliers; SK Hynix supplies ~70% of Nvidia's HBM. TSMC's CoWoS capacity — the packaging capacity — became the binding constraint on AI chip supply in 2023-2024, as demand for HBM-integrated chips exceeded CoWoS capacity even though compute die capacity was available.
+HBM was developed by SK Hynix and AMD (with Samsung as an alternate supplier) starting in 2013. HBM1 first appeared in AMD's Fiji GPUs (2015). HBM2 launched in 2016 with NVIDIA's P100 (Pascal). HBM2e became standard in 2020 (NVIDIA A100, AMD MI100). HBM3 launched in 2022 (NVIDIA H100), with HBM3e (enhanced) in 2024.
+
+The AI boom exposed CoWoS as the critical bottleneck: TSMC's CoWoS capacity was scaled slowly pre-AI and could not meet the sudden surge in demand. In 2023-2024, this created 6-12 month lead times for AI GPUs and directly impacted NVIDIA's ability to ship all the H100s the market demanded.
 
 ## Mechanisms / characteristics / details
 
-CoWoS: compute die + HBM dies on a silicon interposer, connected to substrate. The interposer enables thousands of connections at very short distances, maximizing bandwidth and minimizing latency. Yield challenges: if any HBM stack or compute die fails, the entire package fails — making CoWoS yield management complex. TSMC CoWoS capacity is the bottleneck; Samsung and Intel IFS offer alternatives but at smaller scale. HBM3E (12-high, ~1.2 TB/s) is the current generation for H100/H200 successors.
+HBM provides ~3-5 TB/s memory bandwidth compared to ~200 GB/s for DDR5. This matters enormously for AI: training large models requires constantly feeding data to thousands of parallel compute cores. Memory bandwidth, not raw compute FLOPS, is often the actual bottleneck for large model training.
+
+CoWoS packaging adds complexity: the GPU die and HBM stacks are mounted on a silicon interposer, which connects to the package substrate. This requires TSMC's advanced packaging infrastructure. TSMC has announced major CoWoS capacity expansion, targeting 2x growth in 2024 and additional capacity in 2025, but demand continues to exceed supply.
+
+[[Advanced Packaging Technologies]] covers CoWoS, SoIC, and other advanced packaging approaches. [[Foundry Business Model]] covers TSMC's role in advanced packaging as a differentiator. [[HBM High Bandwidth Memory]] covers the memory technology itself.
 
 ## Nuances critiques limits
 
-Packaging capacity is now as strategically important as fab capacity. The CoWoS shortage means AI chip supply is constrained not by wafer starts but by packaging throughput. This creates pricing power for TSMC in packaging. Hyperscalers and chip companies are investing in alternative packaging (Samsung I-Cube, Intel Foveros) to diversify. Long term, the question is whether advanced packaging can keep pace with compute scaling, or whether new approaches (photonic interconnects, on-chip SRAM) reduce the dependence on HBM stacking.
+HBM supply is concentrated: SK Hynix is the primary supplier for NVIDIA's H100/H200, with Samsung as an alternate. Micron has been slower to qualify HBM3 for AI accelerators. Any disruption at SK Hynix (natural disaster, fab incident) could cripple AI GPU production.
+
+The CoWoS interposer is manufactured on older TSMC node technology (not leading edge), but capacity expansion is still capital-intensive and slow (12-18 month ramp). Samsung and Intel are developing competing advanced packaging (I-cubes, Foveros) but none yet match CoWoS scale for AI accelerators.
+
+Advanced packaging represents a significant portion of AI chip cost — estimated at $300-500 per H100. As AI accelerators integrate more HBM stacks (H200 uses 8 stacks vs 6 for H100), packaging complexity and cost grow.
 
 ## Links and implications
 
-[[AI Chip Packaging HBM]] is enabled by [[Advanced Packaging Technologies]] and [[HBM High Bandwidth Memory]]. It is what makes [[NVIDIA Business Analysis]] and [[AMD GPU Data Center]] compute possible at scale. The [[Foundry Business Model]] is relevant since packaging is done at foundries (TSMC) or OSATs. [[GPU Interconnect Technologies]] is the complementary scaling technology. The CoWoS bottleneck [[Subsea Cable Networks]] analogy: both represent physical infrastructure constraints that can bottleneck an entire supply chain.
+[[AI Chip Packaging HBM]] connects directly to [[NVIDIA Business Analysis]] and [[AMD GPU Data Center]] as the packaging technology enabling their AI GPUs. [[HBM High Bandwidth Memory]] is the memory technology at the heart of these packages. [[GPU Interconnect Technologies]] covers how multiple AI chips connect within a system.
 
 ## Sources
-[^1]: SK Hynix HBM3E product specifications.
-[^2]: TSMC CoWoS technology overview, 2024.
-[^3]: Semiconductor Engineering, "HBM supply chain analysis," 2024.
-[^4]: Gartner, "AI chip packaging constraints," 2024.
-[^5]: Company earnings calls, TSMC and SK Hynix.
+[^1]: SK Hynix HBM product specifications and die analysis.
+[^2]: TSMC CoWoS technology documentation and capacity announcements.
+[^3]: TechInsights AI accelerator die shots and packaging analysis.
+[^4]: Yole Développement, Advanced Packaging Market Report 2024.
+[^5]: Industry interviews and supply chain analysis.

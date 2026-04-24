@@ -7,9 +7,22 @@ controversy: medium
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #automotive, #networking, #can, #ethernet]
+tags:
+  - '#concept'
+  - '#automotive'
+  - '#networking'
+  - '#can'
+  - '#ethernet'
 created: 2026-04-24
-strong_links: [["Automotive MCU Market", "Automotive Semiconductor Market Overview", "ADAS Domain Controller Architecture", "Automotive Display and Infotainment"], ["High Speed Interface ICs", "Automotive Grade Semiconductor Requirements", "Automotive Sensor Fusion", "Edge Computing Infrastructure"]]
+strong_links:
+  - ['Automotive MCU Market']
+  - ['Automotive Semiconductor Market Overview']
+  - ['ADAS Domain Controller Architecture']
+  - ['Automotive Display and Infotainment']
+  - ['High Speed Interface ICs']
+  - ['Automotive Grade Semiconductor Requirements']
+  - ['Automotive Sensor Fusion']
+  - ['Edge Computing Infrastructure']
 opposition_links: []
 ---
 

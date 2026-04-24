@@ -7,9 +7,15 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 3
-tags: [#sector, #telecom, #wireless]
+tags:
+  - '#sector'
+  - '#telecom'
+  - '#wireless'
 created: 2026-04-24
-strong_links: [["Wireless Infrastructure Investment CycleRF Front End ModulesSmall Cell Deployment", ["llular Baseband Mode, tenna Technologies Mass MI""], []]
+strong_links:
+  - ['Wireless Infrastructure Investment CycleRF Front End ModulesSmall Cell Deployment']
+  - ['llular Baseband Mode, tenna Technologies Mass MI']
+  - []
 opposition_links: []
 ---
 

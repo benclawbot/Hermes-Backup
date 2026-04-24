@@ -7,9 +7,22 @@ controversy: medium
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #photonics, #integrated-circuit, #silicon-photonics, #optical]
+tags:
+  - '#concept'
+  - '#photonics'
+  - '#integrated-circuit'
+  - '#silicon-photonics'
+  - '#optical'
 created: 2026-04-24
-strong_links: [["Optoelectronics Sensor Market", "Data Center Optical Networks", "LiDAR Technology", "Co-Packaged Optics"], ["MicroLED Technology", "Semiconductor Materials Market", "Foundry Business Model", "Advanced Packaging Market Dynamics"]]
+strong_links:
+  - ['Optoelectronics Sensor Market']
+  - ['Data Center Optical Networks']
+  - ['LiDAR Technology']
+  - ['Co-Packaged Optics']
+  - ['MicroLED Technology']
+  - ['Semiconductor Materials Market']
+  - ['Foundry Business Model']
+  - ['Advanced Packaging Market Dynamics']
 opposition_links: []
 ---
 

@@ -7,9 +7,15 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 3
-tags: [#concept, #semiconductors, #wireless]
+tags:
+  - '#concept'
+  - '#semiconductors'
+  - '#wireless'
 created: 2026-04-24
-strong_links: [["5G Infrastructure MarketRF Front End ModulesQualcomm Business Analysis", ["diaTek Business Analys, artphone SoC Mark""], []]
+strong_links:
+  - ['5G Infrastructure MarketRF Front End ModulesQualcomm Business Analysis']
+  - ['diaTek Business Analys, artphone SoC Mark']
+  - []
 opposition_links: []
 ---
 

@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #optoelectronics, #sensors, #photonics, #imaging]
+tags:
+  - '#sector'
+  - '#optoelectronics'
+  - '#sensors'
+  - '#photonics'
+  - '#imaging'
 created: 2026-04-24
-strong_links: [["Image Sensor Market", "Display Panel Industry Overview", "LiDAR Technology", "Photonics Integrated Circuits"], ["MicroLED Technology", "OLED Display Technology", "Semiconductor Materials Market", "Consumer Electronics Demand"]]
+strong_links:
+  - ['Image Sensor Market']
+  - ['Display Panel Industry Overview']
+  - ['LiDAR Technology']
+  - ['Photonics Integrated Circuits']
+  - ['MicroLED Technology']
+  - ['OLED Display Technology']
+  - ['Semiconductor Materials Market']
+  - ['Consumer Electronics Demand']
 opposition_links: []
 ---
 

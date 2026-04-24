@@ -7,9 +7,22 @@ controversy: medium
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #microled, #display, #technology, #next-gen]
+tags:
+  - '#concept'
+  - '#microled'
+  - '#display'
+  - '#technology'
+  - '#next-gen'
 created: 2026-04-24
-strong_links: [["OLED Display Technology", "QDOT Display Technology", "Display Panel Industry Overview", "Consumer Electronics Demand"], ["Samsung Display Business Analysis", "Apple MicroLED Strategy", "BOE Display Industry Position", "Semiconductor Materials Market"]]
+strong_links:
+  - ['OLED Display Technology']
+  - ['QDOT Display Technology']
+  - ['Display Panel Industry Overview']
+  - ['Consumer Electronics Demand']
+  - ['Samsung Display Business Analysis']
+  - ['Apple MicroLED Strategy']
+  - ['BOE Display Industry Position']
+  - ['Semiconductor Materials Market']
 opposition_links: []
 ---
 

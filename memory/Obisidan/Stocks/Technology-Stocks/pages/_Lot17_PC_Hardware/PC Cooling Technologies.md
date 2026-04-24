@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #cooling, #thermal, #pc, #heat]
+tags:
+  - '#concept'
+  - '#cooling'
+  - '#thermal'
+  - '#pc'
+  - '#heat'
 created: 2026-04-24
-strong_links: [["PC Gaming Hardware Market", "CPU Market Intel AMD ARM", "Power Semiconductor Packaging", "Data Center Cooling Technologies"], ["GPU Computing Demand", "PC Gaming Hardware Market", "Solid State Drives", "High Bandwidth Memory HBM"]]
+strong_links:
+  - ['PC Gaming Hardware Market']
+  - ['CPU Market Intel AMD ARM']
+  - ['Power Semiconductor Packaging']
+  - ['Data Center Cooling Technologies']
+  - ['GPU Computing Demand']
+  - ['PC Gaming Hardware Market']
+  - ['Solid State Drives']
+  - ['High Bandwidth Memory HBM']
 opposition_links: []
 ---
 

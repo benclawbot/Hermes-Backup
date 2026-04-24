@@ -7,9 +7,22 @@ controversy: low
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #eda, #semiconductor, #software, #design-tools]
+tags:
+  - '#company'
+  - '#eda'
+  - '#semiconductor'
+  - '#software'
+  - '#design-tools'
 created: 2026-04-24
-strong_links: [["Electronic Design Automation", "Cadence Design Systems", "Advanced Node Technology Roadmap", "Semiconductor IP Licensing"], ["Foundry Business Model", "TSMC Competitive Position", "Fabless Semiconductor Model", "300mm Wafer Fab Economics"]]
+strong_links:
+  - ['Electronic Design Automation']
+  - ['Cadence Design Systems']
+  - ['Advanced Node Technology Roadmap']
+  - ['Semiconductor IP Licensing']
+  - ['Foundry Business Model']
+  - ['TSMC Competitive Position']
+  - ['Fabless Semiconductor Model']
+  - ['300mm Wafer Fab Economics']
 opposition_links: []
 ---
 

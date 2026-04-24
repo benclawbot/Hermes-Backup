@@ -7,9 +7,23 @@ controversy: medium
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#sector, #lithography, #euv, #equipment, #asml, #geopolitics]
+tags:
+  - '#sector'
+  - '#lithography'
+  - '#euv'
+  - '#equipment'
+  - '#asml'
+  - '#geopolitics'
 created: 2026-04-24
-strong_links: [["EUV Lithography Systems", "Advanced Node Technology Roadmap", "TSMC Competitive Position", "Semiconductor Equipment Market Overview"], ["Foundry Business Model", "Advanced Packaging Technologies", "Samsung Foundry Strategy", "Intel Foundry Services Ambitions"]]
+strong_links:
+  - ['EUV Lithography Systems']
+  - ['Advanced Node Technology Roadmap']
+  - ['TSMC Competitive Position']
+  - ['Semiconductor Equipment Market Overview']
+  - ['Foundry Business Model']
+  - ['Advanced Packaging Technologies']
+  - ['Samsung Foundry Strategy']
+  - ['Intel Foundry Services Ambitions']
 opposition_links: []
 ---
 

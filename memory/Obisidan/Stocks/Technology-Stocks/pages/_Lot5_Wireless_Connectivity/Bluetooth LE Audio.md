@@ -7,9 +7,15 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 3
-tags: [#concept, #wireless, #audio]
+tags:
+  - '#concept'
+  - '#wireless'
+  - '#audio'
 created: 2026-04-24
-strong_links: [["WiFi Chip MarketRF Front End ModulesAudio Codec Chips", ["alcomm Business Analys, S Earbud Chip Mark""], []]
+strong_links:
+  - ['WiFi Chip MarketRF Front End ModulesAudio Codec Chips']
+  - ['alcomm Business Analys, S Earbud Chip Mark']
+  - []
 opposition_links: []
 ---
 

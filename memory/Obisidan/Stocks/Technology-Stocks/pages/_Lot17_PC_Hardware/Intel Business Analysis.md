@@ -7,9 +7,22 @@ controversy: medium
 importance: pillar
 source_knowledge: web-checked
 sources_count: 5
-tags: [#company, #intel, #cpu, #foundry, #idm]
+tags:
+  - '#company'
+  - '#intel'
+  - '#cpu'
+  - '#foundry'
+  - '#idm'
 created: 2026-04-24
-strong_links: [["AMD Business Analysis", "CPU Market Intel AMD ARM", "Chiplet Based Design Ecosystem", "Semiconductor Assembly Test Services"], ["3D IC Stacking TSV", "2.5D Interposer Technologies", "Power Semiconductor Packaging", "Trusted Foundry Program"]]
+strong_links:
+  - ['AMD Business Analysis']
+  - ['CPU Market Intel AMD ARM']
+  - ['Chiplet Based Design Ecosystem']
+  - ['Semiconductor Assembly Test Services']
+  - ['3D IC Stacking TSV']
+  - ['2.5D Interposer Technologies']
+  - ['Power Semiconductor Packaging']
+  - ['Trusted Foundry Program']
 opposition_links: []
 ---
 

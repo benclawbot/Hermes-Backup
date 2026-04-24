@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #data-center, #storage, #architecture, #infrastructure]
+tags:
+  - '#concept'
+  - '#data-center'
+  - '#storage'
+  - '#architecture'
+  - '#infrastructure'
 created: 2026-04-24
-strong_links: [["Enterprise Storage Semiconductors", "Solid State Drives", "Cloud Infrastructure Spending", "Memory for Data Centers"], ["High Bandwidth Memory HBM", "AI Accelerator Chips", "Storage Class Memory", "NAND Flash Memory"]]
+strong_links:
+  - ['Enterprise Storage Semiconductors']
+  - ['Solid State Drives']
+  - ['Cloud Infrastructure Spending']
+  - ['Memory for Data Centers']
+  - ['High Bandwidth Memory HBM']
+  - ['AI Accelerator Chips']
+  - ['Storage Class Memory']
+  - ['NAND Flash Memory']
 opposition_links: []
 ---
 

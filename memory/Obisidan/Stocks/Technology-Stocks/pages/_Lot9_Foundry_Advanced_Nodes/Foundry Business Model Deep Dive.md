@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #foundry, #business-model, #economics, #capital]
+tags:
+  - '#concept'
+  - '#foundry'
+  - '#business-model'
+  - '#economics'
+  - '#capital'
 created: 2026-04-24
-strong_links: [["Foundry Business Model", "TSMC Competitive Position", "Fabless vs IDM Comparison", "Advanced Node Technology Roadmap"], ["Advanced Packaging Technologies", "EUV Lithography Systems", "Semiconductor Equipment Market Overview", "AI Accelerator Market Overview"]]
+strong_links:
+  - ['Foundry Business Model']
+  - ['TSMC Competitive Position']
+  - ['Fabless vs IDM Comparison']
+  - ['Advanced Node Technology Roadmap']
+  - ['Advanced Packaging Technologies']
+  - ['EUV Lithography Systems']
+  - ['Semiconductor Equipment Market Overview']
+  - ['AI Accelerator Market Overview']
 opposition_links: []
 ---
 

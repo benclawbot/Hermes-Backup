@@ -7,9 +7,20 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #technology, #power]
+tags:
+  - '#concept'
+  - '#technology'
+  - '#power'
 created: 2026-04-24
-strong_links: [["Hyperscale Data Center Operators", "Data Center Cooling Technologies", "Silicon Carbide SiC Market", "Power Semiconductor Packaging"], ["Gallium Nitride GaN Power", "Server CPU Market Intel AMD Arm", "AI Accelerator Market Overview", "DRAM Market Analysis Samsung SKHynix Micron"]]
+strong_links:
+  - ['Hyperscale Data Center Operators']
+  - ['Data Center Cooling Technologies']
+  - ['Silicon Carbide SiC Market']
+  - ['Power Semiconductor Packaging']
+  - ['Gallium Nitride GaN Power']
+  - ['Server CPU Market Intel AMD Arm']
+  - ['AI Accelerator Market Overview']
+  - ['DRAM Market Analysis Samsung SKHynix Micron']
 opposition_links: []
 ---
 

@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #defense, #contractor, #prime, #electronics]
+tags:
+  - '#concept'
+  - '#defense'
+  - '#contractor'
+  - '#prime'
+  - '#electronics'
 created: 2026-04-24
-strong_links: [["Defense Semiconductor Requirements", "Military Avionics Systems", "Military Communication Systems", "Secure Processor Technologies"], ["Trusted Foundry Program", "Radiation Hardened Chips Space", "Semiconductor Export Controls ITAR", "DARPA Electronics Resurgence"]]
+strong_links:
+  - ['Defense Semiconductor Requirements']
+  - ['Military Avionics Systems']
+  - ['Military Communication Systems']
+  - ['Secure Processor Technologies']
+  - ['Trusted Foundry Program']
+  - ['Radiation Hardened Chips Space']
+  - ['Semiconductor Export Controls ITAR']
+  - ['DARPA Electronics Resurgence']
 opposition_links: []
 ---
 

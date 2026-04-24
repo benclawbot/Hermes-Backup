@@ -7,9 +7,15 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 3
-tags: [#concept, #wireless, #antenna]
+tags:
+  - '#concept'
+  - '#wireless'
+  - '#antenna'
 created: 2026-04-24
-strong_links: [["5G Infrastructure MarketRF Front End ModulesSmall Cell Deployment", ["llular Baseband Mode, mpound Semiconducto""], []]
+strong_links:
+  - ['5G Infrastructure MarketRF Front End ModulesSmall Cell Deployment']
+  - ['llular Baseband Mode, mpound Semiconducto']
+  - []
 opposition_links: []
 ---
 

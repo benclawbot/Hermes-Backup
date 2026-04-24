@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #defense, #military, #semiconductors, #rad-hard]
+tags:
+  - '#concept'
+  - '#defense'
+  - '#military'
+  - '#semiconductors'
+  - '#rad-hard'
 created: 2026-04-24
-strong_links: [["Radiation Hardened Chips Space", "Military Avionics Systems", "Secure Processor Technologies", "Trusted Foundry Program"], ["Semiconductor Export Controls ITAR", "Defense Contractor Semiconductor Content", "DARPA Electronics Resurgence", "Wide Bandgap Material Economics"]]
+strong_links:
+  - ['Radiation Hardened Chips Space']
+  - ['Military Avionics Systems']
+  - ['Secure Processor Technologies']
+  - ['Trusted Foundry Program']
+  - ['Semiconductor Export Controls ITAR']
+  - ['Defense Contractor Semiconductor Content']
+  - ['DARPA Electronics Resurgence']
+  - ['Wide Bandgap Material Economics']
 opposition_links: []
 ---
 

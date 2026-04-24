@@ -7,9 +7,22 @@ controversy: low
 importance: standard
 source_knowledge: web-checked
 sources_count: 5
-tags: [#concept, #soc, #design, #complexity, #semiconductors]
+tags:
+  - '#concept'
+  - '#soc'
+  - '#design'
+  - '#complexity'
+  - '#semiconductors'
 created: 2026-04-24
-strong_links: [["Electronic Design Automation", "Advanced Node Technology Roadmap", "Semiconductor IP Licensing", "Fabless Semiconductor Model"], ["Synopsys Business Analysis", "Cadence Design Systems", "Foundry Business Model", "300mm Wafer Fab Economics"]]
+strong_links:
+  - ['Electronic Design Automation']
+  - ['Advanced Node Technology Roadmap']
+  - ['Semiconductor IP Licensing']
+  - ['Fabless Semiconductor Model']
+  - ['Synopsys Business Analysis']
+  - ['Cadence Design Systems']
+  - ['Foundry Business Model']
+  - ['300mm Wafer Fab Economics']
 opposition_links: []
 ---
 

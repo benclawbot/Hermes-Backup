@@ -7,9 +7,22 @@ controversy: low
 importance: deep-cut
 source_knowledge: web-checked
 sources_count: 4
-tags: [#concept, #sensors, #ultrasonic, #mems, #iot]
+tags:
+  - '#concept'
+  - '#sensors'
+  - '#ultrasonic'
+  - '#mems'
+  - '#iot'
 created: 2026-04-24
-strong_links: [["MEMS Microphones", "Fingerprint Sensor Technologies", "Time of Flight 3D Sensing", "Advanced Packaging Technologies"], ["Foundry Business Model", "Edge Computing Infrastructure", "Power Management ICs", "Medical Imaging Semiconductors"]]
+strong_links:
+  - ['MEMS Microphones']
+  - ['Fingerprint Sensor Technologies']
+  - ['Time of Flight 3D Sensing']
+  - ['Advanced Packaging Technologies']
+  - ['Foundry Business Model']
+  - ['Edge Computing Infrastructure']
+  - ['Power Management ICs']
+  - ['Medical Imaging Semiconductors']
 opposition_links: []
 ---
 
