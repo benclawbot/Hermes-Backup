@@ -199,7 +199,7 @@ class BM25Indexer:
             })
         return results
 
-    def search(self, query: str, top_n: int = 10) -> list[dict]:
+    def search(self, query: str, top_n: int = 10, oversample: int = 1) -> list[dict]:
         """
         BM25 search. Returns top-N results with title, path, summary, and score.
         """
@@ -216,8 +216,9 @@ class BM25Indexer:
 
         # Sort by score descending
         ranked = sorted(scores.items(), key=lambda x: -x[1])
+        top_k = top_n * oversample
         results = []
-        for doc_id, score in ranked[:top_n]:
+        for doc_id, score in ranked[:top_k]:
             doc = self.docs[doc_id]
             # Highlight: extract snippet around first query token match
             snippet = self._snippet(doc["content"], query_tokens)
@@ -321,6 +322,110 @@ class BM25Indexer:
 
         con.close()
         return idx
+
+# ── Hybrid Search (BM25 + Semantic Reranking) ─────────────────────────────────
+
+class _EmbeddingReranker:
+    """
+    Lazy-loaded sentence-transformer reranker.
+    """
+    _instance: Optional["_EmbeddingReranker"] = None
+    _model = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
+    def load(self):
+        if self._model is None:
+            try:
+                from sentence_transformers import SentenceTransformer
+                self._model = SentenceTransformer("all-MiniLM-L6-v2")
+            except ImportError:
+                return False
+        return True
+
+    def encode(self, texts: list[str]) -> Optional[list[list[float]]]:
+        if self._model is None:
+            return None
+        try:
+            return self._model.encode(texts, convert_to_numpy=True).tolist()
+        except Exception:
+            return None
+
+    @staticmethod
+    def cosine(a: list[float], b: list[float]) -> float:
+        import math
+        dot = sum(x*y for x,y in zip(a,b))
+        norm_a = math.sqrt(sum(x*x for x in a))
+        norm_b = math.sqrt(sum(x*x for x in b))
+        return dot / (norm_a * norm_b + 1e-8)
+
+
+def _rerank_hybrid(bm25_results: list[dict], query: str,
+                   alpha: float = 0.4, top_k: int = 20) -> list[dict]:
+    """
+    Re-rank BM25 results using semantic similarity.
+    alpha=0.4 means 40% BM25 / 60% semantic weight.
+    """
+    reranker = _EmbeddingReranker()
+    if not reranker.load():
+        for r in bm25_results:
+            r["bm25_score"] = r.pop("score", 0)
+            r["semantic_score"] = None
+            r["hybrid_score"] = r["bm25_score"]
+        return bm25_results
+
+    query_emb = reranker.encode([query])
+    if not query_emb:
+        for r in bm25_results:
+            r["bm25_score"] = r.pop("score", 0)
+            r["semantic_score"] = None
+            r["hybrid_score"] = r["bm25_score"]
+        return bm25_results
+
+    texts = [r.get("summary", r.get("title", "")) for r in bm25_results]
+    doc_embs = reranker.encode(texts)
+    if not doc_embs:
+        for r in bm25_results:
+            r["bm25_score"] = r.pop("score", 0)
+            r["semantic_score"] = None
+            r["hybrid_score"] = r["bm25_score"]
+        return bm25_results
+
+    bm25_max = max((r["score"] for r in bm25_results), default=1.0)
+    query_emb = query_emb[0]
+
+    for r, doc_emb in zip(bm25_results, doc_embs):
+        bm25_norm = r["score"] / bm25_max
+        semantic = reranker.cosine(query_emb, doc_emb)
+        r["bm25_score"] = r.pop("score", 0)
+        r["semantic_score"] = round(semantic, 4)
+        r["hybrid_score"] = round(alpha * bm25_norm + (1 - alpha) * semantic, 4)
+
+    bm25_results.sort(key=lambda x: -x["hybrid_score"])
+    for i, r in enumerate(bm25_results):
+        r["rank"] = i + 1
+    return bm25_results
+
+
+def hybrid_search(self, query: str, top_n: int = 10, use_semantic: bool = True) -> list[dict]:
+    """
+    Hybrid search: BM25 first pass + optional semantic reranking.
+    Falls back to pure BM25 if semantic reranking is unavailable.
+    """
+    bm25_results = self.search(query, top_n=top_n, oversample=2)
+    if not use_semantic:
+        for r in bm25_results:
+            r["bm25_score"] = r["score"]
+            r["semantic_score"] = None
+            r["hybrid_score"] = r["bm25_score"]
+        return bm25_results[:top_n]
+    reranked = _rerank_hybrid(bm25_results, query, alpha=0.4)
+    return reranked[:top_n]
+
+BM25Indexer.hybrid_search = hybrid_search
 
 # ── JSON-RPC MCP server ────────────────────────────────────────────────────────
 
