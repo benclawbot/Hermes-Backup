@@ -1,40 +1,64 @@
-# Dependencies
-node_modules/
+# Workspace-wide security + hygiene ignores
 
-# Build output
-.next/
-out/
-dist/
-.open-next/
-.wrangler/
-
-# Environment — NEVER commit actual keys
+# Secrets / credentials
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
+*.pem
+*.key
+*secret*.json
+*token*.json
+google_client_secret.json
+google_tokens.json
 
-# Database
-data/
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
 
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.manual-dev*.log
-.playwright-webserver*.log
+# Runtime/state artifacts
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.log
+*.log.*
+.coverage
+htmlcov/
 
-# Editor
-.DS_Store
-.idea/
-.vscode/
+# Local sync/cache noise
+.dropbox
+.dropbox.cache/
 
-# OS
-Thumbs.db
-.vercel
-.env*.local
+# Keep child projects isolated in their own repos
+Projects/
 
-# Test artifacts
-/test-results/
-/tests/.playwright-report/
-/playwright-report/
-.vercel
+# Local model/cache artifacts
+*.pkl
+
+# Path-polluted filenames (from accidental Windows path copies)
+*\\*
+*:*
+
+# Added by Hermes workspace hardening
+.env
+.env.*
+!.env.example
+.netrc
+.git-credentials
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+.venv/
+venv/
+__pycache__/
+node_modules/
+dist/
+build/
+coverage/

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Puter Test</title>
+</head>
+<body>
+    <h1>Image Gen Test</h1>
+    <div id="status">Loading Puter.js...</div>
+    <div id="images"></div>
+
+    <script src="https://js.puter.com/v2/"></script>
+    <script>
+        const status = document.getElementById('status');
+        const imagesDiv = document.getElementById('images');
+
+        status.textContent = 'Puter.js loaded, generating...';
+
+        const prompt = "ethereal glowing wisp creature warm amber cool blue semi-transparent ghostly mysterious approachable digital art portrait";
+
+        const timeout = 120000; // 2 min
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+        puter.ai.txt2img(prompt, { timeout: timeout })
+            .then(img => {
+                clearTimeout(timeoutId);
+                status.textContent = 'SUCCESS! Image generated.';
+                imagesDiv.appendChild(img);
+                // Log the src for debugging
+                console.log('Image src length:', img.src ? img.src.length : 0);
+                console.log('Image src prefix:', img.src ? img.src.substring(0, 80) : 'none');
+            })
+            .catch(err => {
+                clearTimeout(timeoutId);
+                status.textContent = 'ERROR: ' + err.toString();
+                console.error('Error:', err);
+            });
+    </script>
+</body>
+</html>

@@ -1,69 +1,63 @@
-# ComplyScan — GDPR Compliance Checker
-
-Automated GDPR compliance scanning: enter a URL and receive a full report with findings and fix suggestions.
-
-## Tech Stack
-
-- **Framework:** Next.js 15 (App Router)
-- **Language:** TypeScript
-- **Styling:** Tailwind CSS
-- **Payments:** Stripe (UI only in this repo)
-- **Email:** Mailjet
+# Harness Setup
 
 ## Prerequisites
-
-- Node.js 18+
-- npm 9+
-
-## Setup
-
 ```bash
-# Clone the repository
-git clone <repo-url>
-cd compliance-checker
-
-# Install dependencies
-npm install
-
-# Copy environment variables
-cp .env.local.example .env.local
-
-# Start development server
-npm run dev
+pip install anthropic
+export ANTHROPIC_API_KEY=sk-ant-...
 ```
-
-Open [http://localhost:3000](http://localhost:3000) to start.
-
-## Environment Variables
-
-See `.env.local.example` for all required variables.
-
-## Available Scripts
-
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run start` | Start production server |
-| `npm run lint` | Run ESLint |
-| `npm test` | Run tests |
-| `npm run test:coverage` | Run tests with coverage |
 
 ## Project Structure
+```
+harness/
+  harness.py        ← runtime engine
+  projects.json     ← project registry
+  
+your-project/
+  CLAUDE.md         ← system constitution
+  AGENTS.md         ← role contracts
+  WORKFLOW.md       ← execution engine
+  TASKS.md          ← shared state (harness-managed)
+  MEMORY.md         ← persistent memory
+  RETRO.md          ← failure log
+  src/              ← Builder writes code here
+```
+
+## First Run
+
+**1. Register your project:**
+```bash
+python harness.py --add my-app /path/to/your/project
+```
+
+**2. Copy the 6 markdown files into your project root.**
+
+**3. Fill in MEMORY.md → Project Context** (stack, entry points, constraints).
+
+**4. Start:**
+```bash
+python harness.py intake            # fresh start — Planner interviews you
+python harness.py run               # resume from current state
+python harness.py status            # check what's happening
+python harness.py -p other-app run  # switch project
+```
+
+## How it works
 
 ```
-app/
-  components/    # UI components (Navbar, Hero, Pricing, etc.)
-  lib/           # Utilities (cn helper)
-  layout.tsx     # Root layout with fonts + metadata
-  page.tsx       # Landing page
-  globals.css    # Global styles + Tailwind
+You describe goal → [PLANNER] asks ≤5 questions → TASKS.md auto-written
+→ [BUILDER] executes, writes files to disk → [REVIEWER] validates
+→ lessons written to MEMORY.md → next task pulled from queue
+→ loop continues until queue empty → prompts you for next goal
 ```
 
-## Notes
+## Escalation (the only times you're interrupted)
 
-- The `/api/scan` route is a UI placeholder. Backend logic is implemented in TASK-002.
-- Stripe Checkout buttons are UI placeholders. Full Stripe integration is in TASK-003.
-- Email functionality is UI placeholder only. Email delivery is in TASK-003.
+- Builder hits an ambiguity it can't resolve
+- Task fails ≥ MAX_RETRIES times  
+- Reviewer proposes a new system rule (requires your approval)
 
+## Changing the model
 
+Edit `MODEL` in harness.py:
+- `claude-sonnet-4-6` — default (fast, balanced)
+- `claude-opus-4-6` — harder tasks, slower, more expensive

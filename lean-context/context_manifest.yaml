@@ -1,0 +1,15 @@
+# Example context_manifest.yaml
+# Place in the task working directory or project root.
+# OpenClaw's load_task_context.py reads this to know what to load.
+
+task: TASK-005
+kind: infra
+context_files:
+  - PROJECT.md
+  - TASKS.md
+skills: []
+tools:
+  - ctx_batch_execute
+  - ctx_search
+  - ctx_execute
+  - ctx_execute_file

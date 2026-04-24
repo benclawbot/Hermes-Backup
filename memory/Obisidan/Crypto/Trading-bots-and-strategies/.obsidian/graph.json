@@ -1,0 +1,19 @@
+{
+  "coloring": {
+    "byType": {
+      "concept": "#4a90d9",
+      "théorie": "#6c83b5",
+      "personne": "#4caf50",
+      "expérience": "#ff9800",
+      "controverse": "#e53935",
+      "école": "#9c27b0",
+      "trouble": "#795548",
+      "méthode": "#00bcd4",
+      "terme": "#9e9e9e",
+      "débat": "#9c27b0",
+      "événement": "#ff5722",
+      "institution": "#607d8b",
+      "œuvre": "#8d6e63"
+    }
+  }
+}
